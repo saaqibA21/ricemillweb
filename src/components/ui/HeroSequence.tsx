@@ -130,10 +130,15 @@ export default function HeroSequence() {
           />
 
           <div ref={textRef} className="max-w-4xl mx-auto flex flex-col items-center">
-            {/* Pill Badge */}
-            <div className="inline-flex items-center gap-2.5 bg-black/60 border border-[#d4a017]/40 text-[#f5c74e] text-xs sm:text-sm font-medium tracking-widest uppercase px-5 py-2 rounded-full mb-5 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.6)]">
-              <span className="w-2 h-2 bg-[#d4a017] rounded-full animate-pulse shadow-[0_0_8px_#d4a017]" />
-              Farm to Kitchen Since 1981
+            {/* Authentic Heritage Crest */}
+            <div className="flex items-center gap-3 mb-4">
+              <span className="h-[1px] w-8 sm:w-16 bg-gradient-to-r from-transparent via-[#d4a017]/60 to-[#d4a017]" />
+              <div className="flex items-center gap-2 text-xs sm:text-sm font-serif tracking-[0.26em] uppercase font-semibold text-[#f5d98b] drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">
+                <span>ESTD. 1981</span>
+                <span className="text-[#d4a017] text-xs">❖</span>
+                <span>TAMIL NADU</span>
+              </div>
+              <span className="h-[1px] w-8 sm:w-16 bg-gradient-to-l from-transparent via-[#d4a017]/60 to-[#d4a017]" />
             </div>
 
             {/* Brand Title */}
@@ -144,18 +149,14 @@ export default function HeroSequence() {
               </span>
             </h1>
 
-            {/* Elegant Sub-Header Ribbon */}
-            <div className="flex items-center justify-center gap-3 mt-3 mb-4">
-              <span className="h-[1px] w-8 sm:w-16 bg-gradient-to-r from-transparent to-[#d4a017]" />
-              <span className="text-xs sm:text-sm md:text-base font-sans uppercase tracking-[0.35em] text-[#e8c048] font-semibold drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
-                Rice Mills &amp; Wholesale
-              </span>
-              <span className="h-[1px] w-8 sm:w-16 bg-gradient-to-l from-transparent to-[#d4a017]" />
-            </div>
+            {/* Traditional Sub-Title */}
+            <p className="mt-3 text-sm sm:text-base md:text-lg text-[#ecd79d] font-serif italic tracking-wide max-w-xl mx-auto drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]">
+              Traditional Rice Millers &amp; Wholesale Suppliers
+            </p>
 
             {/* Tagline */}
-            <p className="text-gray-200 text-base sm:text-lg md:text-xl font-light tracking-wide max-w-xl mx-auto drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]">
-              One bowl <span className="text-[#d4a017] font-bold mx-1">·</span> Five varieties <span className="text-[#d4a017] font-bold mx-1">·</span> Infinite flavour
+            <p className="mt-2 text-white/90 text-sm sm:text-base font-light tracking-wide max-w-md mx-auto drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+              One bowl · Five varieties · Infinite flavour
             </p>
           </div>
 
