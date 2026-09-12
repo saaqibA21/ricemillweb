@@ -122,18 +122,7 @@ export default function AnimatedHero() {
         <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
 
         {/* Dark gradient for text legibility over the footage */}
-        <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/55 via-black/10 to-black/70 pointer-events-none" />
-
-        {/* Blurs out the source footage's watermark, fixed near the bottom-right corner */}
-        <div
-          className="absolute right-0 bottom-0 z-10 w-[32%] h-[28%] pointer-events-none"
-          style={{
-            backdropFilter: 'blur(18px)',
-            WebkitBackdropFilter: 'blur(18px)',
-            maskImage: 'radial-gradient(circle at 100% 100%, black 0%, black 55%, transparent 100%)',
-            WebkitMaskImage: 'radial-gradient(circle at 100% 100%, black 0%, black 55%, transparent 100%)',
-          }}
-        />
+        <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/50 via-transparent to-black/75 pointer-events-none" />
 
         {/* Mid-scroll phase label */}
         <div
@@ -152,9 +141,9 @@ export default function AnimatedHero() {
             }}
           />
 
-          <div ref={textRef} className="max-w-4xl mx-auto flex flex-col items-center">
+          <div ref={textRef} className="max-w-4xl mx-auto flex flex-col items-center text-center">
             {/* Authentic Heritage Crest */}
-            <div className="flex items-center gap-3 mb-4">
+            <div className="flex items-center justify-center gap-3 mb-4">
               <span className="h-[1px] w-8 sm:w-16 bg-gradient-to-r from-transparent via-[#d4a017]/60 to-[#d4a017]" />
               <div className="flex items-center gap-2 text-xs sm:text-sm font-serif tracking-[0.26em] uppercase font-semibold text-[#f5d98b] drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">
                 <span>ESTD. 1981</span>
@@ -183,12 +172,21 @@ export default function AnimatedHero() {
             </p>
           </div>
 
-          <div ref={ctaRef} className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-6 sm:mt-8 w-full max-w-xs sm:max-w-none pointer-events-auto px-2">
-            <Link to="/shop" className="btn-primary text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 justify-center shadow-lg shadow-black/40">
+          <div
+            ref={ctaRef}
+            className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mt-6 sm:mt-8 w-full max-w-xs sm:w-auto sm:max-w-none pointer-events-auto px-2 mx-auto"
+          >
+            <Link
+              to="/shop"
+              className="btn-primary text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 justify-center shadow-lg shadow-black/40 w-full sm:w-auto"
+            >
               <ShoppingBag className="w-5 h-5" />
               Shop All Rice
             </Link>
-            <Link to="/wholesale" className="btn-secondary text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 justify-center backdrop-blur-sm bg-black/20">
+            <Link
+              to="/wholesale"
+              className="btn-secondary text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 justify-center backdrop-blur-sm bg-black/20 w-full sm:w-auto"
+            >
               Wholesale Inquiry
               <ArrowRight className="w-5 h-5" />
             </Link>
