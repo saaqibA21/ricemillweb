@@ -18,10 +18,11 @@ async function main() {
   const sql = neon(url);
   const schemaPath = fileURLToPath(new URL('../db/schema.sql', import.meta.url));
   const schema = readFileSync(schemaPath, 'utf-8');
-  const statements = schema
+  const cleanSchema = schema.replace(/--.*$/gm, '').trim();
+  const statements = cleanSchema
     .split(';')
     .map((s) => s.trim())
-    .filter((s) => s.length > 0 && !s.startsWith('--'));
+    .filter((s) => s.length > 0);
 
   for (const statement of statements) {
     await sql.query(statement);
