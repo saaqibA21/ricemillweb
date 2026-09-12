@@ -1,6 +1,6 @@
 // src/components/layout/Footer.tsx
 import { Link } from 'react-router-dom';
-import { Wheat, Phone, Mail, MapPin, MessageCircle, Instagram, Facebook, Youtube } from 'lucide-react';
+import { Phone, Mail, MapPin, MessageCircle, Instagram, Facebook, Youtube } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -11,9 +11,11 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-1">
             <Link to="/" className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-gradient-to-br from-[#d4a017] to-[#926b09] rounded-xl flex items-center justify-center">
-                <Wheat className="w-7 h-7 text-white" />
-              </div>
+              <img
+                src="/assets/logo.jpeg"
+                alt="Hariharan Traders"
+                className="w-14 h-14 rounded-full object-cover ring-2 ring-[#d4a017]/40"
+              />
               <div>
                 <div className="font-serif font-bold text-white text-xl">Hariharan Traders</div>
                 <div className="text-[#d4a017] text-xs tracking-widest">RICE • ஆரோக்கியமான வாழ்வு</div>

@@ -1,7 +1,7 @@
 // src/pages/Login.tsx
 import { useState } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { Phone, ArrowRight, Wheat, RefreshCw } from 'lucide-react';
+import { Phone, ArrowRight, RefreshCw } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { User } from '../types';
 import toast from 'react-hot-toast';
@@ -70,9 +70,11 @@ export default function Login() {
       <div className="w-full max-w-md">
         {/* Brand */}
         <div className="text-center mb-10">
-          <div className="w-16 h-16 bg-gradient-to-br from-[#d4a017] to-[#926b09] rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <Wheat className="w-9 h-9 text-white" />
-          </div>
+          <img
+            src="/assets/logo.jpeg"
+            alt="Hariharan Traders"
+            className="w-20 h-20 rounded-full object-cover ring-2 ring-[#d4a017]/40 mx-auto mb-4"
+          />
           <h1 className="font-serif font-bold text-3xl text-white mb-1">Hariharan Traders</h1>
           <p className="text-[#d4a017] text-sm tracking-widest">RICE</p>
         </div>

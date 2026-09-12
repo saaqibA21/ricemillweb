@@ -1,7 +1,7 @@
 // src/components/layout/Navbar.tsx
 import { useState, useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { ShoppingCart, User, Menu, X, Wheat, Search } from 'lucide-react';
+import { ShoppingCart, User, Menu, X, Search } from 'lucide-react';
 import { useCartStore } from '../../store/cartStore';
 import { useAuthStore } from '../../store/authStore';
 
@@ -50,9 +50,11 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-[#d4a017] to-[#926b09] rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
-                <Wheat className="w-6 h-6 text-white" />
-              </div>
+              <img
+                src="/assets/logo.jpeg"
+                alt="Hariharan Traders"
+                className="w-11 h-11 rounded-full object-cover ring-2 ring-[#d4a017]/40 group-hover:scale-105 transition-transform"
+              />
               <div className="hidden sm:block">
                 <div className="font-serif font-bold text-white text-lg leading-none">
                   Hariharan Traders
