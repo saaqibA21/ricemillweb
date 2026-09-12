@@ -1,0 +1,167 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --green-primary: #1e5c1e;
+  --green-dark: #0f300f;
+  --gold-primary: #d4a017;
+  --gold-light: #fcd34d;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: #0f1a0f;
+  color: #f0f7f0;
+  overflow-x: hidden;
+}
+
+/* =================== HERO SEQUENCE =================== */
+.hero-section {
+  position: relative;
+  height: 500vh;
+}
+
+.hero-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+.hero-img.active {
+  opacity: 1;
+}
+
+/* =================== CUSTOM SCROLLBAR =================== */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0f1a0f;
+}
+::-webkit-scrollbar-thumb {
+  background: #d4a017;
+  border-radius: 3px;
+}
+
+/* =================== BUTTONS =================== */
+.btn-primary {
+  @apply bg-[#d4a017] hover:bg-[#b7860e] text-[#0f1a0f] font-semibold px-6 py-3 rounded-lg transition-all duration-200 inline-flex items-center gap-2 cursor-pointer;
+}
+
+.btn-secondary {
+  @apply border border-[#d4a017] text-[#d4a017] hover:bg-[#d4a017] hover:text-[#0f1a0f] font-semibold px-6 py-3 rounded-lg transition-all duration-200 inline-flex items-center gap-2 cursor-pointer;
+}
+
+.btn-green {
+  @apply bg-[#1e5c1e] hover:bg-[#2d7d2d] text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 inline-flex items-center gap-2 cursor-pointer;
+}
+
+/* =================== CARDS =================== */
+.card {
+  @apply bg-[#1a2e1a] border border-[#2d4a2d] rounded-2xl overflow-hidden hover:border-[#d4a017]/50 transition-all duration-300;
+}
+
+.card-glass {
+  background: rgba(30, 50, 30, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(212, 160, 23, 0.2);
+  border-radius: 1rem;
+}
+
+/* =================== INPUTS =================== */
+.input {
+  @apply bg-[#1a2e1a] border border-[#2d4a2d] text-white placeholder-gray-500 rounded-lg px-4 py-3 w-full focus:outline-none focus:border-[#d4a017] transition-colors duration-200;
+}
+
+.label {
+  @apply text-sm font-medium text-gray-300 mb-1 block;
+}
+
+/* =================== BADGES =================== */
+.badge {
+  @apply text-xs font-semibold px-2 py-1 rounded-full;
+}
+
+.badge-gold {
+  @apply bg-[#d4a017]/20 text-[#fcd34d] border border-[#d4a017]/30;
+}
+
+.badge-green {
+  @apply bg-[#1e5c1e]/40 text-[#7ec07e] border border-[#2d7d2d]/40;
+}
+
+/* =================== GRAIN PARTICLES =================== */
+.grain-particle {
+  position: fixed;
+  pointer-events: none;
+  z-index: 1;
+  width: 3px;
+  height: 8px;
+  background: rgba(212, 160, 23, 0.6);
+  border-radius: 50%;
+  animation: grainFall linear infinite;
+}
+
+@keyframes grainFall {
+  0% { transform: translateY(-10px) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.4; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+/* =================== SECTION TITLES =================== */
+.section-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  @apply text-4xl md:text-5xl font-bold text-white;
+}
+
+.section-subtitle {
+  @apply text-[#d4a017] font-semibold text-sm uppercase tracking-widest mb-4;
+}
+
+/* =================== STAR RATING =================== */
+.star-filled { color: #fcd34d; }
+.star-empty { color: #374151; }
+
+/* =================== DIVIDER =================== */
+.gold-divider {
+  @apply w-16 h-1 bg-[#d4a017] rounded-full;
+}
+
+/* =================== RESPONSIVE NAV =================== */
+.nav-link {
+  @apply text-gray-300 hover:text-[#d4a017] font-medium transition-colors duration-200 relative;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #d4a017;
+  transition: width 0.2s;
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
+}
