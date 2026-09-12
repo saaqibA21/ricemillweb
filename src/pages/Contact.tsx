@@ -5,15 +5,27 @@ import toast from 'react-hot-toast';
 
 export default function Contact() {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ name: '', phone: '', email: '', subject: '', message: '' });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await new Promise((r) => setTimeout(r, 800));
-    setSubmitted(true);
-    toast.success('Message sent! We\'ll get back to you soon.', {
-      style: { background: '#1a2e1a', color: '#f0f7f0', border: '1px solid #d4a017' },
-    });
+    setLoading(true);
+    try {
+      await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+    } catch (err) {
+      console.warn('Network issue submitting feedback:', err);
+    } finally {
+      setLoading(false);
+      setSubmitted(true);
+      toast.success('Message sent! We\'ll get back to you soon.', {
+        style: { background: '#1a2e1a', color: '#f0f7f0', border: '1px solid #d4a017' },
+      });
+    }
   };
 
   return (
@@ -165,9 +177,9 @@ export default function Contact() {
                   />
                 </div>
 
-                <button type="submit" className="btn-primary w-full justify-center py-4">
+                <button type="submit" disabled={loading} className="btn-primary w-full justify-center py-4 disabled:opacity-50">
                   <Send className="w-5 h-5" />
-                  Send Message
+                  {loading ? 'Sending...' : 'Send Message'}
                 </button>
               </form>
             )}

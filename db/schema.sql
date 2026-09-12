@@ -38,3 +38,28 @@ create table if not exists orders (
   created_at timestamptz not null default now(),
   estimated_delivery timestamptz
 );
+
+create table if not exists feedbacks (
+  id text primary key,
+  name text not null,
+  phone text,
+  email text not null,
+  subject text,
+  message text not null,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists export_requests (
+  id text primary key,
+  company_name text,
+  contact_name text not null,
+  phone text not null,
+  email text not null,
+  country text not null default 'India',
+  products text,
+  quantity text,
+  message text,
+  status text not null default 'new',
+  created_at timestamptz not null default now()
+);
+

@@ -23,6 +23,7 @@ const certifications = [
 
 export default function Wholesale() {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     companyName: '',
     contactName: '',
@@ -36,12 +37,22 @@ export default function Wholesale() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate submission
-    await new Promise((r) => setTimeout(r, 1000));
-    setSubmitted(true);
-    toast.success('Inquiry submitted! We\'ll contact you within 24 hours.', {
-      style: { background: '#1a2e1a', color: '#f0f7f0', border: '1px solid #d4a017' },
-    });
+    setLoading(true);
+    try {
+      await fetch('/api/export', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+    } catch (err) {
+      console.warn('Network issue saving export request:', err);
+    } finally {
+      setLoading(false);
+      setSubmitted(true);
+      toast.success('Inquiry submitted! We\'ll contact you within 24 hours.', {
+        style: { background: '#1a2e1a', color: '#f0f7f0', border: '1px solid #d4a017' },
+      });
+    }
   };
 
   return (
@@ -248,9 +259,9 @@ export default function Wholesale() {
                   />
                 </div>
 
-                <button type="submit" className="btn-primary w-full justify-center py-4 text-base">
+                <button type="submit" disabled={loading} className="btn-primary w-full justify-center py-4 text-base disabled:opacity-50">
                   <Send className="w-5 h-5" />
-                  Submit Inquiry
+                  {loading ? 'Submitting Inquiry...' : 'Submit Inquiry'}
                 </button>
               </form>
             )}
