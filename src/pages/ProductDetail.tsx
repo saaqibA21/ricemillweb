@@ -3,13 +3,15 @@ import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ShoppingCart, Star, ArrowLeft, Check, Truck, Shield, Award } from 'lucide-react';
 import { getProductBySlug } from '../data/products';
+import { useProductsStore } from '../store/productsStore';
 import { useCartStore } from '../store/cartStore';
 import { PriceOption } from '../types';
 import toast from 'react-hot-toast';
 
 export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>();
-  const product = getProductBySlug(slug || '');
+  const products = useProductsStore((s) => s.products);
+  const product = products.find((p) => p.slug === slug) || getProductBySlug(slug || '');
   const addItem = useCartStore((s) => s.addItem);
 
   const [selectedWeight, setSelectedWeight] = useState<PriceOption>(

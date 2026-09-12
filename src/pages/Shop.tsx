@@ -3,7 +3,7 @@ import { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
 import ProductCard from '../components/ui/ProductCard';
-import { products, varieties } from '../data/products';
+import { useProductsStore } from '../store/productsStore';
 
 const sortOptions = [
   { value: 'default', label: 'Featured' },
@@ -14,6 +14,7 @@ const sortOptions = [
 ];
 
 export default function Shop() {
+  const { products, varieties, isLoading } = useProductsStore();
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
   const [selectedVariety, setSelectedVariety] = useState(searchParams.get('variety') || 'All');

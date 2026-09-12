@@ -4,6 +4,7 @@
 // Safe to re-run — existing rows are upserted by id.
 import dotenv from 'dotenv';
 dotenv.config({ path: '.env.local' });
+dotenv.config();
 
 import { neon } from '@neondatabase/serverless';
 import { products } from '../src/data/products';

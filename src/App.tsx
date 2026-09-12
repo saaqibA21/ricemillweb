@@ -1,6 +1,8 @@
 // src/App.tsx
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import { useProductsStore } from './store/productsStore';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import Home from './pages/Home';
@@ -37,6 +39,10 @@ function WhatsAppButton() {
 }
 
 export default function App() {
+  useEffect(() => {
+    useProductsStore.getState().fetchProducts();
+  }, []);
+
   return (
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <div className="min-h-screen bg-[#0f1a0f] flex flex-col">

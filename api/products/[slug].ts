@@ -7,10 +7,16 @@ export const config = { runtime: 'edge' };
 export default async function handler(req: Request) {
   if (req.method !== 'GET') return json({ error: 'Method not allowed' }, 405);
 
-  const slug = new URL(req.url).pathname.split('/').pop();
-  const sql = db();
-  const rows = await sql`select * from products where slug = ${slug} limit 1`;
+  try {
+    const slug = new URL(req.url).pathname.split('/').pop();
+    const sql = db();
+    const rows = await sql`select * from products where slug = ${slug} limit 1`;
 
-  if (rows.length === 0) return json({ error: 'Not found' }, 404);
-  return json(mapProductRow(rows[0]));
+    if (rows.length === 0) return json({ error: 'Not found' }, 404);
+    return json(mapProductRow(rows[0]));
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Database error';
+    return json({ error: message }, 500);
+  }
 }
+

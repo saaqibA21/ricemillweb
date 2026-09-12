@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import AnimatedHero from '../components/ui/AnimatedHero';
 import ProductCard from '../components/ui/ProductCard';
-import { products } from '../data/products';
+import { useProductsStore } from '../store/productsStore';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -83,6 +83,7 @@ export default function Home() {
     return () => ctx.revert();
   }, []);
 
+  const products = useProductsStore((s) => s.products);
   const featuredProducts = products.slice(0, 6);
 
   return (

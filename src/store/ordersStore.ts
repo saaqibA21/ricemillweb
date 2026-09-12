@@ -9,7 +9,8 @@ interface OrdersState {
     items: CartItem[],
     total: number,
     address: Address,
-    paymentMethod: 'upi' | 'cod'
+    paymentMethod: 'upi' | 'cod',
+    orderId?: string
   ) => Order;
 }
 
@@ -18,13 +19,13 @@ export const useOrdersStore = create<OrdersState>()(
     (set, get) => ({
       orders: [],
 
-      placeOrder: (items, total, address, paymentMethod) => {
+      placeOrder: (items, total, address, paymentMethod, orderId) => {
         const now = new Date();
         const delivery = new Date(now);
         delivery.setDate(delivery.getDate() + 5);
 
         const order: Order = {
-          id: `GG-${Date.now()}`,
+          id: orderId || `GG-${Date.now()}`,
           items,
           total,
           status: 'confirmed',

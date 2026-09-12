@@ -34,13 +34,18 @@ export default async function handler(req: Request) {
   const estimatedDelivery = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString();
   const paymentStatus = paymentMethod === 'cod' ? 'pending' : 'paid';
 
-  await sql`
-    insert into orders (id, items, total, status, payment_method, payment_status, address, estimated_delivery)
-    values (
-      ${id}, ${JSON.stringify(items)}, ${total}, 'confirmed',
-      ${paymentMethod}, ${paymentStatus}, ${JSON.stringify(address)}, ${estimatedDelivery}
-    )
-  `;
+  try {
+    await sql`
+      insert into orders (id, items, total, status, payment_method, payment_status, address, estimated_delivery)
+      values (
+        ${id}, ${JSON.stringify(items)}, ${total}, 'confirmed',
+        ${paymentMethod}, ${paymentStatus}, ${JSON.stringify(address)}, ${estimatedDelivery}
+      )
+    `;
 
-  return json({ id, estimatedDelivery }, 201);
+    return json({ id, estimatedDelivery }, 201);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Database error';
+    return json({ error: message }, 500);
+  }
 }

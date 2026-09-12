@@ -68,16 +68,35 @@ export default function Checkout() {
     e.preventDefault();
     setProcessing(true);
 
-    // Simulate payment processing
-    await new Promise((r) => setTimeout(r, 2000));
-
     const fullAddress: Address = {
       ...address,
       id: `addr-${Date.now()}`,
       isDefault: true,
     };
 
-    const order = placeOrder(items, grandTotal, fullAddress, paymentMethod);
+    let serverOrderId: string | undefined;
+    try {
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items,
+          total: grandTotal,
+          paymentMethod,
+          address: fullAddress,
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.id) {
+          serverOrderId = data.id;
+        }
+      }
+    } catch {
+      // In local dev without backend or offline, proceed with local order placement
+    }
+
+    const order = placeOrder(items, grandTotal, fullAddress, paymentMethod, serverOrderId);
     clearCart();
     setProcessing(false);
     navigate(`/order-success/${order.id}`);

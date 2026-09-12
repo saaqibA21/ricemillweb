@@ -1,21 +1,23 @@
 // scripts/migrate.ts
 // Usage: npm run db:migrate
 import dotenv from 'dotenv';
-dotenv.config({ path: '.env.local' });
-
-import { neon } from '@neondatabase/serverless';
+import { fileURLToPath } from 'url';
 import { readFileSync } from 'fs';
-import { join } from 'path';
+import { neon } from '@neondatabase/serverless';
+
+dotenv.config({ path: '.env.local' });
+dotenv.config();
 
 async function main() {
   const url = process.env.DATABASE_URL;
   if (!url) {
     throw new Error(
-      'DATABASE_URL not set. Run `vercel env pull .env.local` after creating the Postgres database in the Vercel dashboard.'
+      'DATABASE_URL not set. Run `vercel env pull .env.local` after creating the Postgres database in the Vercel dashboard, or add DATABASE_URL to .env.local'
     );
   }
   const sql = neon(url);
-  const schema = readFileSync(join(__dirname, '../db/schema.sql'), 'utf-8');
+  const schemaPath = fileURLToPath(new URL('../db/schema.sql', import.meta.url));
+  const schema = readFileSync(schemaPath, 'utf-8');
   const statements = schema
     .split(';')
     .map((s) => s.trim())
