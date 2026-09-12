@@ -139,7 +139,9 @@ export default function Footer() {
             <span>•</span>
             <span>GST: 03AAAAA0000A1Z5</span>
             <span>•</span>
-            <span>ISO 22000 Certified</span>
+            <Link to="/admin" className="text-gray-500 hover:text-[#d4a017] transition-colors">
+              Admin Portal
+            </Link>
           </div>
         </div>
       </div>
