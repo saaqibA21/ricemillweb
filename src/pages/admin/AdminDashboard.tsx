@@ -1,4 +1,4 @@
-﻿// src/pages/admin/AdminDashboard.tsx
+// src/pages/admin/AdminDashboard.tsx
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -318,22 +318,21 @@ export default function AdminDashboard() {
         )}
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-[#1f381f] gap-6">
+        <div className="flex border-b border-[#1f381f] gap-4 sm:gap-6 overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0 scroll-touch">
           <button
             onClick={() => setActiveTab('orders')}
-            className={`pb-4 text-sm font-semibold flex items-center gap-2 border-b-2 transition-all ${
+            className={`pb-3 sm:pb-4 text-xs sm:text-sm font-semibold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap shrink-0 ${
               activeTab === 'orders'
                 ? 'border-[#d4a017] text-[#d4a017]'
                 : 'border-transparent text-gray-400 hover:text-gray-200'
             }`}
           >
             <ShoppingBag className="w-4 h-4" />
-            Orders ({orders.length})
+            Orders &amp; Payments ({orders.length})
           </button>
-
           <button
             onClick={() => setActiveTab('feedbacks')}
-            className={`pb-4 text-sm font-semibold flex items-center gap-2 border-b-2 transition-all ${
+            className={`pb-3 sm:pb-4 text-xs sm:text-sm font-semibold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap shrink-0 ${
               activeTab === 'feedbacks'
                 ? 'border-[#d4a017] text-[#d4a017]'
                 : 'border-transparent text-gray-400 hover:text-gray-200'
@@ -342,17 +341,16 @@ export default function AdminDashboard() {
             <MessageSquare className="w-4 h-4" />
             Customer Feedbacks ({feedbacks.length})
           </button>
-
           <button
             onClick={() => setActiveTab('export')}
-            className={`pb-4 text-sm font-semibold flex items-center gap-2 border-b-2 transition-all ${
+            className={`pb-3 sm:pb-4 text-xs sm:text-sm font-semibold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap shrink-0 ${
               activeTab === 'export'
                 ? 'border-[#d4a017] text-[#d4a017]'
                 : 'border-transparent text-gray-400 hover:text-gray-200'
             }`}
           >
             <Globe className="w-4 h-4" />
-            Wholesale & Export Requests ({exportRequests.length})
+            Wholesale &amp; Export Inquiries ({exportRequests.length})
           </button>
         </div>
 

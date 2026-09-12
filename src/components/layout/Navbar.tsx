@@ -49,18 +49,18 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-2 group">
+            <Link to="/" className="flex items-center gap-2.5 group shrink-0">
               <img
                 src="/assets/logo.jpeg"
                 alt="Hariharan Traders"
-                className="w-11 h-11 rounded-full object-cover ring-2 ring-[#d4a017]/40 group-hover:scale-105 transition-transform"
+                className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover ring-2 ring-[#d4a017]/40 group-hover:scale-105 transition-transform"
               />
-              <div className="hidden sm:block">
-                <div className="font-serif font-bold text-white text-lg leading-none">
+              <div className="flex flex-col">
+                <div className="font-serif font-bold text-white text-sm sm:text-base md:text-lg leading-tight truncate max-w-[150px] xs:max-w-[190px] sm:max-w-none">
                   Hariharan Traders
                 </div>
-                <div className="text-[#d4a017] text-xs font-medium tracking-widest">
-                  RICE
+                <div className="text-[#d4a017] text-[10px] sm:text-xs font-semibold tracking-wider">
+                  RICE MILL
                 </div>
               </div>
             </Link>
@@ -120,7 +120,7 @@ export default function Navbar() {
 
         {/* Search Bar Dropdown */}
         {searchOpen && (
-          <div className="bg-[#0a150a]/95 backdrop-blur-md border-t border-[#2d4a2d] px-4 py-3">
+          <div className="bg-[#0a150a]/98 backdrop-blur-lg border-t border-[#2d4a2d] px-4 py-3 shadow-xl">
             <form onSubmit={handleSearch} className="max-w-2xl mx-auto flex gap-2">
               <input
                 autoFocus
@@ -128,9 +128,9 @@ export default function Navbar() {
                 placeholder="Search rice varieties, brands..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="input flex-1"
+                className="input flex-1 text-base py-3"
               />
-              <button type="submit" className="btn-primary py-3">
+              <button type="submit" className="btn-primary py-3 px-5 shrink-0">
                 Search
               </button>
             </form>
@@ -139,34 +139,36 @@ export default function Navbar() {
 
         {/* Mobile Menu */}
         {menuOpen && (
-          <div className="md:hidden bg-[#0a150a]/98 backdrop-blur-md border-t border-[#2d4a2d]">
-            <div className="px-4 py-6 space-y-4">
+          <div className="md:hidden bg-[#0a150a]/98 backdrop-blur-xl border-t border-[#2d4a2d] shadow-2xl animate-in fade-in duration-200">
+            <div className="px-5 py-6 space-y-3">
               {navLinks.map((l) => (
                 <NavLink
                   key={l.to}
                   to={l.to}
                   onClick={() => setMenuOpen(false)}
                   className={({ isActive }) =>
-                    `block text-lg font-medium py-2 ${
-                      isActive ? 'text-[#d4a017]' : 'text-gray-300'
+                    `block text-lg font-medium py-2.5 px-3 rounded-xl transition-all ${
+                      isActive
+                        ? 'bg-[#1a2e1a] text-[#d4a017] font-semibold'
+                        : 'text-gray-300 hover:text-white hover:bg-[#142314]'
                     }`
                   }
                 >
                   {l.label}
                 </NavLink>
               ))}
-              <div className="pt-4 border-t border-[#2d4a2d] flex gap-4">
+              <div className="pt-4 border-t border-[#1f381f] flex gap-3">
                 <Link
                   to="/cart"
                   onClick={() => setMenuOpen(false)}
-                  className="btn-primary flex-1 justify-center"
+                  className="btn-primary flex-1 justify-center py-3.5 text-base"
                 >
                   Cart ({totalItems})
                 </Link>
                 <Link
                   to={isLoggedIn ? '/account' : '/login'}
                   onClick={() => setMenuOpen(false)}
-                  className="btn-secondary flex-1 justify-center"
+                  className="btn-secondary flex-1 justify-center py-3.5 text-base"
                 >
                   {isLoggedIn ? 'Account' : 'Login'}
                 </Link>

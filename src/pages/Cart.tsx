@@ -50,9 +50,9 @@ export default function Cart() {
             {items.map((item) => {
               const key = `${item.product.id}-${item.selectedWeight.weight}`;
               return (
-                <div key={key} className="card p-4 flex gap-4">
+                <div key={key} className="card p-3.5 sm:p-4 flex gap-3 sm:gap-4 items-center">
                   {/* Image */}
-                  <div className="w-24 h-24 rounded-xl overflow-hidden bg-[#0f1a0f] shrink-0">
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden bg-[#0f1a0f] shrink-0 border border-[#233b23]">
                     <img
                       src={item.product.image}
                       alt={item.product.name}
@@ -68,16 +68,19 @@ export default function Cart() {
                   <div className="flex-1 min-w-0">
                     <Link
                       to={`/product/${item.product.slug}`}
-                      className="font-serif font-semibold text-white hover:text-[#d4a017] transition-colors line-clamp-1"
+                      className="font-serif font-semibold text-white hover:text-[#d4a017] transition-colors text-sm sm:text-base line-clamp-1"
                     >
                       {item.product.name}
                     </Link>
-                    <p className="text-[#d4a017] text-sm mt-0.5">{item.selectedWeight.weight}</p>
-                    <p className="text-gray-400 text-xs mt-0.5">{item.product.variety}</p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-[#d4a017] text-xs sm:text-sm font-medium">{item.selectedWeight.weight}</span>
+                      <span className="text-gray-500 text-xs">•</span>
+                      <span className="text-gray-400 text-xs truncate">{item.product.variety}</span>
+                    </div>
 
-                    <div className="flex items-center justify-between mt-3">
+                    <div className="flex items-center justify-between mt-2.5 sm:mt-3">
                       {/* Quantity controls */}
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 sm:gap-2">
                         <button
                           onClick={() =>
                             updateQuantity(
@@ -86,11 +89,12 @@ export default function Cart() {
                               item.quantity - 1
                             )
                           }
-                          className="w-7 h-7 rounded-lg bg-[#0f1a0f] border border-[#2d4a2d] flex items-center justify-center text-white hover:border-[#d4a017] transition-colors"
+                          className="w-8 h-8 rounded-lg bg-[#0f1a0f] border border-[#2d4a2d] flex items-center justify-center text-white hover:border-[#d4a017] active:scale-95 transition-all"
+                          aria-label="Decrease quantity"
                         >
-                          <Minus className="w-3 h-3" />
+                          <Minus className="w-3.5 h-3.5" />
                         </button>
-                        <span className="w-8 text-center text-white font-semibold">
+                        <span className="w-7 text-center text-white font-semibold text-sm">
                           {item.quantity}
                         </span>
                         <button
@@ -101,23 +105,25 @@ export default function Cart() {
                               item.quantity + 1
                             )
                           }
-                          className="w-7 h-7 rounded-lg bg-[#0f1a0f] border border-[#2d4a2d] flex items-center justify-center text-white hover:border-[#d4a017] transition-colors"
+                          className="w-8 h-8 rounded-lg bg-[#0f1a0f] border border-[#2d4a2d] flex items-center justify-center text-white hover:border-[#d4a017] active:scale-95 transition-all"
+                          aria-label="Increase quantity"
                         >
-                          <Plus className="w-3 h-3" />
+                          <Plus className="w-3.5 h-3.5" />
                         </button>
                       </div>
 
                       {/* Price + Remove */}
-                      <div className="flex items-center gap-4">
-                        <span className="text-[#d4a017] font-bold text-lg">
+                      <div className="flex items-center gap-3 sm:gap-4">
+                        <span className="text-[#d4a017] font-bold text-base sm:text-lg">
                           ₹{(item.selectedWeight.price * item.quantity).toLocaleString()}
                         </span>
                         <button
                           onClick={() =>
                             removeItem(item.product.id, item.selectedWeight.weight)
                           }
-                          className="text-gray-500 hover:text-red-400 transition-colors"
+                          className="p-1.5 text-gray-400 hover:text-red-400 active:scale-95 transition-colors"
                           title="Remove item"
+                          aria-label="Remove item"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>

@@ -84,15 +84,15 @@ export default function Shop() {
         </div>
 
         {/* Variety tabs */}
-        <div className="flex gap-3 overflow-x-auto pb-3 mb-8 scrollbar-hide">
+        <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-3 mb-6 scroll-touch scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
           {['All', ...varieties].map((v) => (
             <button
               key={v}
               onClick={() => setSelectedVariety(v)}
-              className={`whitespace-nowrap px-5 py-2 rounded-full text-sm font-semibold border transition-all ${
+              className={`whitespace-nowrap px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold border transition-all shrink-0 active:scale-95 ${
                 selectedVariety === v
-                  ? 'bg-[#d4a017] text-[#0f1a0f] border-[#d4a017]'
-                  : 'border-[#2d4a2d] text-gray-300 hover:border-[#d4a017] hover:text-[#d4a017]'
+                  ? 'bg-[#d4a017] text-[#0f1a0f] border-[#d4a017] shadow-md shadow-[#d4a017]/20'
+                  : 'border-[#2d4a2d] bg-[#122212] text-gray-300 hover:border-[#d4a017] hover:text-[#d4a017]'
               }`}
             >
               {v}
@@ -101,28 +101,28 @@ export default function Shop() {
         </div>
 
         {/* Search + Sort Bar */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8">
           <form onSubmit={handleSearch} className="flex gap-2 flex-1">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search rice..."
+                placeholder="Search rice varieties..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="input pl-10"
+                className="input pl-10 text-base py-3"
               />
             </div>
-            <button type="submit" className="btn-primary px-5">
+            <button type="submit" className="btn-primary px-5 py-3 shrink-0">
               Search
             </button>
           </form>
 
-          <div className="flex gap-3 items-center">
+          <div className="flex gap-2.5 items-center w-full sm:w-auto">
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="input py-3 pr-8 cursor-pointer"
+              className="input py-3 pr-8 cursor-pointer text-base flex-1 sm:flex-none"
             >
               {sortOptions.map((o) => (
                 <option key={o.value} value={o.value} className="bg-[#1a2e1a]">
@@ -133,7 +133,7 @@ export default function Shop() {
             {isFiltered && (
               <button
                 onClick={clearFilters}
-                className="flex items-center gap-1 text-sm text-[#d4a017] border border-[#d4a017]/30 px-3 py-3 rounded-lg hover:bg-[#d4a017]/10 transition-colors whitespace-nowrap"
+                className="flex items-center gap-1 text-sm font-medium text-[#d4a017] border border-[#d4a017]/30 px-3.5 py-3 rounded-lg hover:bg-[#d4a017]/10 active:scale-95 transition-all whitespace-nowrap shrink-0"
               >
                 <X className="w-4 h-4" /> Clear
               </button>

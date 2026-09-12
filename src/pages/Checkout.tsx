@@ -105,17 +105,17 @@ export default function Checkout() {
   return (
     <main className="pt-24 pb-20 min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="section-title mb-8">Checkout</h1>
+        <h1 className="section-title mb-6 sm:mb-8 text-3xl sm:text-4xl">Checkout</h1>
 
         {/* Steps indicator */}
-        <div className="flex items-center gap-4 mb-10">
+        <div className="flex items-center gap-2 sm:gap-4 mb-8 sm:mb-10">
           {[
             { key: 'address', label: 'Delivery Address', Icon: MapPin },
             { key: 'payment', label: 'Payment', Icon: CreditCard },
           ].map(({ key, label, Icon }, i) => (
             <div key={key} className="flex items-center gap-2">
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
+                className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold transition-all shrink-0 ${
                   step === key
                     ? 'bg-[#d4a017] text-[#0f1a0f]'
                     : step === 'payment' && key === 'address'
@@ -123,25 +123,25 @@ export default function Checkout() {
                     : 'bg-[#1a2e1a] text-gray-400'
                 }`}
               >
-                {step === 'payment' && key === 'address' ? <Check className="w-4 h-4" /> : i + 1}
+                {step === 'payment' && key === 'address' ? <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : i + 1}
               </div>
               <span
-                className={`text-sm font-medium ${
+                className={`text-xs sm:text-sm font-medium whitespace-nowrap ${
                   step === key ? 'text-white' : 'text-gray-400'
                 }`}
               >
                 {label}
               </span>
-              {i < 1 && <div className="w-12 h-px bg-[#2d4a2d] ml-2" />}
+              {i < 1 && <div className="w-8 sm:w-12 h-px bg-[#2d4a2d] ml-1 sm:ml-2" />}
             </div>
           ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Left: Address / Payment Form */}
           <div className="lg:col-span-2">
             {step === 'address' ? (
-              <form onSubmit={handleAddressSubmit} className="card p-6 space-y-5">
+              <form onSubmit={handleAddressSubmit} className="card p-4 sm:p-6 space-y-4 sm:space-y-5">
                 <h2 className="font-serif font-bold text-xl text-white flex items-center gap-2">
                   <MapPin className="w-5 h-5 text-[#d4a017]" />
                   Delivery Address
@@ -306,20 +306,20 @@ export default function Checkout() {
                   {paymentMethod === 'upi' && (
                     <div>
                       <p className="label mb-3">Choose UPI App</p>
-                      <div className="grid grid-cols-4 gap-3 mb-4">
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 mb-4">
                         {upiApps.map((app) => (
                           <button
                             key={app.id}
                             type="button"
                             onClick={() => setSelectedUpiApp(app.id)}
-                            className={`p-3 rounded-xl border text-center transition-all ${
+                            className={`p-3 sm:p-3.5 rounded-xl border text-center transition-all active:scale-95 ${
                               selectedUpiApp === app.id
-                                ? 'border-[#d4a017] bg-[#d4a017]/10'
-                                : 'border-[#2d4a2d] hover:border-[#d4a017]/50'
+                                ? 'border-[#d4a017] bg-[#d4a017]/10 shadow-md shadow-[#d4a017]/10'
+                                : 'border-[#2d4a2d] bg-[#142614] hover:border-[#d4a017]/50'
                             }`}
                           >
                             <div className="text-2xl mb-1">{app.icon}</div>
-                            <div className="text-xs text-gray-300">{app.name}</div>
+                            <div className="text-xs font-semibold text-gray-200">{app.name}</div>
                           </button>
                         ))}
                       </div>

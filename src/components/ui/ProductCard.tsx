@@ -55,7 +55,7 @@ export default function ProductCard({ product }: Props) {
         {/* Quick add button */}
         <button
           onClick={handleAddToCart}
-          className="absolute bottom-3 right-3 w-10 h-10 bg-[#d4a017] text-[#0f1a0f] rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-200 hover:bg-[#fcd34d]"
+          className="absolute bottom-3 right-3 w-10 h-10 bg-[#d4a017] text-[#0f1a0f] rounded-xl flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 translate-y-0 sm:translate-y-2 sm:group-hover:translate-y-0 transition-all duration-200 hover:bg-[#fcd34d] shadow-lg shadow-black/40 active:scale-95"
           title="Quick add to cart"
         >
           <ShoppingCart className="w-5 h-5" />

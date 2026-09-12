@@ -183,12 +183,12 @@ export default function AnimatedHero() {
             </p>
           </div>
 
-          <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4 mt-8 pointer-events-auto">
-            <Link to="/shop" className="btn-primary text-lg px-8 py-4">
+          <div ref={ctaRef} className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-6 sm:mt-8 w-full max-w-xs sm:max-w-none pointer-events-auto px-2">
+            <Link to="/shop" className="btn-primary text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 justify-center shadow-lg shadow-black/40">
               <ShoppingBag className="w-5 h-5" />
               Shop All Rice
             </Link>
-            <Link to="/wholesale" className="btn-secondary text-lg px-8 py-4">
+            <Link to="/wholesale" className="btn-secondary text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 justify-center backdrop-blur-sm bg-black/20">
               Wholesale Inquiry
               <ArrowRight className="w-5 h-5" />
             </Link>
@@ -196,9 +196,9 @@ export default function AnimatedHero() {
         </div>
 
         {/* Scroll hint */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1 animate-bounce">
-          <span className="text-gray-400 text-xs tracking-widest uppercase">Scroll to watch</span>
-          <ChevronDown className="w-5 h-5 text-[#d4a017]" />
+        <div className="absolute bottom-3 sm:bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-0.5 sm:gap-1 animate-bounce">
+          <span className="text-gray-400 text-[10px] sm:text-xs tracking-widest uppercase">Scroll to watch</span>
+          <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5 text-[#d4a017]" />
         </div>
 
         {/* Progress bar */}
