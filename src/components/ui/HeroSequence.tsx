@@ -124,13 +124,13 @@ export default function HeroSequence() {
           <div ref={textRef}>
             <div className="inline-flex items-center gap-2 bg-[#d4a017]/10 border border-[#d4a017]/30 text-[#d4a017] text-sm font-semibold px-4 py-2 rounded-full mb-6 backdrop-blur-sm">
               <span className="w-2 h-2 bg-[#d4a017] rounded-full animate-pulse" />
-              Farm to Kitchen Since 1985
+              Farm to Kitchen Since 1981
             </div>
             <h1 className="font-serif text-5xl sm:text-6xl md:text-8xl font-bold text-white leading-tight mb-6">
-              Golden
-              <span className="block text-[#d4a017]">Grain</span>
+              Hariharan
+              <span className="block text-[#d4a017]">Traders</span>
               <span className="block text-4xl sm:text-5xl md:text-6xl font-medium text-gray-200">
-                Rice Mill
+                Rice
               </span>
             </h1>
             <p className="text-gray-300 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed mb-2">

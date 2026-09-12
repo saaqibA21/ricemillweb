@@ -14,7 +14,7 @@ export default function Terms() {
           {[
             {
               title: '1. Acceptance of Terms',
-              content: `By accessing and using the Golden Grain Rice Mill website (goldengrainmill.com) and placing orders, you accept and agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, please do not use our website or services.`,
+              content: `By accessing and using the Hariharan Traders Rice website (hariharantraders.com) and placing orders, you accept and agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, please do not use our website or services.`,
             },
             {
               title: '2. Products and Pricing',
@@ -34,11 +34,11 @@ export default function Terms() {
             },
             {
               title: '6. User Accounts',
-              content: `You are required to provide accurate information when creating an account. Your account is linked to your registered mobile number. You are responsible for maintaining the confidentiality of your OTP and account activity. Golden Grain Rice Mill is not liable for unauthorized access resulting from your negligence.`,
+              content: `You are required to provide accurate information when creating an account. Your account is linked to your registered mobile number. You are responsible for maintaining the confidentiality of your OTP and account activity. Hariharan Traders Rice is not liable for unauthorized access resulting from your negligence.`,
             },
             {
               title: '7. Intellectual Property',
-              content: `All content on this website, including images, text, logos, product descriptions, and branding, is the property of Golden Grain Rice Mill and is protected under Indian copyright law. Unauthorized reproduction or distribution is strictly prohibited.`,
+              content: `All content on this website, including images, text, logos, product descriptions, and branding, is the property of Hariharan Traders Rice and is protected under Indian copyright law. Unauthorized reproduction or distribution is strictly prohibited.`,
             },
             {
               title: '8. Wholesale and Export Orders',
@@ -46,11 +46,11 @@ export default function Terms() {
             },
             {
               title: '9. Limitation of Liability',
-              content: `Golden Grain Rice Mill shall not be liable for any indirect, incidental, or consequential damages arising from the use of our products or website. Our liability is limited to the value of the product purchased. Nothing in these terms limits liability for death or personal injury caused by negligence.`,
+              content: `Hariharan Traders Rice shall not be liable for any indirect, incidental, or consequential damages arising from the use of our products or website. Our liability is limited to the value of the product purchased. Nothing in these terms limits liability for death or personal injury caused by negligence.`,
             },
             {
               title: '10. Governing Law',
-              content: `These Terms and Conditions are governed by the laws of India. Any disputes shall be subject to the exclusive jurisdiction of courts in Punjab, India. We encourage resolution of disputes through our customer support team before approaching legal remedies.`,
+              content: `These Terms and Conditions are governed by the laws of India. Any disputes shall be subject to the exclusive jurisdiction of courts in Tamil Nadu, India. We encourage resolution of disputes through our customer support team before approaching legal remedies.`,
             },
             {
               title: '11. Amendments',
@@ -58,7 +58,7 @@ export default function Terms() {
             },
             {
               title: '12. Contact',
-              content: `For any questions regarding these Terms, please contact us at info@goldengrainmill.com or call +91 98765 43210.`,
+              content: `For any questions regarding these Terms, please contact us at info@hariharantraders.com or call +91 98765 43210.`,
             },
           ].map(({ title, content }) => (
             <section key={title} className="card p-6">

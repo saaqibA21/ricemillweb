@@ -55,10 +55,10 @@ export default function Navbar() {
               </div>
               <div className="hidden sm:block">
                 <div className="font-serif font-bold text-white text-lg leading-none">
-                  Golden Grain
+                  Hariharan Traders
                 </div>
                 <div className="text-[#d4a017] text-xs font-medium tracking-widest">
-                  RICE MILL
+                  RICE
                 </div>
               </div>
             </Link>

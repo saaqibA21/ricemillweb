@@ -139,7 +139,7 @@ export default function Home() {
       <section ref={featuresRef} className="py-20 bg-[#0a150a]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
-            <p className="section-subtitle">Why Golden Grain</p>
+            <p className="section-subtitle">Why Hariharan Traders</p>
             <h2 className="section-title">Quality You Can Taste</h2>
             <div className="gold-divider mx-auto mt-4" />
           </div>

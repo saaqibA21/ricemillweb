@@ -50,7 +50,7 @@ export default function Privacy() {
             },
             {
               title: '10. Contact',
-              content: `For privacy concerns or data requests, contact our Data Protection Officer at: info@goldengrainmill.com | +91 98765 43210 | Golden Grain Rice Mill, Industrial Area, Punjab, India.`,
+              content: `For privacy concerns or data requests, contact our Data Protection Officer at: info@hariharantraders.com | +91 98765 43210 | Hariharan Traders Rice, Tamil Nadu, India.`,
             },
           ].map(({ title, content }) => (
             <section key={title} className="card p-6">

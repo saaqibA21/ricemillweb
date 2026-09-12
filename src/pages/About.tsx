@@ -2,7 +2,7 @@
 import { Leaf, Award, Users, Factory } from 'lucide-react';
 
 const milestones = [
-  { year: '1985', event: 'Golden Grain Rice Mill founded in Punjab' },
+  { year: '1981', event: 'Hariharan Traders founded in Tamil Nadu' },
   { year: '1995', event: 'Expanded to 50,000 sq ft modern milling facility' },
   { year: '2003', event: 'Achieved FSSAI and ISO 9001 certification' },
   { year: '2010', event: 'First export to Middle East markets' },

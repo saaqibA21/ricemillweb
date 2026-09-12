@@ -36,7 +36,7 @@ export default function OrderSuccess() {
           </div>
           <h1 className="font-serif text-4xl font-bold text-white mb-2">Order Placed!</h1>
           <p className="text-gray-400 text-lg">
-            Thank you for shopping with Golden Grain 🌾
+            Thank you for shopping with Hariharan Traders 🌾
           </p>
         </div>
 

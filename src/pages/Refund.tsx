@@ -56,7 +56,7 @@ export default function Refund() {
             },
             {
               title: '7. Contact for Returns',
-              content: `Returns & Refunds: WhatsApp: +91 98765 43210 | Email: support@goldengrainmill.com | Phone: +91 98765 43210 (Mon–Sat, 9 AM–6 PM IST)`,
+              content: `Returns & Refunds: WhatsApp: +91 98765 43210 | Email: support@hariharantraders.com | Phone: +91 98765 43210 (Mon–Sat, 9 AM–6 PM IST)`,
             },
           ].map(({ title, content }) => (
             <section key={title} className="card p-6">

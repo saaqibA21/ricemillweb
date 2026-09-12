@@ -15,12 +15,12 @@ export default function Footer() {
                 <Wheat className="w-7 h-7 text-white" />
               </div>
               <div>
-                <div className="font-serif font-bold text-white text-xl">Golden Grain</div>
-                <div className="text-[#d4a017] text-xs tracking-widest">RICE MILL</div>
+                <div className="font-serif font-bold text-white text-xl">Hariharan Traders</div>
+                <div className="text-[#d4a017] text-xs tracking-widest">RICE • ஆரோக்கியமான வாழ்வு</div>
               </div>
             </Link>
             <p className="text-gray-400 text-sm leading-relaxed mb-6">
-              From paddy fields to your kitchen — delivering the finest rice varieties since 1985.
+              From paddy fields to your kitchen — delivering the finest rice varieties since 1981.
               FSSAI Certified. ISO 22000. Trusted by 50,000+ families.
             </p>
             {/* Social */}
@@ -97,7 +97,7 @@ export default function Footer() {
               <li className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-[#d4a017] mt-1 shrink-0" />
                 <span className="text-gray-400">
-                  Golden Grain Rice Mill, Industrial Area, Punjab, India – 144001
+                  Hariharan Traders Rice, Tamil Nadu, India
                 </span>
               </li>
               <li className="flex items-center gap-3">
@@ -108,8 +108,8 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-[#d4a017] shrink-0" />
-                <a href="mailto:info@goldengrainmill.com" className="text-gray-400 hover:text-white">
-                  info@goldengrainmill.com
+                <a href="mailto:info@hariharantraders.com" className="text-gray-400 hover:text-white">
+                  info@hariharantraders.com
                 </a>
               </li>
             </ul>
@@ -131,7 +131,7 @@ export default function Footer() {
       {/* Bottom Bar */}
       <div className="border-t border-[#1a2e1a]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
-          <p>© {new Date().getFullYear()} Golden Grain Rice Mill. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Hariharan Traders Rice. All rights reserved.</p>
           <div className="flex items-center gap-4">
             <span>FSSAI: 10012345678901</span>
             <span>•</span>

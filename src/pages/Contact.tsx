@@ -38,13 +38,13 @@ export default function Contact() {
               {
                 Icon: Mail,
                 title: 'Email Us',
-                lines: ['info@goldengrainmill.com', 'export@goldengrainmill.com'],
+                lines: ['info@hariharantraders.com', 'export@hariharantraders.com'],
                 sub: 'We reply within 4–6 hours',
               },
               {
                 Icon: MapPin,
                 title: 'Visit Us',
-                lines: ['Golden Grain Rice Mill', 'Industrial Area Phase 2, Punjab, India — 144001'],
+                lines: ['Hariharan Traders Rice', 'Tamil Nadu, India'],
                 sub: 'Open Monday to Saturday, 9 AM – 5 PM',
               },
               {
