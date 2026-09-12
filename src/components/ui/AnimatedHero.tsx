@@ -144,20 +144,41 @@ export default function AnimatedHero() {
 
         {/* Hero text overlay */}
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-4 text-center pointer-events-none">
-          <div ref={textRef}>
-            <div className="inline-flex items-center gap-2 bg-[#d4a017]/10 border border-[#d4a017]/30 text-[#d4a017] text-sm font-semibold px-4 py-2 rounded-full mb-6 backdrop-blur-sm">
-              <span className="w-2 h-2 bg-[#d4a017] rounded-full animate-pulse" />
+          {/* Gentle dark center vignette for razor-sharp text readability */}
+          <div
+            className="absolute inset-0 pointer-events-none -z-10"
+            style={{
+              background: 'radial-gradient(ellipse 65% 55% at 50% 48%, rgba(10,18,10,0.72) 0%, rgba(10,18,10,0.35) 60%, rgba(10,18,10,0) 100%)',
+            }}
+          />
+
+          <div ref={textRef} className="max-w-4xl mx-auto flex flex-col items-center">
+            {/* Pill Badge */}
+            <div className="inline-flex items-center gap-2.5 bg-black/60 border border-[#d4a017]/40 text-[#f5c74e] text-xs sm:text-sm font-medium tracking-widest uppercase px-5 py-2 rounded-full mb-5 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.6)]">
+              <span className="w-2 h-2 bg-[#d4a017] rounded-full animate-pulse shadow-[0_0_8px_#d4a017]" />
               Farm to Kitchen Since 1981
             </div>
-            <h1 className="font-serif text-5xl sm:text-7xl md:text-8xl font-bold text-white leading-tight mb-4">
-              Hariharan
-              <span className="block text-[#d4a017]">Traders</span>
-              <span className="block text-3xl sm:text-4xl md:text-5xl font-medium text-gray-300">
-                Rice
+
+            {/* Brand Title */}
+            <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight text-white leading-[1.08] drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)]">
+              Hariharan{' '}
+              <span className="bg-gradient-to-r from-[#fce18a] via-[#e5b32f] to-[#caa02b] bg-clip-text text-transparent">
+                Traders
               </span>
             </h1>
-            <p className="text-gray-300 text-lg md:text-xl max-w-xl mx-auto mt-4 mb-2">
-              One bowl. Five varieties. Infinite flavour.
+
+            {/* Elegant Sub-Header Ribbon */}
+            <div className="flex items-center justify-center gap-3 mt-3 mb-4">
+              <span className="h-[1px] w-8 sm:w-16 bg-gradient-to-r from-transparent to-[#d4a017]" />
+              <span className="text-xs sm:text-sm md:text-base font-sans uppercase tracking-[0.35em] text-[#e8c048] font-semibold drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+                Rice Mills &amp; Wholesale
+              </span>
+              <span className="h-[1px] w-8 sm:w-16 bg-gradient-to-l from-transparent to-[#d4a017]" />
+            </div>
+
+            {/* Tagline */}
+            <p className="text-gray-200 text-base sm:text-lg md:text-xl font-light tracking-wide max-w-xl mx-auto drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]">
+              One bowl <span className="text-[#d4a017] font-bold mx-1">·</span> Five varieties <span className="text-[#d4a017] font-bold mx-1">·</span> Infinite flavour
             </p>
           </div>
 
