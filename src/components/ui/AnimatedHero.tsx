@@ -59,6 +59,8 @@ export default function AnimatedHero() {
       trigger: sectionRef.current,
       start: 'top top',
       end: 'bottom bottom',
+      pin: mountRef.current,
+      pinSpacing: false,
       scrub: 0.3,
       onUpdate: (self) => {
         progressRef.current = self.progress;
@@ -116,7 +118,7 @@ export default function AnimatedHero() {
     <section ref={sectionRef} style={{ height: '320vh' }}>
       <div
         ref={mountRef}
-        className="sticky top-0 h-screen overflow-hidden bg-gradient-to-b from-[#141416] to-[#050506]"
+        className="sticky top-0 w-full h-screen overflow-hidden bg-gradient-to-b from-[#141416] to-[#050506]"
       >
         {/* Frame sequence */}
         <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />

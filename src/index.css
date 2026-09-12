@@ -14,15 +14,11 @@
   box-sizing: border-box;
 }
 
-html {
-  -webkit-tap-highlight-color: transparent;
-}
-
 body {
   font-family: 'Inter', system-ui, sans-serif;
   background-color: #0f1a0f;
   color: #f0f7f0;
-  overflow-x: clip;
+  overflow-x: hidden;
 }
 
 /* Prevent iOS Safari from auto-zooming on focus */
