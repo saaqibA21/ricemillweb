@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ShoppingCart, Star } from 'lucide-react';
 import { Product } from '../../types';
 import { useCartStore } from '../../store/cartStore';
+import { useTranslation } from '../../store/languageStore';
 import toast from 'react-hot-toast';
 
 interface Props {
@@ -11,6 +12,7 @@ interface Props {
 
 export default function ProductCard({ product }: Props) {
   const addItem = useCartStore((s) => s.addItem);
+  const { t } = useTranslation();
   const defaultPrice = product.prices[0];
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -95,7 +97,7 @@ export default function ProductCard({ product }: Props) {
             <span className="text-gray-400 text-xs ml-1">/ {defaultPrice.weight}</span>
           </div>
           {product.isWholesaleAvailable && (
-            <span className="badge badge-green text-xs">Wholesale</span>
+            <span className="badge badge-green text-xs">{t('nav.wholesale', 'Wholesale')}</span>
           )}
         </div>
       </div>

@@ -1,9 +1,6 @@
 // src/components/ui/AnimatedHero.tsx
 // Scroll-scrubbed image-sequence hero: frames extracted from the real rice
 // separation footage (public/assets/rice-frames/frame-001.jpg … frame-080.jpg).
-// The frame shown is a pure function of scroll progress, so it scrubs
-// perfectly forward and backward with the scrollbar, just like a video
-// timeline — but as plain images, no video decode/seek latency.
 
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
@@ -11,6 +8,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Link } from 'react-router-dom';
 import { ShoppingBag, ArrowRight, ChevronDown } from 'lucide-react';
 import { getRiceFrames, drawRiceFrame, frameIndexForProgress } from '../../lib/riceFrames';
+import { useTranslation } from '../../store/languageStore';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -23,6 +21,7 @@ export default function AnimatedHero() {
   const ctaRef = useRef<HTMLDivElement>(null);
   const phaseLabelRef = useRef<HTMLDivElement>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
+  const { t, lang } = useTranslation();
 
   useEffect(() => {
     const mount = mountRef.current;
@@ -30,7 +29,7 @@ export default function AnimatedHero() {
     if (!mount || !canvas) return;
     const ctx = canvas.getContext('2d')!;
 
-    // ── Preload all frames (shared cache with other scroll sections) ──
+    // ── Preload all frames ──
     const images = getRiceFrames();
 
     let lastDrawnIndex = -1;
@@ -94,8 +93,13 @@ export default function AnimatedHero() {
         const visible = p > 0.28 && p < 0.95;
         const labelAlpha = !visible ? 0 : p < 0.38 ? (p - 0.28) / 0.1 : p > 0.85 ? 1 - (p - 0.85) / 0.1 : 1;
         phaseLabelRef.current.style.opacity = String(labelAlpha);
-        phaseLabelRef.current.textContent =
-          p < 0.62 ? 'Every grain, a different story.' : 'From one bowl, into every bowl.';
+        if (lang === 'ta') {
+          phaseLabelRef.current.textContent =
+            p < 0.62 ? 'ஒவ்வொரு அரிசி மணியிலும் ஒரு தனி சுவை.' : 'எங்கள் ஆலையிலிருந்து உங்கள் குடும்பத்திற்கு.';
+        } else {
+          phaseLabelRef.current.textContent =
+            p < 0.62 ? 'Every grain, a different story.' : 'From one bowl, into every bowl.';
+        }
       }
 
       // Progress bar
@@ -112,7 +116,7 @@ export default function AnimatedHero() {
       window.removeEventListener('resize', resize);
       ScrollTrigger.getAll().forEach((tr) => tr.kill());
     };
-  }, []);
+  }, [lang]);
 
   return (
     <section ref={sectionRef} style={{ height: '320vh' }}>
@@ -135,7 +139,7 @@ export default function AnimatedHero() {
 
         {/* Hero text overlay */}
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-4 text-center pointer-events-none">
-          {/* Gentle dark center vignette for razor-sharp text readability */}
+          {/* Center vignette */}
           <div
             className="absolute inset-0 pointer-events-none -z-10"
             style={{
@@ -144,7 +148,7 @@ export default function AnimatedHero() {
           />
 
           <div ref={textRef} className="max-w-4xl mx-auto flex flex-col items-center text-center">
-            {/* Authentic Heritage Crest */}
+            {/* Crest */}
             <div className="flex items-center justify-center gap-3 mb-4">
               <span className="h-[1px] w-8 sm:w-16 bg-gradient-to-r from-transparent via-[#d4a017]/60 to-[#d4a017]" />
               <div className="flex items-center gap-2 text-xs sm:text-sm font-serif tracking-[0.26em] uppercase font-semibold text-[#f5d98b] drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">
@@ -165,12 +169,12 @@ export default function AnimatedHero() {
 
             {/* Traditional Sub-Title */}
             <p className="mt-3 text-sm sm:text-base md:text-lg text-[#ecd79d] font-serif italic tracking-wide max-w-xl mx-auto drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]">
-              Traditional Rice Millers &amp; Wholesale Suppliers
+              {t('hero.title', 'Traditional Rice Millers & Wholesale Suppliers')}
             </p>
 
             {/* Tagline */}
             <p className="mt-2 text-white/90 text-sm sm:text-base font-light tracking-wide max-w-md mx-auto drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
-              One bowl · Five varieties · Infinite flavour
+              {t('hero.subtitle', 'Delivering authentic Tamil Nadu Ponni, Basmati, and traditional rice varieties directly to your home.')}
             </p>
           </div>
 
@@ -183,13 +187,13 @@ export default function AnimatedHero() {
               className="btn-primary text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 justify-center shadow-lg shadow-black/40 w-full sm:w-auto"
             >
               <ShoppingBag className="w-5 h-5" />
-              Shop All Rice
+              {t('hero.shopNow', 'Shop All Rice')}
             </Link>
             <Link
               to="/wholesale"
               className="btn-secondary text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 justify-center backdrop-blur-sm bg-black/20 w-full sm:w-auto"
             >
-              Wholesale Inquiry
+              {t('hero.wholesaleBtn', 'Wholesale Inquiry')}
               <ArrowRight className="w-5 h-5" />
             </Link>
           </div>

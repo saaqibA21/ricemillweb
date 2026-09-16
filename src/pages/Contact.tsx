@@ -2,11 +2,13 @@
 import { useState } from 'react';
 import { Phone, Mail, MapPin, MessageCircle, Clock, Send, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useTranslation } from '../store/languageStore';
 
 export default function Contact() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ name: '', phone: '', email: '', subject: '', message: '' });
+  const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,8 +34,8 @@ export default function Contact() {
     <main className="pt-24 pb-20 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-14">
-          <p className="section-subtitle">Get In Touch</p>
-          <h1 className="section-title mb-4">Contact Us</h1>
+          <p className="section-subtitle">{t('contact.getInTouch', 'Get In Touch')}</p>
+          <h1 className="section-title mb-4">{t('contact.pageTitle', 'Contact Us')}</h1>
           <div className="gold-divider mx-auto" />
         </div>
 
@@ -43,25 +45,25 @@ export default function Contact() {
             {[
               {
                 Icon: Phone,
-                title: 'Call Us',
+                title: t('contact.callUs', 'Call Us'),
                 lines: ['+91 78109 90099'],
                 sub: 'Mon–Sat, 9 AM to 6 PM IST',
               },
               {
                 Icon: Mail,
-                title: 'Email Us',
+                title: t('contact.emailUs', 'Email Us'),
                 lines: ['hariharantradersorders@gmail.com'],
                 sub: 'We reply within 4–6 hours',
               },
               {
                 Icon: MapPin,
-                title: 'Visit Us',
+                title: t('contact.visitUs', 'Visit Us'),
                 lines: ['Hariharan Traders Rice', 'Tamil Nadu, India'],
                 sub: 'Open Monday to Saturday, 9 AM – 5 PM',
               },
               {
                 Icon: Clock,
-                title: 'Business Hours',
+                title: t('contact.hours', 'Business Hours'),
                 lines: ['Mon–Fri: 9:00 AM – 6:00 PM', 'Sat: 9:00 AM – 2:00 PM'],
                 sub: 'Closed on Sundays & National Holidays',
               },

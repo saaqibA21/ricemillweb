@@ -4,6 +4,8 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { ShoppingCart, User, Menu, X, Search } from 'lucide-react';
 import { useCartStore } from '../../store/cartStore';
 import { useAuthStore } from '../../store/authStore';
+import { useTranslation } from '../../store/languageStore';
+import LanguageToggle from './LanguageToggle';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -12,6 +14,7 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState('');
   const totalItems = useCartStore((s) => s.totalItems)();
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,11 +33,11 @@ export default function Navbar() {
   };
 
   const navLinks = [
-    { to: '/shop', label: 'Shop' },
-    { to: '/wholesale', label: 'Wholesale' },
-    { to: '/export', label: 'Export' },
-    { to: '/about', label: 'About Us' },
-    { to: '/contact', label: 'Contact' },
+    { to: '/shop', label: t('nav.shop', 'Shop') },
+    { to: '/wholesale', label: t('nav.wholesale', 'Wholesale') },
+    { to: '/export', label: t('nav.export', 'Export') },
+    { to: '/about', label: t('nav.about', 'About Us') },
+    { to: '/contact', label: t('nav.contact', 'Contact') },
   ];
 
   return (
@@ -80,11 +83,14 @@ export default function Navbar() {
               ))}
             </div>
 
-            {/* Right Icons */}
-            <div className="flex items-center gap-3">
+            {/* Right Icons & Language Toggle */}
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <LanguageToggle className="hidden sm:inline-flex" />
+
               <button
                 onClick={() => setSearchOpen(!searchOpen)}
                 className="text-gray-300 hover:text-[#d4a017] transition-colors p-2"
+                aria-label="Search"
               >
                 <Search className="w-5 h-5" />
               </button>
@@ -92,6 +98,7 @@ export default function Navbar() {
               <Link
                 to="/cart"
                 className="relative text-gray-300 hover:text-[#d4a017] transition-colors p-2"
+                aria-label="Cart"
               >
                 <ShoppingCart className="w-5 h-5" />
                 {totalItems > 0 && (
@@ -104,6 +111,7 @@ export default function Navbar() {
               <Link
                 to={isLoggedIn ? '/account' : '/login'}
                 className="text-gray-300 hover:text-[#d4a017] transition-colors p-2"
+                aria-label="Account"
               >
                 <User className="w-5 h-5" />
               </Link>
@@ -111,6 +119,7 @@ export default function Navbar() {
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
                 className="md:hidden text-gray-300 hover:text-[#d4a017] p-2"
+                aria-label="Menu"
               >
                 {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
@@ -125,13 +134,13 @@ export default function Navbar() {
               <input
                 autoFocus
                 type="text"
-                placeholder="Search rice varieties, brands..."
+                placeholder={t('nav.searchPlaceholder', 'Search rice varieties, brands...')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="input flex-1 text-base py-3"
               />
               <button type="submit" className="btn-primary py-3 px-5 shrink-0">
-                Search
+                {t('nav.searchBtn', 'Search')}
               </button>
             </form>
           </div>
@@ -141,6 +150,11 @@ export default function Navbar() {
         {menuOpen && (
           <div className="md:hidden bg-[#0a150a]/98 backdrop-blur-xl border-t border-[#2d4a2d] shadow-2xl animate-in fade-in duration-200">
             <div className="px-5 py-6 space-y-3">
+              <div className="flex justify-between items-center pb-3 border-b border-[#1f381f]">
+                <span className="text-xs text-gray-400 font-medium uppercase tracking-wider">Select Language</span>
+                <LanguageToggle />
+              </div>
+
               {navLinks.map((l) => (
                 <NavLink
                   key={l.to}
@@ -163,14 +177,14 @@ export default function Navbar() {
                   onClick={() => setMenuOpen(false)}
                   className="btn-primary flex-1 justify-center py-3.5 text-base"
                 >
-                  Cart ({totalItems})
+                  {t('nav.cart', 'Cart')} ({totalItems})
                 </Link>
                 <Link
                   to={isLoggedIn ? '/account' : '/login'}
                   onClick={() => setMenuOpen(false)}
                   className="btn-secondary flex-1 justify-center py-3.5 text-base"
                 >
-                  {isLoggedIn ? 'Account' : 'Login'}
+                  {isLoggedIn ? t('nav.account', 'Account') : t('nav.login', 'Login')}
                 </Link>
               </div>
             </div>
