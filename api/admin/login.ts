@@ -1,4 +1,4 @@
-﻿// api/admin/login.ts
+// api/admin/login.ts
 export const config = { runtime: 'edge' };
 
 function json(data: unknown, status = 200) {
@@ -23,7 +23,8 @@ export default async function handler(req: Request) {
     const normalizedUser = (username || '').trim().toLowerCase();
     const isUserMatch =
       normalizedUser === validUser.toLowerCase() ||
-      normalizedUser === 'admin@hariharantraders.com';
+      normalizedUser === 'admin@hariharantraders.com' ||
+      normalizedUser === 'hariharantradersorders@gmail.com';
 
     if (isUserMatch && password === validPass) {
       // Create a deterministic session token

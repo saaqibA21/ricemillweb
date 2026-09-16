@@ -44,13 +44,13 @@ export default function Contact() {
               {
                 Icon: Phone,
                 title: 'Call Us',
-                lines: ['+91 98765 43210', '+91 87654 32109'],
+                lines: ['+91 78109 90099'],
                 sub: 'Mon–Sat, 9 AM to 6 PM IST',
               },
               {
                 Icon: Mail,
                 title: 'Email Us',
-                lines: ['info@hariharantraders.com', 'export@hariharantraders.com'],
+                lines: ['hariharantradersorders@gmail.com'],
                 sub: 'We reply within 4–6 hours',
               },
               {
@@ -82,7 +82,7 @@ export default function Contact() {
 
             {/* WhatsApp CTA */}
             <a
-              href="https://wa.me/919876543210?text=Hello%20Golden%20Grain%20Rice%20Mill%2C%20I%20have%20an%20inquiry."
+              href="https://wa.me/917810990099?text=Hello%20Hariharan%20Traders%20Rice%20Mill%2C%20I%20have%20an%20inquiry."
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-3 bg-[#25D366]/10 border border-[#25D366]/30 text-[#25D366] font-semibold px-6 py-4 rounded-xl hover:bg-[#25D366]/20 transition-all"

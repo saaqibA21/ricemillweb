@@ -40,7 +40,7 @@ export default function Refund() {
             },
             {
               title: '3. How to Initiate a Return',
-              content: `To initiate a return: (1) Contact us within 7 days of delivery via WhatsApp (+91 98765 43210), phone, or email. (2) Provide your order ID, reason for return, and photos of the product/packaging. (3) Our team will review your request within 24 hours. (4) If approved, we will arrange a free pick-up from your address within 2–3 business days. (5) Refund will be processed after the returned product is received and verified.`,
+              content: `To initiate a return: (1) Contact us within 7 days of delivery via WhatsApp (+91 78109 90099), phone, or email. (2) Provide your order ID, reason for return, and photos of the product/packaging. (3) Our team will review your request within 24 hours. (4) If approved, we will arrange a free pick-up from your address within 2–3 business days. (5) Refund will be processed after the returned product is received and verified.`,
             },
             {
               title: '4. Refund Processing',
@@ -56,7 +56,7 @@ export default function Refund() {
             },
             {
               title: '7. Contact for Returns',
-              content: `Returns & Refunds: WhatsApp: +91 98765 43210 | Email: support@hariharantraders.com | Phone: +91 98765 43210 (Mon–Sat, 9 AM–6 PM IST)`,
+              content: `Returns & Refunds: WhatsApp: +91 78109 90099 | Email: hariharantradersorders@gmail.com | Phone: +91 78109 90099 (Mon–Sat, 9 AM–6 PM IST)`,
             },
           ].map(({ title, content }) => (
             <section key={title} className="card p-6">

@@ -100,7 +100,7 @@ export default function Login() {
                       type="tel"
                       inputMode="numeric"
                       maxLength={10}
-                      placeholder="98765 43210"
+                      placeholder="78109 90099"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
                       className="input rounded-l-none"

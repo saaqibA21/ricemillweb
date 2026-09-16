@@ -104,21 +104,21 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-4 h-4 text-[#d4a017] shrink-0" />
-                <a href="tel:+919876543210" className="text-gray-400 hover:text-white">
-                  +91 98765 43210
+                <a href="tel:+917810990099" className="text-gray-400 hover:text-white">
+                  +91 78109 90099
                 </a>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-[#d4a017] shrink-0" />
-                <a href="mailto:info@hariharantraders.com" className="text-gray-400 hover:text-white">
-                  info@hariharantraders.com
+                <a href="mailto:hariharantradersorders@gmail.com" className="text-gray-400 hover:text-white">
+                  hariharantradersorders@gmail.com
                 </a>
               </li>
             </ul>
 
             {/* WhatsApp */}
             <a
-              href="https://wa.me/919876543210?text=Hello%2C%20I%20want%20to%20enquire%20about%20your%20rice%20products."
+              href="https://wa.me/917810990099?text=Hello%2C%20I%20want%20to%20enquire%20about%20your%20rice%20products."
               target="_blank"
               rel="noopener noreferrer"
               className="mt-6 inline-flex items-center gap-2 bg-[#25D366]/10 border border-[#25D366]/30 text-[#25D366] font-medium px-4 py-3 rounded-lg hover:bg-[#25D366]/20 transition-all w-full justify-center"

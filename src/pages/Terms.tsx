@@ -58,7 +58,7 @@ export default function Terms() {
             },
             {
               title: '12. Contact',
-              content: `For any questions regarding these Terms, please contact us at info@hariharantraders.com or call +91 98765 43210.`,
+              content: `For any questions regarding these Terms, please contact us at hariharantradersorders@gmail.com or call +91 78109 90099.`,
             },
           ].map(({ title, content }) => (
             <section key={title} className="card p-6">

@@ -137,7 +137,7 @@ export default function OrderSuccess() {
 
         <p className="text-center text-gray-500 text-xs mt-6">
           Order confirmation sent to your registered phone number.
-          For support: <a href="tel:+919876543210" className="text-[#d4a017]">+91 98765 43210</a>
+          For support: <a href="tel:+917810990099" className="text-[#d4a017]">+91 78109 90099</a>
         </p>
       </div>
     </main>
