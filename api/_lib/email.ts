@@ -1,13 +1,43 @@
 // api/_lib/email.ts
-import { Resend } from 'resend';
+// Direct fetch integration with Resend API
 
-const apiKey = process.env.RESEND_API_KEY;
-const notificationTarget = process.env.NOTIFICATION_EMAIL || 'hariharantradersorders@gmail.com';
-
-const resend = apiKey ? new Resend(apiKey) : null;
-
-// Sender email (default onboarding domain from Resend until custom domain is verified)
+const API_KEY = process.env.RESEND_API_KEY;
+const NOTIFICATION_EMAIL = process.env.NOTIFICATION_EMAIL || 'hariharantradersorders@gmail.com';
 const FROM_EMAIL = 'Hariharan Traders Rice <onboarding@resend.dev>';
+
+async function postResend(payload: { from: string; to: string[]; subject: string; html: string }) {
+  if (!API_KEY) {
+    console.warn('RESEND_API_KEY is not set');
+    return null;
+  }
+
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      console.warn('Resend API Warning/Error:', data);
+      // If 403 test domain restriction error, retry strictly to account owner email
+      if (res.status === 403 && payload.to.length > 1) {
+        console.log('Retrying email delivery strictly to owner email:', NOTIFICATION_EMAIL);
+        return await postResend({ ...payload, to: [NOTIFICATION_EMAIL] });
+      }
+    } else {
+      console.log('Resend email sent successfully:', data.id);
+    }
+    return data;
+  } catch (err) {
+    console.error('Network error posting to Resend:', err);
+    return null;
+  }
+}
 
 export async function sendOrderConfirmationEmail(order: {
   id: string;
@@ -30,11 +60,6 @@ export async function sendOrderConfirmationEmail(order: {
   };
   estimatedDelivery?: string;
 }) {
-  if (!resend) {
-    console.warn('RESEND_API_KEY is not configured. Skipping email dispatch.');
-    return null;
-  }
-
   const itemsHtml = order.items
     .map(
       (item) => `
@@ -73,7 +98,7 @@ export async function sendOrderConfirmationEmail(order: {
         </div>
 
         <div style="background-color: #0f1a0f; border-left: 4px solid #d4a017; padding: 15px; border-radius: 6px; margin-bottom: 25px;">
-          <h2 style="color: #ffffff; margin: 0 0 8px 0; font-size: 20px;">🎉 Order Confirmed!</h2>
+          <h2 style="color: #ffffff; margin: 0 0 8px 0; font-size: 20px;">🎉 New Order Received!</h2>
           <p style="color: #cbd5e1; margin: 0; font-size: 14px;">Order ID: <strong style="color: #d4a017;">${order.id}</strong></p>
         </div>
 
@@ -96,10 +121,11 @@ export async function sendOrderConfirmationEmail(order: {
           <span style="color: #d4a017; font-size: 20px; font-weight: bold;">₹${order.total.toLocaleString()}</span>
         </div>
 
-        <h3 style="color: #f1f5f9; border-bottom: 1px solid #2d4a2d; padding-bottom: 8px;">Delivery Information</h3>
-        <p style="color: #cbd5e1; font-size: 14px; margin: 5px 0;"><strong>Customer:</strong> ${customerName}</p>
+        <h3 style="color: #f1f5f9; border-bottom: 1px solid #2d4a2d; padding-bottom: 8px;">Customer & Delivery Info</h3>
+        <p style="color: #cbd5e1; font-size: 14px; margin: 5px 0;"><strong>Customer Name:</strong> ${customerName}</p>
         <p style="color: #cbd5e1; font-size: 14px; margin: 5px 0;"><strong>Address:</strong> ${fullAddress}</p>
         <p style="color: #cbd5e1; font-size: 14px; margin: 5px 0;"><strong>Phone:</strong> ${order.address.phone || 'N/A'}</p>
+        <p style="color: #cbd5e1; font-size: 14px; margin: 5px 0;"><strong>Customer Email:</strong> ${order.address.email || 'N/A'}</p>
         <p style="color: #cbd5e1; font-size: 14px; margin: 5px 0;"><strong>Payment Method:</strong> ${order.paymentMethod.toUpperCase()}</p>
 
         <div style="text-align: center; margin-top: 30px; border-top: 1px solid #2d4a2d; padding-top: 20px; color: #94a3b8; font-size: 12px;">
@@ -111,23 +137,13 @@ export async function sendOrderConfirmationEmail(order: {
     </html>
   `;
 
-  const recipients = [notificationTarget];
-  if (order.address.email && order.address.email.includes('@')) {
-    recipients.push(order.address.email);
-  }
-
-  try {
-    const res = await resend.emails.send({
-      from: FROM_EMAIL,
-      to: recipients,
-      subject: `Order Confirmed #${order.id} - Hariharan Traders`,
-      html: htmlContent,
-    });
-    return res;
-  } catch (err) {
-    console.error('Failed to dispatch order email via Resend:', err);
-    return null;
-  }
+  // Always send to NOTIFICATION_EMAIL first
+  return await postResend({
+    from: FROM_EMAIL,
+    to: [NOTIFICATION_EMAIL],
+    subject: `🌾 New Order #${order.id} (₹${order.total.toLocaleString()}) - Hariharan Traders`,
+    html: htmlContent,
+  });
 }
 
 export async function sendContactFeedbackEmail(feedback: {
@@ -137,8 +153,6 @@ export async function sendContactFeedbackEmail(feedback: {
   subject?: string;
   message: string;
 }) {
-  if (!resend) return null;
-
   const html = `
     <div style="font-family: Arial, sans-serif; background: #0f1a0f; color: #ffffff; padding: 25px;">
       <div style="max-width: 550px; margin: 0 auto; background: #1a2e1a; padding: 25px; border-radius: 12px; border: 1px solid #d4a017;">
@@ -155,17 +169,12 @@ export async function sendContactFeedbackEmail(feedback: {
     </div>
   `;
 
-  try {
-    return await resend.emails.send({
-      from: FROM_EMAIL,
-      to: [notificationTarget],
-      subject: `New Inquiry: ${feedback.subject || 'Website Message'} from ${feedback.name}`,
-      html,
-    });
-  } catch (err) {
-    console.error('Failed to send contact feedback email:', err);
-    return null;
-  }
+  return await postResend({
+    from: FROM_EMAIL,
+    to: [NOTIFICATION_EMAIL],
+    subject: `New Inquiry: ${feedback.subject || 'Website Message'} from ${feedback.name}`,
+    html,
+  });
 }
 
 export async function sendWholesaleInquiryEmail(inquiry: {
@@ -178,8 +187,6 @@ export async function sendWholesaleInquiryEmail(inquiry: {
   quantityMT?: number;
   message?: string;
 }) {
-  if (!resend) return null;
-
   const html = `
     <div style="font-family: Arial, sans-serif; background: #0f1a0f; color: #ffffff; padding: 25px;">
       <div style="max-width: 550px; margin: 0 auto; background: #1a2e1a; padding: 25px; border-radius: 12px; border: 1px solid #d4a017;">
@@ -199,15 +206,10 @@ export async function sendWholesaleInquiryEmail(inquiry: {
     </div>
   `;
 
-  try {
-    return await resend.emails.send({
-      from: FROM_EMAIL,
-      to: [notificationTarget],
-      subject: `🌾 Bulk Order Inquiry: ${inquiry.contactName} (${inquiry.companyName || 'Wholesale'})`,
-      html,
-    });
-  } catch (err) {
-    console.error('Failed to send wholesale inquiry email:', err);
-    return null;
-  }
+  return await postResend({
+    from: FROM_EMAIL,
+    to: [NOTIFICATION_EMAIL],
+    subject: `🌾 Bulk Order Inquiry: ${inquiry.contactName} (${inquiry.companyName || 'Wholesale'})`,
+    html,
+  });
 }
