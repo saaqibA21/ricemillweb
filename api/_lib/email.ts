@@ -3,7 +3,7 @@
 
 const API_KEY = process.env.RESEND_API_KEY;
 const NOTIFICATION_EMAIL = process.env.NOTIFICATION_EMAIL || 'hariharantradersorders@gmail.com';
-const FROM_EMAIL = 'Hariharan Traders Rice <onboarding@resend.dev>';
+const FROM_EMAIL = process.env.FROM_EMAIL || 'Hariharan Traders Rice <orders@hariharantraders.com>';
 
 async function postResend(payload: { from: string; to: string[]; subject: string; html: string }) {
   if (!API_KEY) {
