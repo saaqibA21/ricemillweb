@@ -24,10 +24,14 @@ async function postResend(payload: { from: string; to: string[]; subject: string
     const data = await res.json();
     if (!res.ok) {
       console.warn('Resend API Warning/Error:', data);
-      // If 403 test domain restriction error, retry strictly to account owner email
-      if (res.status === 403 && payload.to.length > 1) {
-        console.log('Retrying email delivery strictly to owner email:', NOTIFICATION_EMAIL);
-        return await postResend({ ...payload, to: [NOTIFICATION_EMAIL] });
+      // If custom domain unverified (403), auto-fallback to onboarding@resend.dev sending to NOTIFICATION_EMAIL
+      if (res.status === 403 && payload.from !== 'Hariharan Traders Rice <onboarding@resend.dev>') {
+        console.log('Custom domain pending verification. Falling back to onboarding@resend.dev');
+        return await postResend({
+          ...payload,
+          from: 'Hariharan Traders Rice <onboarding@resend.dev>',
+          to: [NOTIFICATION_EMAIL],
+        });
       }
     } else {
       console.log('Resend email sent successfully:', data.id);
