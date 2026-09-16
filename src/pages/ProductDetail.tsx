@@ -5,6 +5,7 @@ import { ShoppingCart, Star, ArrowLeft, Check, Truck, Shield, Award } from 'luci
 import { getProductBySlug } from '../data/products';
 import { useProductsStore } from '../store/productsStore';
 import { useCartStore } from '../store/cartStore';
+import { useTranslation } from '../store/languageStore';
 import { PriceOption } from '../types';
 import toast from 'react-hot-toast';
 
@@ -13,6 +14,8 @@ export default function ProductDetail() {
   const products = useProductsStore((s) => s.products);
   const product = products.find((p) => p.slug === slug) || getProductBySlug(slug || '');
   const addItem = useCartStore((s) => s.addItem);
+  const { t, lang } = useTranslation();
+  const isTa = lang === 'ta';
 
   const [selectedWeight, setSelectedWeight] = useState<PriceOption>(
     product?.prices[0] || { weight: '1 kg', weightKg: 1, price: 0 }
@@ -32,9 +35,13 @@ export default function ProductDetail() {
     );
   }
 
+  const displayName = isTa && product.nameTa ? product.nameTa : product.name;
+  const displayVariety = isTa && product.varietyTa ? product.varietyTa : product.variety;
+  const displayDesc = isTa && product.longDescriptionTa ? product.longDescriptionTa : product.longDescription;
+
   const handleAddToCart = () => {
     addItem(product, selectedWeight, quantity);
-    toast.success(`${product.name} added to cart!`, {
+    toast.success(`${displayName} கூடையில் சேர்க்கப்பட்டது!`, {
       style: { background: '#1a2e1a', color: '#f0f7f0', border: '1px solid #d4a017' },
       iconTheme: { primary: '#d4a017', secondary: '#0f1a0f' },
     });
@@ -51,11 +58,11 @@ export default function ProductDetail() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm text-gray-400 mb-8">
-          <Link to="/" className="hover:text-white transition-colors">Home</Link>
+          <Link to="/" className="hover:text-white transition-colors">{t('nav.about', 'Home')}</Link>
           <span>/</span>
-          <Link to="/shop" className="hover:text-white transition-colors">Shop</Link>
+          <Link to="/shop" className="hover:text-white transition-colors">{t('nav.shop', 'Shop')}</Link>
           <span>/</span>
-          <span className="text-white">{product.name}</span>
+          <span className="text-white">{displayName}</span>
         </nav>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -64,7 +71,7 @@ export default function ProductDetail() {
             <div className="aspect-square rounded-2xl overflow-hidden bg-[#1a2e1a] mb-4">
               <img
                 src={product.images[activeImg] || product.image}
-                alt={product.name}
+                alt={displayName}
                 className="w-full h-full object-cover"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src =
@@ -92,10 +99,10 @@ export default function ProductDetail() {
           {/* Details */}
           <div>
             <span className="text-[#d4a017] font-semibold text-xs sm:text-sm uppercase tracking-widest mb-1.5 block">
-              {product.variety}
+              {displayVariety}
             </span>
             <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 leading-tight">
-              {product.name}
+              {displayName}
             </h1>
 
             {/* Rating */}
@@ -126,7 +133,7 @@ export default function ProductDetail() {
               ))}
             </div>
 
-            <p className="text-gray-300 text-sm sm:text-base leading-relaxed mb-6">{product.longDescription}</p>
+            <p className="text-gray-300 text-sm sm:text-base leading-relaxed mb-6">{displayDesc}</p>
 
             {/* Grain specs */}
             <div className="grid grid-cols-2 gap-2.5 sm:gap-3 mb-6">

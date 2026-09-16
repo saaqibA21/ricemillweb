@@ -2,10 +2,14 @@
 export interface Product {
   id: string;
   name: string;
+  nameTa?: string;
   slug: string;
   variety: string;
+  varietyTa?: string;
   description: string;
+  descriptionTa?: string;
   longDescription: string;
+  longDescriptionTa?: string;
   image: string;
   images: string[];
   grainLength: string;
