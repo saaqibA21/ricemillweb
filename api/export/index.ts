@@ -1,8 +1,9 @@
-﻿// api/export/index.ts
+// api/export/index.ts
 // POST /api/export -> save wholesale and export inquiry
 import { neon } from '@neondatabase/serverless';
+import { sendWholesaleInquiryEmail } from '../_lib/email';
 
-export const config = { runtime: 'edge' };
+export const config = { runtime: 'nodejs' };
 
 function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -51,6 +52,18 @@ export default async function handler(req: Request) {
         ${message || null}
       )
     `;
+
+    // Trigger automated wholesale email dispatch
+    sendWholesaleInquiryEmail({
+      companyName,
+      contactName,
+      phone,
+      email,
+      country,
+      products: products ? [products] : [],
+      quantityMT: quantity ? parseFloat(quantity) || 0 : 0,
+      message,
+    }).catch((err) => console.warn('Wholesale inquiry email warning:', err));
 
     return json({ success: true, id }, 201);
   } catch (err: unknown) {

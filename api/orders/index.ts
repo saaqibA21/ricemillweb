@@ -1,8 +1,9 @@
 // api/orders/index.ts
 // POST /api/orders -> create an order, returns { id, estimatedDelivery }
 import { neon } from '@neondatabase/serverless';
+import { sendOrderConfirmationEmail } from '../_lib/email';
 
-export const config = { runtime: 'edge' };
+export const config = { runtime: 'nodejs' };
 
 function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -18,10 +19,23 @@ export default async function handler(req: Request) {
   if (!url) return json({ error: 'DATABASE_URL is not set' }, 500);
 
   const body = (await req.json()) as {
-    items: unknown;
+    items: Array<{
+      product: { name: string };
+      selectedWeight: { weight: string; price: number };
+      quantity: number;
+    }>;
     total: number;
     paymentMethod: 'upi' | 'cod';
-    address: unknown;
+    address: {
+      line1?: string;
+      line2?: string;
+      city?: string;
+      state?: string;
+      pincode?: string;
+      phone?: string;
+      email?: string;
+      name?: string;
+    };
   };
   const { items, total, paymentMethod, address } = body;
 
@@ -42,6 +56,16 @@ export default async function handler(req: Request) {
         ${paymentMethod}, ${paymentStatus}, ${JSON.stringify(address)}, ${estimatedDelivery}
       )
     `;
+
+    // Trigger automated order confirmation email asynchronously
+    sendOrderConfirmationEmail({
+      id,
+      items,
+      total,
+      paymentMethod,
+      address,
+      estimatedDelivery,
+    }).catch((err) => console.warn('Order email dispatch warning:', err));
 
     return json({ id, estimatedDelivery }, 201);
   } catch (err: unknown) {

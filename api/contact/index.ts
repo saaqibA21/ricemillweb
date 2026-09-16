@@ -1,8 +1,9 @@
-﻿// api/contact/index.ts
+// api/contact/index.ts
 // POST /api/contact -> save customer feedback / inquiry
 import { neon } from '@neondatabase/serverless';
+import { sendContactFeedbackEmail } from '../_lib/email';
 
-export const config = { runtime: 'edge' };
+export const config = { runtime: 'nodejs' };
 
 function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -38,6 +39,15 @@ export default async function handler(req: Request) {
       insert into feedbacks (id, name, phone, email, subject, message)
       values (${id}, ${name}, ${phone || null}, ${email}, ${subject || null}, ${message})
     `;
+
+    // Trigger automated notification email
+    sendContactFeedbackEmail({
+      name,
+      phone,
+      email,
+      subject,
+      message,
+    }).catch((err) => console.warn('Feedback email dispatch warning:', err));
 
     return json({ success: true, id }, 201);
   } catch (err: unknown) {
