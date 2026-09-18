@@ -2,7 +2,7 @@
 // POST /api/export -> save wholesale and export inquiry
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { neon } from '@neondatabase/serverless';
-import { sendWholesaleInquiryEmail } from '../_lib/email';
+import { sendWholesaleInquiryEmail } from '../_lib/email.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });

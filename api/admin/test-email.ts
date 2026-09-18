@@ -1,7 +1,7 @@
 // api/admin/test-email.ts
 // POST /api/admin/test-email -> verify SMTP configuration and send a test message
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { sendEmailMessage } from '../_lib/email';
+import { sendEmailMessage } from '../_lib/email.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {

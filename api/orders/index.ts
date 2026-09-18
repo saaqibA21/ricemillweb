@@ -2,7 +2,7 @@
 // POST /api/orders -> create an order, returns { id, estimatedDelivery }
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { neon } from '@neondatabase/serverless';
-import { sendOrderConfirmationEmail } from '../_lib/email';
+import { sendOrderConfirmationEmail } from '../_lib/email.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
