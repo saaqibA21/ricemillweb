@@ -242,17 +242,33 @@ export async function sendContactFeedbackEmail(feedback: {
   subject?: string;
   message: string;
 }) {
+  const recipients = [NOTIFICATION_EMAIL];
+  if (feedback.email && feedback.email.includes('@') && !recipients.includes(feedback.email)) {
+    recipients.push(feedback.email);
+  }
+
   const html = `
     <div style="font-family: Arial, sans-serif; background: #0f1a0f; color: #ffffff; padding: 25px;">
       <div style="max-width: 550px; margin: 0 auto; background: #1a2e1a; padding: 25px; border-radius: 12px; border: 1px solid #d4a017;">
-        <h2 style="color: #d4a017; margin-top: 0;">📩 New Website Inquiry / Feedback</h2>
-        <p><strong>Name:</strong> ${feedback.name}</p>
-        <p><strong>Email:</strong> ${feedback.email}</p>
-        <p><strong>Phone:</strong> ${feedback.phone || 'N/A'}</p>
-        <p><strong>Subject:</strong> ${feedback.subject || 'General Query'}</p>
-        <div style="background: #0f1a0f; padding: 15px; border-radius: 8px; margin-top: 15px; color: #cbd5e1;">
-          <strong style="color: #d4a017;">Message:</strong><br/>
-          <p style="white-space: pre-wrap; margin-top: 8px;">${feedback.message}</p>
+        <div style="text-align: center; margin-bottom: 20px;">
+          <h1 style="color: #d4a017; font-family: Georgia, serif; margin: 0 0 5px 0;">Hariharan Traders</h1>
+          <p style="color: #a7f3d0; font-size: 13px; margin: 0;">RICE MILL • ஆரோக்கியமான வாழ்வு</p>
+        </div>
+        <div style="background-color: #0f1a0f; border-left: 4px solid #d4a017; padding: 12px; border-radius: 6px; margin-bottom: 20px;">
+          <h2 style="color: #ffffff; margin: 0 0 5px 0; font-size: 18px;">📩 We Have Received Your Message</h2>
+          <p style="color: #cbd5e1; margin: 0; font-size: 13px;">Thank you for reaching out to Hariharan Traders. Our team will review your inquiry and get back to you shortly.</p>
+        </div>
+        <p style="color: #cbd5e1; margin: 6px 0;"><strong>Name:</strong> ${feedback.name}</p>
+        <p style="color: #cbd5e1; margin: 6px 0;"><strong>Email:</strong> ${feedback.email}</p>
+        <p style="color: #cbd5e1; margin: 6px 0;"><strong>Phone:</strong> ${feedback.phone || 'N/A'}</p>
+        <p style="color: #cbd5e1; margin: 6px 0;"><strong>Subject:</strong> ${feedback.subject || 'General Inquiry'}</p>
+        <div style="background: #0f1a0f; padding: 15px; border-radius: 8px; margin-top: 15px; color: #cbd5e1; border: 1px solid #2d4a2d;">
+          <strong style="color: #d4a017;">Your Message:</strong><br/>
+          <p style="white-space: pre-wrap; margin-top: 8px; color: #e2e8f0;">${feedback.message}</p>
+        </div>
+        <div style="text-align: center; margin-top: 25px; border-top: 1px solid #2d4a2d; padding-top: 15px; color: #94a3b8; font-size: 12px;">
+          <p>Hariharan Traders Rice Mill • Tamil Nadu, India</p>
+          <p>Contact: +91 78109 90099 | hariharantradersorders@gmail.com</p>
         </div>
       </div>
     </div>
@@ -260,8 +276,8 @@ export async function sendContactFeedbackEmail(feedback: {
 
   return await sendEmailMessage({
     from: FROM_EMAIL,
-    to: [NOTIFICATION_EMAIL],
-    subject: `New Inquiry: ${feedback.subject || 'Website Message'} from ${feedback.name}`,
+    to: recipients,
+    subject: `🌾 Inquiry Received: ${feedback.subject || 'Website Message'} - Hariharan Traders`,
     html,
   });
 }
@@ -276,20 +292,36 @@ export async function sendWholesaleInquiryEmail(inquiry: {
   quantityMT?: number;
   message?: string;
 }) {
+  const recipients = [NOTIFICATION_EMAIL];
+  if (inquiry.email && inquiry.email.includes('@') && !recipients.includes(inquiry.email)) {
+    recipients.push(inquiry.email);
+  }
+
   const html = `
     <div style="font-family: Arial, sans-serif; background: #0f1a0f; color: #ffffff; padding: 25px;">
       <div style="max-width: 550px; margin: 0 auto; background: #1a2e1a; padding: 25px; border-radius: 12px; border: 1px solid #d4a017;">
-        <h2 style="color: #d4a017; margin-top: 0;">🌾 New Wholesale / Bulk Order Inquiry</h2>
-        <p><strong>Company:</strong> ${inquiry.companyName || 'N/A'}</p>
-        <p><strong>Contact Name:</strong> ${inquiry.contactName}</p>
-        <p><strong>Phone:</strong> ${inquiry.phone}</p>
-        <p><strong>Email:</strong> ${inquiry.email}</p>
-        <p><strong>Country:</strong> ${inquiry.country || 'India'}</p>
-        <p><strong>Products Interested:</strong> ${inquiry.products?.join(', ') || 'Bulk Rice'}</p>
-        <p><strong>Quantity (Metric Tons):</strong> ${inquiry.quantityMT || 'N/A'}</p>
-        <div style="background: #0f1a0f; padding: 15px; border-radius: 8px; margin-top: 15px; color: #cbd5e1;">
-          <strong style="color: #d4a017;">Additional Notes:</strong><br/>
-          <p style="white-space: pre-wrap; margin-top: 8px;">${inquiry.message || 'No additional notes provided.'}</p>
+        <div style="text-align: center; margin-bottom: 20px;">
+          <h1 style="color: #d4a017; font-family: Georgia, serif; margin: 0 0 5px 0;">Hariharan Traders</h1>
+          <p style="color: #a7f3d0; font-size: 13px; margin: 0;">RICE MILL • WHOLESALE & EXPORT DIVISION</p>
+        </div>
+        <div style="background-color: #0f1a0f; border-left: 4px solid #d4a017; padding: 12px; border-radius: 6px; margin-bottom: 20px;">
+          <h2 style="color: #ffffff; margin: 0 0 5px 0; font-size: 18px;">🌾 Bulk / Export Order Inquiry Confirmation</h2>
+          <p style="color: #cbd5e1; margin: 0; font-size: 13px;">Thank you for contacting Hariharan Traders. We have received your bulk quotation request and our wholesale desk will contact you shortly.</p>
+        </div>
+        <p style="color: #cbd5e1; margin: 6px 0;"><strong>Company:</strong> ${inquiry.companyName || 'N/A'}</p>
+        <p style="color: #cbd5e1; margin: 6px 0;"><strong>Contact Name:</strong> ${inquiry.contactName}</p>
+        <p style="color: #cbd5e1; margin: 6px 0;"><strong>Phone:</strong> ${inquiry.phone}</p>
+        <p style="color: #cbd5e1; margin: 6px 0;"><strong>Email:</strong> ${inquiry.email}</p>
+        <p style="color: #cbd5e1; margin: 6px 0;"><strong>Country:</strong> ${inquiry.country || 'India'}</p>
+        <p style="color: #cbd5e1; margin: 6px 0;"><strong>Products Interested:</strong> ${inquiry.products?.join(', ') || 'Bulk Rice'}</p>
+        <p style="color: #cbd5e1; margin: 6px 0;"><strong>Quantity:</strong> ${inquiry.quantityMT ? `${inquiry.quantityMT} Metric Tons` : 'N/A'}</p>
+        <div style="background: #0f1a0f; padding: 15px; border-radius: 8px; margin-top: 15px; color: #cbd5e1; border: 1px solid #2d4a2d;">
+          <strong style="color: #d4a017;">Inquiry Notes:</strong><br/>
+          <p style="white-space: pre-wrap; margin-top: 8px; color: #e2e8f0;">${inquiry.message || 'No additional notes provided.'}</p>
+        </div>
+        <div style="text-align: center; margin-top: 25px; border-top: 1px solid #2d4a2d; padding-top: 15px; color: #94a3b8; font-size: 12px;">
+          <p>Hariharan Traders Rice Mill • Tamil Nadu, India</p>
+          <p>Contact: +91 78109 90099 | hariharantradersorders@gmail.com</p>
         </div>
       </div>
     </div>
@@ -297,8 +329,8 @@ export async function sendWholesaleInquiryEmail(inquiry: {
 
   return await sendEmailMessage({
     from: FROM_EMAIL,
-    to: [NOTIFICATION_EMAIL],
-    subject: `🌾 Bulk Order Inquiry: ${inquiry.contactName} (${inquiry.companyName || 'Wholesale'})`,
+    to: recipients,
+    subject: `🌾 Bulk Order Inquiry: ${inquiry.contactName} (${inquiry.companyName || 'Wholesale'}) - Hariharan Traders`,
     html,
   });
 }

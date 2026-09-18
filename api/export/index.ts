@@ -46,7 +46,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     `;
 
     // Trigger automated wholesale email dispatch
-    sendWholesaleInquiryEmail({
+    await sendWholesaleInquiryEmail({
       companyName,
       contactName,
       phone,

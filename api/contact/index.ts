@@ -33,7 +33,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     `;
 
     // Trigger automated notification email
-    sendContactFeedbackEmail({
+    await sendContactFeedbackEmail({
       name,
       phone,
       email,

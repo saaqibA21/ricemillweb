@@ -51,7 +51,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     `;
 
     // Trigger automated order confirmation email asynchronously
-    sendOrderConfirmationEmail({
+    await sendOrderConfirmationEmail({
       id,
       items,
       total,
