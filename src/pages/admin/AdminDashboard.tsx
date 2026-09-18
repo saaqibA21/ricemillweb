@@ -196,6 +196,26 @@ export default function AdminDashboard() {
 
   if (!token) return null;
 
+  const [testingEmail, setTestingEmail] = useState(false);
+
+  const handleTestEmail = async () => {
+    setTestingEmail(true);
+    try {
+      const res = await fetch('/api/admin/test-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to send test email');
+      toast.success(data.message || 'Test email sent successfully! Check your inbox.');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to send test email';
+      toast.error(msg);
+    } finally {
+      setTestingEmail(false);
+    }
+  };
+
   return (
     <main className="min-h-screen pt-24 pb-20 px-4 sm:px-6 lg:px-8 bg-[#091109] text-gray-100">
       <div className="max-w-7xl mx-auto space-y-8">
@@ -213,7 +233,16 @@ export default function AdminDashboard() {
             </h1>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={handleTestEmail}
+              disabled={testingEmail}
+              className="flex items-center gap-2 bg-[#122412] hover:bg-[#1a331a] text-gray-300 px-4 py-2 rounded-xl text-sm border border-[#234023] transition-colors disabled:opacity-50"
+              title="Verify SMTP configuration by sending a test email"
+            >
+              <Mail className={`w-4 h-4 text-[#d4a017] ${testingEmail ? 'animate-bounce' : ''}`} />
+              {testingEmail ? 'Sending Test...' : 'Test SMTP'}
+            </button>
             <button
               onClick={fetchData}
               disabled={loading}

@@ -1,9 +1,44 @@
 // api/_lib/email.ts
-// Direct fetch integration with Resend API
+// Dual-engine email delivery: SMTP (nodemailer) with Resend API fallback
+import nodemailer from 'nodemailer';
 
 const API_KEY = process.env.RESEND_API_KEY;
 const NOTIFICATION_EMAIL = process.env.NOTIFICATION_EMAIL || 'hariharantradersorders@gmail.com';
-const FROM_EMAIL = process.env.FROM_EMAIL || 'Hariharan Traders Rice <orders@hariharantraders.com>';
+const FROM_EMAIL =
+  process.env.SMTP_FROM ||
+  process.env.FROM_EMAIL ||
+  (process.env.SMTP_USER ? `"Hariharan Traders Rice" <${process.env.SMTP_USER}>` : 'Hariharan Traders Rice <orders@hariharantraders.in>');
+
+let smtpTransporter: nodemailer.Transporter | null = null;
+
+function getSmtpTransporter(): nodemailer.Transporter | null {
+  const host = process.env.SMTP_HOST;
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+  const port = Number(process.env.SMTP_PORT) || 465;
+  const secure = process.env.SMTP_SECURE ? process.env.SMTP_SECURE === 'true' : port === 465;
+
+  if (!host || !user || !pass) {
+    return null;
+  }
+
+  if (!smtpTransporter) {
+    smtpTransporter = nodemailer.createTransport({
+      host,
+      port,
+      secure,
+      auth: {
+        user,
+        pass,
+      },
+      tls: {
+        rejectUnauthorized: false,
+      },
+    });
+  }
+
+  return smtpTransporter;
+}
 
 async function postResend(payload: { from: string; to: string[]; subject: string; html: string }) {
   if (!API_KEY) {
@@ -24,7 +59,6 @@ async function postResend(payload: { from: string; to: string[]; subject: string
     const data = await res.json();
     if (!res.ok) {
       console.warn('Resend API Warning/Error:', data);
-      // If custom domain unverified (403), auto-fallback to onboarding@resend.dev sending to NOTIFICATION_EMAIL
       if (res.status === 403 && payload.from !== 'Hariharan Traders Rice <onboarding@resend.dev>') {
         console.log('Custom domain pending verification. Falling back to onboarding@resend.dev');
         return await postResend({
@@ -41,6 +75,49 @@ async function postResend(payload: { from: string; to: string[]; subject: string
     console.error('Network error posting to Resend:', err);
     return null;
   }
+}
+
+export async function sendEmailMessage(payload: { from?: string; to: string[]; subject: string; html: string }) {
+  const smtp = getSmtpTransporter();
+
+  // 1. Try SMTP if configured (Gmail, GoDaddy, Office365, Zoho, etc.)
+  if (smtp) {
+    try {
+      const from = payload.from || FROM_EMAIL;
+      const info = await smtp.sendMail({
+        from,
+        to: payload.to.join(', '),
+        subject: payload.subject,
+        html: payload.html,
+      });
+      console.log('SMTP email sent successfully:', info.messageId);
+      return { success: true, messageId: info.messageId };
+    } catch (err) {
+      console.error('SMTP send error, checking for Resend fallback:', err);
+      if (API_KEY) {
+        return await postResend({
+          from: payload.from || FROM_EMAIL,
+          to: payload.to,
+          subject: payload.subject,
+          html: payload.html,
+        });
+      }
+      return null;
+    }
+  }
+
+  // 2. Otherwise fallback to Resend API
+  if (API_KEY) {
+    return await postResend({
+      from: payload.from || FROM_EMAIL,
+      to: payload.to,
+      subject: payload.subject,
+      html: payload.html,
+    });
+  }
+
+  console.warn('No email provider configured (Set SMTP_HOST, SMTP_USER, SMTP_PASS or RESEND_API_KEY)');
+  return null;
 }
 
 export async function sendOrderConfirmationEmail(order: {
@@ -141,11 +218,15 @@ export async function sendOrderConfirmationEmail(order: {
     </html>
   `;
 
-  // Always send to NOTIFICATION_EMAIL first
-  return await postResend({
+  const recipients = [NOTIFICATION_EMAIL];
+  if (order.address.email && order.address.email.includes('@') && !recipients.includes(order.address.email)) {
+    recipients.push(order.address.email);
+  }
+
+  return await sendEmailMessage({
     from: FROM_EMAIL,
-    to: [NOTIFICATION_EMAIL],
-    subject: `🌾 New Order #${order.id} (₹${order.total.toLocaleString()}) - Hariharan Traders`,
+    to: recipients,
+    subject: `🌾 Order Confirmation #${order.id} (₹${order.total.toLocaleString()}) - Hariharan Traders`,
     html: htmlContent,
   });
 }
@@ -173,7 +254,7 @@ export async function sendContactFeedbackEmail(feedback: {
     </div>
   `;
 
-  return await postResend({
+  return await sendEmailMessage({
     from: FROM_EMAIL,
     to: [NOTIFICATION_EMAIL],
     subject: `New Inquiry: ${feedback.subject || 'Website Message'} from ${feedback.name}`,
@@ -210,7 +291,7 @@ export async function sendWholesaleInquiryEmail(inquiry: {
     </div>
   `;
 
-  return await postResend({
+  return await sendEmailMessage({
     from: FROM_EMAIL,
     to: [NOTIFICATION_EMAIL],
     subject: `🌾 Bulk Order Inquiry: ${inquiry.contactName} (${inquiry.companyName || 'Wholesale'})`,
