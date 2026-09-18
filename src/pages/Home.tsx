@@ -86,7 +86,21 @@ export default function Home() {
   }, []);
 
   const products = useProductsStore((s) => s.products);
-  const featuredProducts = products.slice(0, 6);
+  const bagSlugs = [
+    'raja-rajaun-brand-rice',
+    'sri-baba-gold-brand',
+    'royal-bullet',
+    'double-roses-brand',
+    'orange-gold-idly-dosa-rice',
+    'ashirvaadam',
+  ];
+  const featuredProducts = (
+    bagSlugs
+      .map((slug) => products.find((p) => p.slug === slug))
+      .filter(Boolean) as typeof products
+  )
+    .concat(products.filter((p) => !bagSlugs.includes(p.slug)))
+    .slice(0, 6);
 
   return (
     <main>
