@@ -1,39 +1,17 @@
 // api/export/index.ts
 // POST /api/export -> save wholesale and export inquiry
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { neon } from '@neondatabase/serverless';
 import { sendWholesaleInquiryEmail } from '../_lib/email';
 
-export const config = { runtime: 'nodejs' };
-
-async function getRequestBody(req: any) {
-  if (req.body) {
-    return typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-  }
-  if (typeof req.json === 'function') {
-    return await req.json().catch(() => ({}));
-  }
-  return {};
-}
-
-function sendResponse(res: any, data: any, status = 200) {
-  if (res && typeof res.status === 'function') {
-    return res.status(status).json(data);
-  }
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { 'content-type': 'application/json' },
-  });
-}
-
-export default async function handler(req: any, res?: any) {
-  const method = req.method || 'GET';
-  if (method !== 'POST') return sendResponse(res, { error: 'Method not allowed' }, 405);
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const url = process.env.DATABASE_URL;
-  if (!url) return sendResponse(res, { error: 'DATABASE_URL is not set' }, 503);
+  if (!url) return res.status(503).json({ error: 'DATABASE_URL is not set' });
 
   try {
-    const body = (await getRequestBody(req)) as {
+    const body = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {}) as {
       companyName?: string;
       contactName?: string;
       phone?: string;
@@ -46,7 +24,7 @@ export default async function handler(req: any, res?: any) {
     const { companyName, contactName, phone, email, country, products, quantity, message } = body;
 
     if (!contactName || !phone || !email) {
-      return sendResponse(res, { error: 'Contact name, phone, and email are required' }, 400);
+      return res.status(400).json({ error: 'Contact name, phone, and email are required' });
     }
 
     const sql = neon(url);
@@ -79,9 +57,9 @@ export default async function handler(req: any, res?: any) {
       message,
     }).catch((err) => console.warn('Wholesale inquiry email warning:', err));
 
-    return sendResponse(res, { success: true, id }, 201);
+    return res.status(201).json({ success: true, id });
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : 'Failed to save export inquiry';
-    return sendResponse(res, { error: errorMsg }, 500);
+    return res.status(500).json({ error: errorMsg });
   }
 }

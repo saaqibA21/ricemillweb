@@ -1,39 +1,17 @@
 // api/orders/index.ts
 // POST /api/orders -> create an order, returns { id, estimatedDelivery }
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { neon } from '@neondatabase/serverless';
 import { sendOrderConfirmationEmail } from '../_lib/email';
 
-export const config = { runtime: 'nodejs' };
-
-async function getRequestBody(req: any) {
-  if (req.body) {
-    return typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-  }
-  if (typeof req.json === 'function') {
-    return await req.json().catch(() => ({}));
-  }
-  return {};
-}
-
-function sendResponse(res: any, data: any, status = 200) {
-  if (res && typeof res.status === 'function') {
-    return res.status(status).json(data);
-  }
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { 'content-type': 'application/json' },
-  });
-}
-
-export default async function handler(req: any, res?: any) {
-  const method = req.method || 'GET';
-  if (method !== 'POST') return sendResponse(res, { error: 'Method not allowed' }, 405);
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const url = process.env.DATABASE_URL;
-  if (!url) return sendResponse(res, { error: 'DATABASE_URL is not set' }, 500);
+  if (!url) return res.status(500).json({ error: 'DATABASE_URL is not set' });
 
   try {
-    const body = (await getRequestBody(req)) as {
+    const body = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {}) as {
       items: Array<{
         product: { name: string };
         selectedWeight: { weight: string; price: number };
@@ -56,7 +34,7 @@ export default async function handler(req: any, res?: any) {
     const { items, total, paymentMethod, address } = body;
 
     if (!items || !total || !paymentMethod || !address) {
-      return sendResponse(res, { error: 'Missing required order fields' }, 400);
+      return res.status(400).json({ error: 'Missing required order fields' });
     }
 
     const sql = neon(url);
@@ -82,9 +60,9 @@ export default async function handler(req: any, res?: any) {
       estimatedDelivery,
     }).catch((err) => console.warn('Order email dispatch warning:', err));
 
-    return sendResponse(res, { id, estimatedDelivery }, 201);
+    return res.status(201).json({ id, estimatedDelivery });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Database error';
-    return sendResponse(res, { error: message }, 500);
+    return res.status(500).json({ error: message });
   }
 }

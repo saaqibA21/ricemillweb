@@ -1,37 +1,15 @@
 // api/admin/test-email.ts
 // POST /api/admin/test-email -> verify SMTP configuration and send a test message
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { sendEmailMessage } from '../_lib/email';
 
-export const config = { runtime: 'nodejs' };
-
-async function getRequestBody(req: any) {
-  if (req.body) {
-    return typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-  }
-  if (typeof req.json === 'function') {
-    return await req.json().catch(() => ({}));
-  }
-  return {};
-}
-
-function sendResponse(res: any, data: any, status = 200) {
-  if (res && typeof res.status === 'function') {
-    return res.status(status).json(data);
-  }
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { 'content-type': 'application/json' },
-  });
-}
-
-export default async function handler(req: any, res?: any) {
-  const method = req.method || 'GET';
-  if (method !== 'POST') {
-    return sendResponse(res, { error: 'Method not allowed' }, 405);
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const body = await getRequestBody(req);
+    const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {};
     const targetEmail = body.targetEmail || process.env.NOTIFICATION_EMAIL || 'hariharantradersorders@gmail.com';
 
     const testResult = await sendEmailMessage({
@@ -51,18 +29,18 @@ export default async function handler(req: any, res?: any) {
     });
 
     if (!testResult) {
-      return sendResponse(res, {
+      return res.status(500).json({
         error: 'Failed to send test email. Please check your SMTP credentials in Vercel environment variables.',
-      }, 500);
+      });
     }
 
-    return sendResponse(res, {
+    return res.status(200).json({
       success: true,
       message: `Test email sent successfully to ${targetEmail}`,
       result: testResult,
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Error sending test email';
-    return sendResponse(res, { error: message }, 500);
+    return res.status(500).json({ error: message });
   }
 }

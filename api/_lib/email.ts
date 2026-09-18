@@ -23,7 +23,11 @@ function getSmtpTransporter(): nodemailer.Transporter | null {
   }
 
   if (!smtpTransporter) {
-    smtpTransporter = nodemailer.createTransport({
+    const create = nodemailer.createTransport || (nodemailer as any).default?.createTransport;
+    if (typeof create !== 'function') {
+      throw new Error(`nodemailer.createTransport is not a function (got ${typeof create})`);
+    }
+    smtpTransporter = create({
       host,
       port,
       secure,
