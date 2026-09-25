@@ -1,12 +1,14 @@
 // src/pages/Checkout.tsx
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { CreditCard, Smartphone, Package, Check, ArrowRight, MapPin } from 'lucide-react';
+import { CreditCard, Smartphone, Package, Check, ArrowRight, Building2, MapPin, ChevronLeft } from 'lucide-react';
 import { useCartStore } from '../store/cartStore';
 import { useAuthStore } from '../store/authStore';
 import { useOrdersStore } from '../store/ordersStore';
 import { Address } from '../types';
 import toast from 'react-hot-toast';
+import BranchSelector from '../components/checkout/BranchSelector';
+import { ParcelBranch } from '../data/parcelBranches';
 
 type PaymentMethod = 'upi' | 'cod';
 
@@ -23,20 +25,18 @@ export default function Checkout() {
   const { placeOrder } = useOrdersStore();
   const navigate = useNavigate();
 
-  const [step, setStep] = useState<'address' | 'payment'>('address');
+  const [step, setStep] = useState<'branch' | 'payment'>('branch');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('upi');
   const [selectedUpiApp, setSelectedUpiApp] = useState('gpay');
   const [upiId, setUpiId] = useState('');
   const [processing, setProcessing] = useState(false);
 
-  const [address, setAddress] = useState<Omit<Address, 'id' | 'isDefault'>>({
-    label: 'Home',
-    line1: '',
-    line2: '',
-    city: '',
-    state: '',
-    pincode: '',
-  });
+  // Parcel pickup state
+  const [selectedBranch, setSelectedBranch] = useState<ParcelBranch | null>(null);
+  const [receiverName, setReceiverName] = useState(user?.name || '');
+  const [receiverPhone, setReceiverPhone] = useState(user?.phone || '');
+  const [alternatePhone, setAlternatePhone] = useState('');
+  const [receiverEmail, setReceiverEmail] = useState(user?.email || '');
 
   const total = totalPrice();
   const deliveryCharge = total >= 999 ? 0 : 99;
@@ -54,24 +54,60 @@ export default function Checkout() {
     );
   }
 
-  const handleAddressSubmit = (e: React.FormEvent) => {
+  const handleBranchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!address.line1 || !address.city || !address.state || !address.pincode) {
-      toast.error('Please fill all required address fields');
+
+    if (!selectedBranch) {
+      toast.error('Please select your nearest parcel counter from the list');
       return;
     }
+    if (!receiverName.trim()) {
+      toast.error('Please enter the receiver name who will collect the parcel');
+      return;
+    }
+    if (!receiverPhone.trim() || receiverPhone.replace(/\D/g, '').length < 10) {
+      toast.error('Please provide a valid 10-digit mobile number for parcel arrival notification');
+      return;
+    }
+    if (!receiverEmail.trim() || !receiverEmail.includes('@')) {
+      toast.error('Please enter a valid email address for your order confirmation & receipt');
+      return;
+    }
+
     setStep('payment');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedBranch) {
+      toast.error('Please select a pickup branch counter first');
+      setStep('branch');
+      return;
+    }
+
     setProcessing(true);
 
     const fullAddress: Address = {
-      ...address,
       id: `addr-${Date.now()}`,
+      label: `${selectedBranch.service} - ${selectedBranch.branchName}`,
+      line1: `${selectedBranch.service}: ${selectedBranch.branchName}`,
+      line2: selectedBranch.address,
+      city: selectedBranch.city,
+      state: selectedBranch.state,
+      pincode: selectedBranch.digiPin || '000000',
       isDefault: true,
+      service: selectedBranch.service,
+      branchId: selectedBranch.id,
+      branchName: selectedBranch.branchName,
+      branchAddress: selectedBranch.address,
+      branchPhone: selectedBranch.phone,
+      branchDigiPin: selectedBranch.digiPin,
+      contactPerson: selectedBranch.contactPerson,
+      receiverName: receiverName.trim(),
+      receiverPhone: receiverPhone.trim(),
+      receiverEmail: receiverEmail.trim(),
+      alternatePhone: alternatePhone.trim() || undefined,
     };
 
     let serverOrderId: string | undefined;
@@ -105,25 +141,28 @@ export default function Checkout() {
   return (
     <main className="pt-24 pb-20 min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="section-title mb-6 sm:mb-8 text-3xl sm:text-4xl">Checkout</h1>
+        <h1 className="section-title mb-3 sm:mb-4 text-3xl sm:text-4xl">Checkout</h1>
+        <p className="text-gray-400 text-sm mb-6 sm:mb-8">
+          Heavy rice bag orders are delivered to your nearest transport parcel counter for pickup.
+        </p>
 
         {/* Steps indicator */}
         <div className="flex items-center gap-2 sm:gap-4 mb-8 sm:mb-10">
           {[
-            { key: 'address', label: 'Delivery Address', Icon: MapPin },
-            { key: 'payment', label: 'Payment', Icon: CreditCard },
+            { key: 'branch', label: '1. Parcel Counter & Receiver', Icon: Building2 },
+            { key: 'payment', label: '2. Payment & Confirmation', Icon: CreditCard },
           ].map(({ key, label, Icon }, i) => (
             <div key={key} className="flex items-center gap-2">
               <div
                 className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold transition-all shrink-0 ${
                   step === key
                     ? 'bg-[#d4a017] text-[#0f1a0f]'
-                    : step === 'payment' && key === 'address'
+                    : step === 'payment' && key === 'branch'
                     ? 'bg-[#1e5c1e] text-[#7ec07e]'
                     : 'bg-[#1a2e1a] text-gray-400'
                 }`}
               >
-                {step === 'payment' && key === 'address' ? <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : i + 1}
+                {step === 'payment' && key === 'branch' ? <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : i + 1}
               </div>
               <span
                 className={`text-xs sm:text-sm font-medium whitespace-nowrap ${
@@ -138,113 +177,76 @@ export default function Checkout() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-          {/* Left: Address / Payment Form */}
+          {/* Left: Branch Selection / Payment Form */}
           <div className="lg:col-span-2">
-            {step === 'address' ? (
-              <form onSubmit={handleAddressSubmit} className="card p-4 sm:p-6 space-y-4 sm:space-y-5">
-                <h2 className="font-serif font-bold text-xl text-white flex items-center gap-2">
-                  <MapPin className="w-5 h-5 text-[#d4a017]" />
-                  Delivery Address
-                </h2>
+            {step === 'branch' ? (
+              <form onSubmit={handleBranchSubmit} className="space-y-6">
+                <BranchSelector
+                  selectedBranch={selectedBranch}
+                  onSelectBranch={(b) => setSelectedBranch(b)}
+                  receiverName={receiverName}
+                  setReceiverName={setReceiverName}
+                  receiverPhone={receiverPhone}
+                  setReceiverPhone={setReceiverPhone}
+                  alternatePhone={alternatePhone}
+                  setAlternatePhone={setAlternatePhone}
+                  receiverEmail={receiverEmail}
+                  setReceiverEmail={setReceiverEmail}
+                />
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="label">Name *</label>
-                    <input
-                      type="text"
-                      placeholder="Full name"
-                      defaultValue={user?.name}
-                      className="input"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="label">Phone *</label>
-                    <input
-                      type="tel"
-                      placeholder="+91 mobile number"
-                      defaultValue={user?.phone ? `+91${user.phone}` : ''}
-                      className="input"
-                      required
-                    />
-                  </div>
+                <div className="pt-2">
+                  <button type="submit" className="btn-primary w-full justify-center py-4 text-base shadow-lg shadow-[#d4a017]/20">
+                    Continue to Payment
+                    <ArrowRight className="w-5 h-5" />
+                  </button>
                 </div>
-
-                <div>
-                  <label className="label">Address Line 1 *</label>
-                  <input
-                    type="text"
-                    placeholder="House/flat number, street"
-                    value={address.line1}
-                    onChange={(e) => setAddress({ ...address, line1: e.target.value })}
-                    className="input"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="label">Address Line 2</label>
-                  <input
-                    type="text"
-                    placeholder="Area, landmark (optional)"
-                    value={address.line2}
-                    onChange={(e) => setAddress({ ...address, line2: e.target.value })}
-                    className="input"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div>
-                    <label className="label">City *</label>
-                    <input
-                      type="text"
-                      placeholder="City"
-                      value={address.city}
-                      onChange={(e) => setAddress({ ...address, city: e.target.value })}
-                      className="input"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="label">State *</label>
-                    <input
-                      type="text"
-                      placeholder="State"
-                      value={address.state}
-                      onChange={(e) => setAddress({ ...address, state: e.target.value })}
-                      className="input"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="label">Pincode *</label>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={6}
-                      placeholder="6-digit pincode"
-                      value={address.pincode}
-                      onChange={(e) =>
-                        setAddress({ ...address, pincode: e.target.value.replace(/\D/g, '') })
-                      }
-                      className="input"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <button type="submit" className="btn-primary w-full justify-center py-4 text-base">
-                  Continue to Payment
-                  <ArrowRight className="w-5 h-5" />
-                </button>
               </form>
             ) : (
               <form onSubmit={handlePayment} className="space-y-6">
+                {/* Back to Branch selection button */}
+                <button
+                  type="button"
+                  onClick={() => setStep('branch')}
+                  className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-400 hover:text-[#d4a017] transition-colors"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Change Pickup Counter or Receiver Details
+                </button>
+
+                {/* Selected Counter Summary Badge */}
+                {selectedBranch && (
+                  <div className="card p-4 sm:p-5 border-l-4 border-l-[#d4a017] space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs uppercase tracking-wider font-semibold text-[#d4a017]">
+                        📦 Dispatched To Counter
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setStep('branch')}
+                        className="text-xs text-[#a7f3d0] hover:underline"
+                      >
+                        Change
+                      </button>
+                    </div>
+                    <p className="text-white font-bold text-base">
+                      {selectedBranch.service} — {selectedBranch.branchName}
+                    </p>
+                    <p className="text-gray-300 text-xs sm:text-sm">{selectedBranch.address}</p>
+                    <div className="text-xs text-gray-400 pt-1 border-t border-[#1e331e] flex flex-wrap gap-4">
+                      <span>👤 Receiver: <strong className="text-white">{receiverName}</strong></span>
+                      <span>📞 Phone: <strong className="text-white">{receiverPhone}</strong></span>
+                      {selectedBranch.phone && (
+                        <span>🏢 Counter: <strong className="text-[#d4a017]">{selectedBranch.phone}</strong></span>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 {/* Payment method selector */}
                 <div className="card p-6">
                   <h2 className="font-serif font-bold text-xl text-white mb-6 flex items-center gap-2">
                     <CreditCard className="w-5 h-5 text-[#d4a017]" />
-                    Payment Method
+                    Select Payment Method
                   </h2>
 
                   <div className="space-y-3 mb-6">
@@ -266,9 +268,9 @@ export default function Checkout() {
                       />
                       <Smartphone className="w-5 h-5 text-[#d4a017]" />
                       <div>
-                        <div className="text-white font-medium">UPI Payment</div>
+                        <div className="text-white font-medium">Instant UPI Payment</div>
                         <div className="text-gray-400 text-xs">
-                          Pay via GPay, PhonePe, Paytm or UPI ID
+                          Pay instantly via Google Pay, PhonePe, Paytm or UPI ID
                         </div>
                       </div>
                     </label>
@@ -292,11 +294,11 @@ export default function Checkout() {
                       />
                       <Package className="w-5 h-5 text-[#d4a017]" />
                       <div>
-                        <div className="text-white font-medium">Cash on Delivery</div>
+                        <div className="text-white font-medium">Pay on Counter Collection (COD)</div>
                         <div className="text-gray-400 text-xs">
                           {grandTotal > 5000
                             ? 'Not available for orders above ₹5,000'
-                            : 'Pay in cash when your order arrives'}
+                            : 'Pay at the parcel counter when collecting your rice bags'}
                         </div>
                       </div>
                     </label>
@@ -343,12 +345,12 @@ export default function Checkout() {
                 <button
                   type="submit"
                   disabled={processing}
-                  className="btn-primary w-full justify-center py-4 text-lg disabled:opacity-60"
+                  className="btn-primary w-full justify-center py-4 text-lg disabled:opacity-60 shadow-lg shadow-[#d4a017]/20"
                 >
                   {processing ? (
                     <>
                       <div className="w-5 h-5 border-2 border-[#0f1a0f] border-t-transparent rounded-full animate-spin" />
-                      Processing...
+                      Booking Parcel Order...
                     </>
                   ) : (
                     <>
@@ -358,14 +360,14 @@ export default function Checkout() {
                         <Package className="w-5 h-5" />
                       )}
                       {paymentMethod === 'upi'
-                        ? `Pay ₹${grandTotal.toLocaleString()} via UPI`
-                        : `Confirm COD Order • ₹${grandTotal.toLocaleString()}`}
+                        ? `Pay ₹${grandTotal.toLocaleString()} & Confirm Order`
+                        : `Confirm Parcel Booking • ₹${grandTotal.toLocaleString()}`}
                     </>
                   )}
                 </button>
 
                 <p className="text-xs text-gray-500 text-center">
-                  🔐 Payments secured by Razorpay · 256-bit SSL encryption
+                  🔐 Safe & Verified • Instant order confirmation & dispatch receipt via email
                 </p>
               </form>
             )}
@@ -373,17 +375,18 @@ export default function Checkout() {
 
           {/* Right: Order Summary */}
           <div className="lg:col-span-1">
-            <div className="card p-5 sticky top-24">
-              <h3 className="font-serif font-bold text-lg text-white mb-4">
+            <div className="card p-5 sticky top-24 space-y-4">
+              <h3 className="font-serif font-bold text-lg text-white">
                 Order Summary
               </h3>
-              <div className="space-y-3 mb-4 max-h-64 overflow-y-auto pr-1">
+
+              <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
                 {items.map((item) => (
                   <div
                     key={`${item.product.id}-${item.selectedWeight.weight}`}
                     className="flex gap-3 items-center"
                   >
-                    <div className="w-12 h-12 rounded-lg overflow-hidden bg-[#0f1a0f] shrink-0">
+                    <div className="w-12 h-12 rounded-lg overflow-hidden bg-[#0f1a0f] shrink-0 border border-[#233b23]">
                       <img
                         src={item.product.image}
                         alt={item.product.name}
@@ -408,13 +411,14 @@ export default function Checkout() {
                   </div>
                 ))}
               </div>
+
               <div className="border-t border-[#2d4a2d] pt-3 space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400">Subtotal</span>
                   <span className="text-white">₹{total.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Delivery</span>
+                  <span className="text-gray-400">Parcel Transport</span>
                   <span className={deliveryCharge === 0 ? 'text-[#7ec07e]' : 'text-white'}>
                     {deliveryCharge === 0 ? 'FREE' : `₹${deliveryCharge}`}
                   </span>
@@ -423,6 +427,21 @@ export default function Checkout() {
                   <span className="text-white">Total</span>
                   <span className="text-[#d4a017]">₹{grandTotal.toLocaleString()}</span>
                 </div>
+              </div>
+
+              {/* Delivery mode highlight */}
+              <div className="p-3 rounded-lg bg-[#0f1a0f] border border-[#233b23] text-xs text-gray-300 space-y-1">
+                <p className="font-semibold text-[#d4a017] flex items-center gap-1">
+                  <Building2 className="w-3.5 h-3.5" />
+                  Counter Pickup Only:
+                </p>
+                {selectedBranch ? (
+                  <p className="line-clamp-2 text-white">
+                    📍 {selectedBranch.service} — {selectedBranch.branchName}
+                  </p>
+                ) : (
+                  <p className="text-gray-400">Select counter on the left</p>
+                )}
               </div>
             </div>
           </div>

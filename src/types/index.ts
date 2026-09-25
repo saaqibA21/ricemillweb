@@ -56,6 +56,18 @@ export interface Address {
   state: string;
   pincode: string;
   isDefault: boolean;
+  // Parcel Counter Pickup fields
+  service?: 'mSs Parcel Service' | 'A1 Travels & Speed Parcel Service' | string;
+  branchId?: string;
+  branchName?: string;
+  branchAddress?: string;
+  branchPhone?: string;
+  branchDigiPin?: string;
+  contactPerson?: string;
+  receiverName?: string;
+  receiverPhone?: string;
+  receiverEmail?: string;
+  alternatePhone?: string;
 }
 
 export interface Order {

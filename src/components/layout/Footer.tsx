@@ -52,6 +52,7 @@ export default function Footer() {
             <ul className="space-y-3 text-sm">
               {[
                 { to: '/shop', label: t('nav.shop', 'Shop All Rice') },
+                { to: '/branches', label: 'Parcel Pickup Counters (1,228+)' },
                 { to: '/shop?variety=Basmati', label: t('cat.basmati', 'Basmati Rice') },
                 { to: '/wholesale', label: t('nav.wholesale', 'Wholesale Inquiry') },
                 { to: '/export', label: t('nav.export', 'Export & Trade') },

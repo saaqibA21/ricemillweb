@@ -42,7 +42,20 @@ export default function Cart() {
     <main className="pt-24 pb-20 min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="section-title mb-2">Your Cart</h1>
-        <p className="text-gray-400 mb-8">{count} item{count !== 1 ? 's' : ''}</p>
+        <p className="text-gray-400 mb-6">{count} item{count !== 1 ? 's' : ''}</p>
+
+        {/* Parcel Pickup Notice Banner */}
+        <div className="mb-8 p-4 rounded-xl bg-[#1e1707] border border-[#d4a017]/70 flex items-start gap-3">
+          <span className="text-xl">📦</span>
+          <div>
+            <p className="text-sm font-bold text-[#d4a017]">
+              Parcel Counter Pickup Only (No Home Delivery)
+            </p>
+            <p className="text-xs text-gray-300 mt-0.5 leading-relaxed">
+              Rice bags (25kg – 50kg) are booked via <strong>mSs Parcel Service</strong> or <strong>A1 Speed Parcel Service</strong>. At Checkout, you can select your nearest counter across 1,228+ locations for pickup.
+            </p>
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Cart Items */}
@@ -146,16 +159,14 @@ export default function Cart() {
                   <span className="text-white">₹{total.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Delivery</span>
+                  <span className="text-gray-400">Parcel Transport</span>
                   <span className={deliveryCharge === 0 ? 'text-[#7ec07e]' : 'text-white'}>
                     {deliveryCharge === 0 ? 'FREE' : `₹${deliveryCharge}`}
                   </span>
                 </div>
-                {deliveryCharge > 0 && (
-                  <p className="text-xs text-gray-500">
-                    Add ₹{(999 - total).toLocaleString()} more for free delivery
-                  </p>
-                )}
+                <p className="text-[11px] text-gray-500">
+                  📦 Counter Pickup at mSs or A1 Parcel Service
+                </p>
               </div>
 
               <div className="border-t border-[#2d4a2d] pt-4 mb-6">

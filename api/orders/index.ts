@@ -28,6 +28,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         phone?: string;
         email?: string;
         name?: string;
+        service?: string;
+        branchId?: string;
+        branchName?: string;
+        branchAddress?: string;
+        branchPhone?: string;
+        branchDigiPin?: string;
+        contactPerson?: string;
+        receiverName?: string;
+        receiverPhone?: string;
+        receiverEmail?: string;
+        alternatePhone?: string;
       };
     };
 

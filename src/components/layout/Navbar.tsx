@@ -34,6 +34,7 @@ export default function Navbar() {
 
   const navLinks = [
     { to: '/shop', label: t('nav.shop', 'Shop') },
+    { to: '/branches', label: 'Parcel Counters' },
     { to: '/wholesale', label: t('nav.wholesale', 'Wholesale') },
     { to: '/export', label: t('nav.export', 'Export') },
     { to: '/about', label: t('nav.about', 'About Us') },

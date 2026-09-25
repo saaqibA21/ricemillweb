@@ -142,6 +142,17 @@ export async function sendOrderConfirmationEmail(order: {
     phone?: string;
     email?: string;
     name?: string;
+    service?: string;
+    branchId?: string;
+    branchName?: string;
+    branchAddress?: string;
+    branchPhone?: string;
+    branchDigiPin?: string;
+    contactPerson?: string;
+    receiverName?: string;
+    receiverPhone?: string;
+    receiverEmail?: string;
+    alternatePhone?: string;
   };
   estimatedDelivery?: string;
 }) {
@@ -149,24 +160,25 @@ export async function sendOrderConfirmationEmail(order: {
     .map(
       (item) => `
       <tr>
-        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #1e293b;">${item.product.name} (${item.selectedWeight.weight})</td>
-        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #1e293b; text-align: center;">${item.quantity}</td>
-        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #d4a017; font-weight: bold; text-align: right;">₹${(item.selectedWeight.price * item.quantity).toLocaleString()}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #2d4a2d; color: #f1f5f9;">${item.product.name} (${item.selectedWeight.weight})</td>
+        <td style="padding: 10px; border-bottom: 1px solid #2d4a2d; color: #f1f5f9; text-align: center;">${item.quantity}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #2d4a2d; color: #d4a017; font-weight: bold; text-align: right;">₹${(item.selectedWeight.price * item.quantity).toLocaleString()}</td>
       </tr>
     `
     )
     .join('');
 
-  const customerName = order.address.name || 'Valued Customer';
-  const fullAddress = [
+  const customerName = order.address.receiverName || order.address.name || 'Valued Customer';
+  const customerPhone = order.address.receiverPhone || order.address.phone || 'N/A';
+  const parcelService = order.address.service || 'Parcel Counter Service';
+  const branchName = order.address.branchName || order.address.line1 || 'Designated Branch Counter';
+  const branchAddress = order.address.branchAddress || [
     order.address.line1,
     order.address.line2,
     order.address.city,
     order.address.state,
     order.address.pincode,
-  ]
-    .filter(Boolean)
-    .join(', ');
+  ].filter(Boolean).join(', ');
 
   const htmlContent = `
     <!DOCTYPE html>
@@ -183,8 +195,16 @@ export async function sendOrderConfirmationEmail(order: {
         </div>
 
         <div style="background-color: #0f1a0f; border-left: 4px solid #d4a017; padding: 15px; border-radius: 6px; margin-bottom: 25px;">
-          <h2 style="color: #ffffff; margin: 0 0 8px 0; font-size: 20px;">🎉 New Order Received!</h2>
+          <h2 style="color: #ffffff; margin: 0 0 8px 0; font-size: 20px;">🎉 Order Confirmed!</h2>
           <p style="color: #cbd5e1; margin: 0; font-size: 14px;">Order ID: <strong style="color: #d4a017;">${order.id}</strong></p>
+          <div style="margin-top: 10px; background-color: #2a1f0a; border: 1px dashed #d4a017; padding: 10px; border-radius: 6px;">
+            <p style="color: #fde047; font-size: 13px; margin: 0; font-weight: bold;">
+              📦 PARCEL COUNTER PICKUP (NO HOME DELIVERY)
+            </p>
+            <p style="color: #e2e8f0; font-size: 12px; margin: 4px 0 0 0;">
+              Due to bulk rice bag weight, orders are booked via transport parcel counter. Please pick up your bags once arrived.
+            </p>
+          </div>
         </div>
 
         <h3 style="color: #f1f5f9; border-bottom: 1px solid #2d4a2d; padding-bottom: 8px;">Order Details</h3>
@@ -206,12 +226,31 @@ export async function sendOrderConfirmationEmail(order: {
           <span style="color: #d4a017; font-size: 20px; font-weight: bold;">₹${order.total.toLocaleString()}</span>
         </div>
 
-        <h3 style="color: #f1f5f9; border-bottom: 1px solid #2d4a2d; padding-bottom: 8px;">Customer & Delivery Info</h3>
-        <p style="color: #cbd5e1; font-size: 14px; margin: 5px 0;"><strong>Customer Name:</strong> ${customerName}</p>
-        <p style="color: #cbd5e1; font-size: 14px; margin: 5px 0;"><strong>Address:</strong> ${fullAddress}</p>
-        <p style="color: #cbd5e1; font-size: 14px; margin: 5px 0;"><strong>Phone:</strong> ${order.address.phone || 'N/A'}</p>
-        <p style="color: #cbd5e1; font-size: 14px; margin: 5px 0;"><strong>Customer Email:</strong> ${order.address.email || 'N/A'}</p>
+        <h3 style="color: #f1f5f9; border-bottom: 1px solid #2d4a2d; padding-bottom: 8px;">🏢 Selected Parcel Pickup Counter</h3>
+        <div style="background-color: #0f1a0f; padding: 16px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #2d4a2d;">
+          <p style="color: #d4a017; font-size: 15px; font-weight: bold; margin: 0 0 4px 0;">${parcelService}</p>
+          <p style="color: #ffffff; font-size: 14px; font-weight: 600; margin: 0 0 6px 0;">Branch: ${branchName}</p>
+          <p style="color: #cbd5e1; font-size: 13px; margin: 0 0 6px 0;">${branchAddress}</p>
+          ${order.address.branchPhone ? `<p style="color: #a7f3d0; font-size: 13px; margin: 0 0 4px 0;"><strong>Branch Phone:</strong> ${order.address.branchPhone}</p>` : ''}
+          ${order.address.branchDigiPin ? `<p style="color: #93c5fd; font-size: 12px; margin: 0 0 4px 0;"><strong>Digi-PIN:</strong> ${order.address.branchDigiPin}</p>` : ''}
+          ${order.address.contactPerson ? `<p style="color: #cbd5e1; font-size: 12px; margin: 0;"><strong>Contact Person:</strong> ${order.address.contactPerson}</p>` : ''}
+        </div>
+
+        <h3 style="color: #f1f5f9; border-bottom: 1px solid #2d4a2d; padding-bottom: 8px;">👤 Receiver Details</h3>
+        <p style="color: #cbd5e1; font-size: 14px; margin: 5px 0;"><strong>Receiver Name:</strong> ${customerName}</p>
+        <p style="color: #cbd5e1; font-size: 14px; margin: 5px 0;"><strong>Contact Mobile:</strong> ${customerPhone}</p>
+        ${order.address.alternatePhone ? `<p style="color: #cbd5e1; font-size: 14px; margin: 5px 0;"><strong>Alternate Phone:</strong> ${order.address.alternatePhone}</p>` : ''}
+        <p style="color: #cbd5e1; font-size: 14px; margin: 5px 0;"><strong>Email:</strong> ${order.address.email || order.address.receiverEmail || 'N/A'}</p>
         <p style="color: #cbd5e1; font-size: 14px; margin: 5px 0;"><strong>Payment Method:</strong> ${order.paymentMethod.toUpperCase()}</p>
+
+        <div style="background-color: #0f1a0f; border-left: 3px solid #7ec07e; padding: 12px; border-radius: 4px; margin-top: 20px;">
+          <p style="color: #7ec07e; font-size: 13px; font-weight: bold; margin: 0 0 4px 0;">📋 Pickup Instructions:</p>
+          <p style="color: #94a3b8; font-size: 12px; margin: 0;">
+            1. Your parcel will be booked and dispatched to the counter above.<br/>
+            2. Once the shipment reaches the counter, the parcel office will call/SMS you.<br/>
+            3. Show your order ID (${order.id}) and phone number to collect your rice bags.
+          </p>
+        </div>
 
         <div style="text-align: center; margin-top: 30px; border-top: 1px solid #2d4a2d; padding-top: 20px; color: #94a3b8; font-size: 12px;">
           <p>Hariharan Traders Rice Mill • Tamil Nadu, India</p>

@@ -13,6 +13,7 @@ import Checkout from './pages/Checkout';
 import OrderSuccess from './pages/OrderSuccess';
 import Login from './pages/Login';
 import Account from './pages/Account';
+import Branches from './pages/Branches';
 import Wholesale from './pages/Wholesale';
 import Export from './pages/Export';
 import About from './pages/About';
@@ -54,6 +55,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/shop" element={<Shop />} />
+            <Route path="/branches" element={<Branches />} />
             <Route path="/product/:slug" element={<ProductDetail />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />

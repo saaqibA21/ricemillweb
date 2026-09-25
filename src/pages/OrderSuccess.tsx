@@ -21,66 +21,104 @@ export default function OrderSuccess() {
 
   const statusSteps = [
     { Icon: CheckCircle, label: 'Order Confirmed', done: true },
-    { Icon: Package, label: 'Being Packed', done: order.status !== 'confirmed' },
-    { Icon: Truck, label: 'Out for Delivery', done: ['shipped', 'delivered'].includes(order.status) },
-    { Icon: CheckCircle, label: 'Delivered', done: order.status === 'delivered' },
+    { Icon: Package, label: 'Rice Bags Packed', done: order.status !== 'confirmed' },
+    { Icon: Truck, label: 'Transport Dispatched', done: ['shipped', 'delivered'].includes(order.status) },
+    { Icon: CheckCircle, label: 'Ready at Counter', done: order.status === 'delivered' },
   ];
+
+  const serviceName = order.address.service || 'Parcel Counter Pickup';
+  const branchName = order.address.branchName || order.address.line1;
+  const branchAddr = order.address.branchAddress || order.address.line2 || `${order.address.city}, ${order.address.state}`;
+  const receiverName = order.address.receiverName || order.address.label || 'Customer';
+  const receiverPhone = order.address.receiverPhone || order.address.pincode;
 
   return (
     <main className="pt-24 pb-20 min-h-screen flex items-center justify-center">
       <div className="max-w-2xl w-full mx-auto px-4">
         {/* Success Header */}
-        <div className="text-center mb-10">
-          <div className="w-24 h-24 bg-[#1e5c1e]/30 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="w-14 h-14 text-[#7ec07e]" />
+        <div className="text-center mb-8">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 bg-[#1e5c1e]/30 rounded-full flex items-center justify-center mx-auto mb-5 border border-[#7ec07e]/30">
+            <CheckCircle className="w-12 h-12 sm:w-14 sm:h-14 text-[#7ec07e]" />
           </div>
-          <h1 className="font-serif text-4xl font-bold text-white mb-2">Order Placed!</h1>
-          <p className="text-gray-400 text-lg">
-            Thank you for shopping with Hariharan Traders 🌾
+          <h1 className="font-serif text-3xl sm:text-4xl font-bold text-white mb-2">Parcel Order Booked!</h1>
+          <p className="text-gray-400 text-sm sm:text-base">
+            Your rice bags are scheduled for transport booking with Hariharan Traders 🌾
           </p>
         </div>
 
         {/* Order Details Card */}
-        <div className="card p-6 mb-6">
-          <div className="grid grid-cols-2 gap-6 mb-6">
+        <div className="card p-5 sm:p-6 mb-6">
+          <div className="grid grid-cols-2 gap-4 sm:gap-6 mb-6">
             <div>
               <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">Order ID</p>
-              <p className="text-[#d4a017] font-bold font-mono text-lg">{order.id}</p>
+              <p className="text-[#d4a017] font-bold font-mono text-base sm:text-lg">{order.id}</p>
             </div>
             <div>
               <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">Payment</p>
-              <p className="text-white font-semibold capitalize">
-                {order.paymentMethod === 'upi' ? '✓ UPI Paid' : '💵 Cash on Delivery'}
+              <p className="text-white font-semibold capitalize text-sm sm:text-base">
+                {order.paymentMethod === 'upi' ? '✓ UPI Paid' : '💵 Pay at Counter (COD)'}
               </p>
             </div>
             <div>
-              <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">Total Paid</p>
-              <p className="text-white font-bold text-xl">₹{order.total.toLocaleString()}</p>
+              <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">Total Amount</p>
+              <p className="text-white font-bold text-lg sm:text-xl">₹{order.total.toLocaleString()}</p>
             </div>
             <div>
               <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">
                 <Clock className="w-3 h-3 inline mr-1" />
-                Est. Delivery
+                Est. Dispatch
               </p>
-              <p className="text-white font-medium text-sm">{order.estimatedDelivery}</p>
+              <p className="text-white font-medium text-xs sm:text-sm">2–4 business days</p>
             </div>
           </div>
 
-          {/* Delivery Address */}
-          <div className="bg-[#0f1a0f] rounded-xl p-4 mb-6">
-            <p className="text-gray-400 text-xs uppercase tracking-wider mb-2">Delivering to</p>
-            <p className="text-white text-sm">
-              {order.address.line1}
-              {order.address.line2 && `, ${order.address.line2}`}
-            </p>
-            <p className="text-white text-sm">
-              {order.address.city}, {order.address.state} — {order.address.pincode}
-            </p>
+          {/* Parcel Pickup Counter Box */}
+          <div className="bg-[#0f1a0f] rounded-xl p-4 sm:p-5 mb-6 border border-[#2d4a2d]">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs uppercase tracking-wider font-bold text-[#d4a017]">
+                📦 Designated Pickup Counter
+              </span>
+              <span className="text-[11px] bg-[#1e5c1e] text-[#a7f3d0] px-2 py-0.5 rounded font-medium">
+                No Home Delivery
+              </span>
+            </div>
+            <p className="text-white font-bold text-base">{serviceName} — {branchName}</p>
+            <p className="text-gray-300 text-xs sm:text-sm mt-1">{branchAddr}</p>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3 pt-3 border-t border-[#1a2e1a] text-xs text-gray-400">
+              {order.address.branchPhone && (
+                <p>
+                  🏢 Counter Contact:{' '}
+                  <a href={`tel:${order.address.branchPhone}`} className="text-[#d4a017] font-semibold hover:underline">
+                    {order.address.branchPhone}
+                  </a>
+                </p>
+              )}
+              {order.address.branchDigiPin && (
+                <p>
+                  📍 Digi-PIN: <strong className="text-white font-mono">{order.address.branchDigiPin}</strong>
+                </p>
+              )}
+              {order.address.receiverName && (
+                <p>
+                  👤 Receiver: <strong className="text-white">{order.address.receiverName}</strong>
+                </p>
+              )}
+              {order.address.receiverPhone && (
+                <p>
+                  📞 Phone for SMS: <strong className="text-white">{order.address.receiverPhone}</strong>
+                </p>
+              )}
+            </div>
+
+            <div className="mt-3 p-2.5 rounded bg-[#162416] border border-[#234223] text-xs text-[#a7f3d0]">
+              ℹ️ <strong>Collection Process:</strong> Once your consignment arrives at the counter, the parcel office will call/SMS you. Bring this Order ID (<span className="font-mono font-bold text-white">{order.id}</span>) and your mobile number to pick up your bags.
+            </div>
           </div>
 
           {/* Order Status Timeline */}
           <div>
-            <p className="text-gray-400 text-xs uppercase tracking-wider mb-4">Order Status</p>
+            <p className="text-gray-400 text-xs uppercase tracking-wider mb-4">Transport Status</p>
             <div className="flex items-center justify-between relative">
               <div className="absolute top-4 left-4 right-4 h-px bg-[#2d4a2d]" />
               {statusSteps.map(({ Icon, label, done }) => (
@@ -92,7 +130,7 @@ export default function OrderSuccess() {
                   >
                     <Icon className="w-4 h-4" />
                   </div>
-                  <p className="text-xs text-gray-400 text-center leading-tight max-w-[80px]">
+                  <p className="text-[11px] text-gray-400 text-center leading-tight max-w-[85px]">
                     {label}
                   </p>
                 </div>
