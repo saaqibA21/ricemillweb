@@ -235,7 +235,7 @@ export default function ProductDetail() {
             {/* Trust badges */}
             <div className="grid grid-cols-3 gap-2 sm:gap-3 pt-4 border-t border-[#1a2e1a]">
               {[
-                { Icon: Truck, text: 'Free delivery above ₹999' },
+                { Icon: Truck, text: '1,228+ Parcel Counters' },
                 { Icon: Shield, text: '100% pure quality' },
                 { Icon: Award, text: 'FSSAI certified' },
               ].map(({ Icon, text }) => (

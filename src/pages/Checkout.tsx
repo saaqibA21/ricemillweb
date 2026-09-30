@@ -35,8 +35,7 @@ export default function Checkout() {
   const [receiverEmail, setReceiverEmail] = useState(user?.email || '');
 
   const total = totalPrice();
-  const deliveryCharge = total >= 999 ? 0 : 99;
-  const grandTotal = total + deliveryCharge;
+  const grandTotal = total;
 
   if (items.length === 0) {
     return (
@@ -514,10 +513,13 @@ export default function Checkout() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400">Parcel Transport</span>
-                  <span className={deliveryCharge === 0 ? 'text-[#7ec07e]' : 'text-white'}>
-                    {deliveryCharge === 0 ? 'FREE' : `₹${deliveryCharge}`}
+                  <span className="text-[#a7f3d0] font-medium text-xs">
+                    Payable at Counter
                   </span>
                 </div>
+                <p className="text-[11px] text-gray-400 leading-tight">
+                  Transport freight differs by location & weight; payable directly at the parcel counter upon pickup.
+                </p>
                 <div className="flex justify-between font-bold text-lg pt-2 border-t border-[#1a2e1a]">
                   <span className="text-white">Total</span>
                   <span className="text-[#d4a017]">₹{grandTotal.toLocaleString()}</span>

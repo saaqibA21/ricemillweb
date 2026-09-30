@@ -11,8 +11,7 @@ export default function Cart() {
 
   const total = totalPrice();
   const count = totalItems();
-  const deliveryCharge = total >= 999 ? 0 : 99;
-  const grandTotal = total + deliveryCharge;
+  const grandTotal = total;
 
   const handleCheckout = () => {
     if (!isLoggedIn) {
@@ -160,12 +159,12 @@ export default function Cart() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400">Parcel Transport</span>
-                  <span className={deliveryCharge === 0 ? 'text-[#7ec07e]' : 'text-white'}>
-                    {deliveryCharge === 0 ? 'FREE' : `₹${deliveryCharge}`}
+                  <span className="text-[#a7f3d0] font-medium text-xs">
+                    Payable at Counter
                   </span>
                 </div>
-                <p className="text-[11px] text-gray-500">
-                  📦 Counter Pickup at mSs or A1 Parcel Service
+                <p className="text-[11px] text-gray-400">
+                  📦 Transport freight differs by place & weight; payable directly at the parcel counter upon pickup.
                 </p>
               </div>
 
