@@ -18,7 +18,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         quantity: number;
       }>;
       total: number;
-      paymentMethod: 'upi' | 'cod';
+      paymentMethod: 'upi' | 'cod' | 'razorpay';
       address: {
         line1?: string;
         line2?: string;
@@ -39,6 +39,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         receiverPhone?: string;
         receiverEmail?: string;
         alternatePhone?: string;
+        razorpayPaymentId?: string;
+        razorpayOrderId?: string;
       };
     };
 

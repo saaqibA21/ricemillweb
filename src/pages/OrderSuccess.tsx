@@ -56,7 +56,7 @@ export default function OrderSuccess() {
             <div>
               <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">Payment</p>
               <p className="text-white font-semibold capitalize text-sm sm:text-base">
-                {order.paymentMethod === 'upi' ? '✓ UPI Paid' : '💵 Pay at Counter (COD)'}
+                {order.paymentMethod === 'cod' ? '💵 Pay at Counter (COD)' : '✓ Paid via Razorpay'}
               </p>
             </div>
             <div>

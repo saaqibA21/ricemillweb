@@ -9,15 +9,13 @@ import { Address } from '../types';
 import toast from 'react-hot-toast';
 import BranchSelector from '../components/checkout/BranchSelector';
 import { ParcelBranch } from '../data/parcelBranches';
+import {
+  loadRazorpayScript,
+  createBackendRazorpayOrder,
+  verifyBackendPaymentSignature,
+} from '../utils/razorpay';
 
-type PaymentMethod = 'upi' | 'cod';
-
-const upiApps = [
-  { name: 'Google Pay', icon: '🟢', id: 'gpay' },
-  { name: 'PhonePe', icon: '🟣', id: 'phonepe' },
-  { name: 'Paytm', icon: '🔵', id: 'paytm' },
-  { name: 'UPI ID', icon: '🏦', id: 'upi-id' },
-];
+type PaymentMethod = 'razorpay' | 'cod';
 
 export default function Checkout() {
   const { items, totalPrice, clearCart } = useCartStore();
@@ -26,9 +24,7 @@ export default function Checkout() {
   const navigate = useNavigate();
 
   const [step, setStep] = useState<'branch' | 'payment'>('branch');
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('upi');
-  const [selectedUpiApp, setSelectedUpiApp] = useState('gpay');
-  const [upiId, setUpiId] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('razorpay');
   const [processing, setProcessing] = useState(false);
 
   // Parcel pickup state
@@ -78,15 +74,12 @@ export default function Checkout() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handlePayment = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedBranch) {
-      toast.error('Please select a pickup branch counter first');
-      setStep('branch');
-      return;
-    }
-
-    setProcessing(true);
+  const finalizeOrder = async (
+    method: 'razorpay' | 'cod',
+    razorpayPaymentId?: string,
+    razorpayOrderId?: string
+  ) => {
+    if (!selectedBranch) return;
 
     const fullAddress: Address = {
       id: `addr-${Date.now()}`,
@@ -108,6 +101,8 @@ export default function Checkout() {
       receiverPhone: receiverPhone.trim(),
       receiverEmail: receiverEmail.trim(),
       alternatePhone: alternatePhone.trim() || undefined,
+      razorpayPaymentId,
+      razorpayOrderId,
     };
 
     let serverOrderId: string | undefined;
@@ -118,7 +113,7 @@ export default function Checkout() {
         body: JSON.stringify({
           items,
           total: grandTotal,
-          paymentMethod,
+          paymentMethod: method,
           address: fullAddress,
         }),
       });
@@ -132,10 +127,115 @@ export default function Checkout() {
       // In local dev without backend or offline, proceed with local order placement
     }
 
-    const order = placeOrder(items, grandTotal, fullAddress, paymentMethod, serverOrderId);
+    const order = placeOrder(
+      items,
+      grandTotal,
+      fullAddress,
+      method,
+      serverOrderId
+    );
     clearCart();
     setProcessing(false);
     navigate(`/order-success/${order.id}`);
+  };
+
+  const handlePayment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedBranch) {
+      toast.error('Please select a pickup branch counter first');
+      setStep('branch');
+      return;
+    }
+
+    setProcessing(true);
+
+    // Case 1: Cash on Delivery / Pay on Counter Collection
+    if (paymentMethod === 'cod') {
+      await finalizeOrder('cod');
+      return;
+    }
+
+    // Case 2: Razorpay Standard Web Checkout
+    try {
+      // 1. Ensure Razorpay SDK is available
+      const isLoaded = await loadRazorpayScript();
+      if (!isLoaded || !window.Razorpay) {
+        throw new Error('Razorpay SDK failed to load. Please check your internet connection.');
+      }
+
+      // 2. Call backend to create Razorpay Order
+      const toastId = toast.loading('Initializing secure Razorpay payment...');
+      const razorpayOrder = await createBackendRazorpayOrder(grandTotal, {
+        receiverName,
+        receiverPhone,
+        branch: selectedBranch.branchName,
+      });
+      toast.dismiss(toastId);
+
+      const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_TiGmllH2S2WEZl';
+
+      // 3. Open Razorpay Checkout modal
+      const options = {
+        key: razorpayKey,
+        amount: razorpayOrder.amount,
+        currency: razorpayOrder.currency,
+        name: 'Hariharan Traders',
+        description: `Rice Mill Order — ₹${grandTotal.toLocaleString()}`,
+        order_id: razorpayOrder.order_id,
+        prefill: {
+          name: receiverName,
+          contact: receiverPhone,
+          email: receiverEmail,
+        },
+        theme: {
+          color: '#d4a017',
+        },
+        modal: {
+          ondismiss: () => {
+            setProcessing(false);
+            toast('Payment cancelled');
+          },
+        },
+        handler: async (response: {
+          razorpay_payment_id: string;
+          razorpay_order_id: string;
+          razorpay_signature: string;
+        }) => {
+          try {
+            const verifyToast = toast.loading('Verifying payment signature...');
+            const verification = await verifyBackendPaymentSignature(response);
+            toast.dismiss(verifyToast);
+
+            if (verification.verified) {
+              toast.success('Payment verified! Finalizing order...');
+              await finalizeOrder(
+                'razorpay',
+                response.razorpay_payment_id,
+                response.razorpay_order_id
+              );
+            } else {
+              throw new Error('Payment verification unsuccessful');
+            }
+          } catch (err: any) {
+            console.error('Signature verification error:', err);
+            toast.error(err.message || 'Signature mismatch: payment not verified');
+            setProcessing(false);
+          }
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', (resp: any) => {
+        console.error('Razorpay payment failed:', resp.error);
+        toast.error(`Payment failed: ${resp.error?.description || 'Transaction declined'}`);
+        setProcessing(false);
+      });
+      rzp.open();
+    } catch (err: any) {
+      console.error('Razorpay initiation error:', err);
+      toast.error(err.message || 'Unable to open payment modal. Please try again.');
+      setProcessing(false);
+    }
   };
 
   return (
@@ -249,37 +349,60 @@ export default function Checkout() {
                     Select Payment Method
                   </h2>
 
-                  <div className="space-y-3 mb-6">
-                    {/* UPI Option */}
+                  <div className="space-y-4 mb-6">
+                    {/* Razorpay Online Option */}
                     <label
-                      className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all ${
-                        paymentMethod === 'upi'
-                          ? 'border-[#d4a017] bg-[#d4a017]/5'
+                      className={`flex items-start gap-4 p-4 rounded-xl border cursor-pointer transition-all ${
+                        paymentMethod === 'razorpay'
+                          ? 'border-[#d4a017] bg-[#d4a017]/10 ring-1 ring-[#d4a017]'
                           : 'border-[#2d4a2d] hover:border-[#d4a017]/50'
                       }`}
                     >
                       <input
                         type="radio"
                         name="payment"
-                        value="upi"
-                        checked={paymentMethod === 'upi'}
-                        onChange={() => setPaymentMethod('upi')}
-                        className="accent-[#d4a017]"
+                        value="razorpay"
+                        checked={paymentMethod === 'razorpay'}
+                        onChange={() => setPaymentMethod('razorpay')}
+                        className="accent-[#d4a017] mt-1"
                       />
-                      <Smartphone className="w-5 h-5 text-[#d4a017]" />
-                      <div>
-                        <div className="text-white font-medium">Instant UPI Payment</div>
-                        <div className="text-gray-400 text-xs">
-                          Pay instantly via Google Pay, PhonePe, Paytm or UPI ID
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 flex-wrap mb-1">
+                          <span className="text-white font-bold text-base">
+                            Online Payment (Razorpay Standard)
+                          </span>
+                          <span className="text-[10px] bg-[#d4a017] text-[#0f1a0f] font-bold px-2 py-0.5 rounded uppercase tracking-wider">
+                            Instant & Verified
+                          </span>
+                        </div>
+                        <p className="text-gray-400 text-xs mb-3">
+                          Pay securely via UPI (GPay, PhonePe, Paytm, CRED), Cards, Netbanking & Wallets
+                        </p>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-xs px-2.5 py-1 rounded bg-[#0f1a0f] border border-[#2d4a2d] text-gray-300">
+                            🟢 Google Pay
+                          </span>
+                          <span className="text-xs px-2.5 py-1 rounded bg-[#0f1a0f] border border-[#2d4a2d] text-gray-300">
+                            🟣 PhonePe
+                          </span>
+                          <span className="text-xs px-2.5 py-1 rounded bg-[#0f1a0f] border border-[#2d4a2d] text-gray-300">
+                            🔵 Paytm / UPI
+                          </span>
+                          <span className="text-xs px-2.5 py-1 rounded bg-[#0f1a0f] border border-[#2d4a2d] text-gray-300">
+                            💳 Debit & Credit Cards
+                          </span>
+                          <span className="text-xs px-2.5 py-1 rounded bg-[#0f1a0f] border border-[#2d4a2d] text-gray-300">
+                            🏦 Netbanking
+                          </span>
                         </div>
                       </div>
                     </label>
 
                     {/* COD Option */}
                     <label
-                      className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all ${
+                      className={`flex items-start gap-4 p-4 rounded-xl border cursor-pointer transition-all ${
                         paymentMethod === 'cod'
-                          ? 'border-[#d4a017] bg-[#d4a017]/5'
+                          ? 'border-[#d4a017] bg-[#d4a017]/10 ring-1 ring-[#d4a017]'
                           : 'border-[#2d4a2d] hover:border-[#d4a017]/50'
                       } ${grandTotal > 5000 ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
@@ -290,56 +413,23 @@ export default function Checkout() {
                         checked={paymentMethod === 'cod'}
                         onChange={() => setPaymentMethod('cod')}
                         disabled={grandTotal > 5000}
-                        className="accent-[#d4a017]"
+                        className="accent-[#d4a017] mt-1"
                       />
-                      <Package className="w-5 h-5 text-[#d4a017]" />
-                      <div>
-                        <div className="text-white font-medium">Pay on Counter Collection (COD)</div>
-                        <div className="text-gray-400 text-xs">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Package className="w-4 h-4 text-[#d4a017]" />
+                          <span className="text-white font-medium">
+                            Pay on Counter Collection (Cash on Delivery)
+                          </span>
+                        </div>
+                        <p className="text-gray-400 text-xs">
                           {grandTotal > 5000
                             ? 'Not available for orders above ₹5,000'
-                            : 'Pay at the parcel counter when collecting your rice bags'}
-                        </div>
+                            : 'Pay in cash at the parcel counter when collecting your rice bags'}
+                        </p>
                       </div>
                     </label>
                   </div>
-
-                  {/* UPI app selection */}
-                  {paymentMethod === 'upi' && (
-                    <div>
-                      <p className="label mb-3">Choose UPI App</p>
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 mb-4">
-                        {upiApps.map((app) => (
-                          <button
-                            key={app.id}
-                            type="button"
-                            onClick={() => setSelectedUpiApp(app.id)}
-                            className={`p-3 sm:p-3.5 rounded-xl border text-center transition-all active:scale-95 ${
-                              selectedUpiApp === app.id
-                                ? 'border-[#d4a017] bg-[#d4a017]/10 shadow-md shadow-[#d4a017]/10'
-                                : 'border-[#2d4a2d] bg-[#142614] hover:border-[#d4a017]/50'
-                            }`}
-                          >
-                            <div className="text-2xl mb-1">{app.icon}</div>
-                            <div className="text-xs font-semibold text-gray-200">{app.name}</div>
-                          </button>
-                        ))}
-                      </div>
-
-                      {selectedUpiApp === 'upi-id' && (
-                        <div>
-                          <label className="label">Enter UPI ID</label>
-                          <input
-                            type="text"
-                            placeholder="yourname@upi"
-                            value={upiId}
-                            onChange={(e) => setUpiId(e.target.value)}
-                            className="input"
-                          />
-                        </div>
-                      )}
-                    </div>
-                  )}
                 </div>
 
                 <button
@@ -350,24 +440,27 @@ export default function Checkout() {
                   {processing ? (
                     <>
                       <div className="w-5 h-5 border-2 border-[#0f1a0f] border-t-transparent rounded-full animate-spin" />
-                      Booking Parcel Order...
+                      Processing Payment...
                     </>
                   ) : (
                     <>
-                      {paymentMethod === 'upi' ? (
-                        <Smartphone className="w-5 h-5" />
+                      {paymentMethod === 'razorpay' ? (
+                        <>
+                          <CreditCard className="w-5 h-5" />
+                          Pay ₹{grandTotal.toLocaleString()} with Razorpay
+                        </>
                       ) : (
-                        <Package className="w-5 h-5" />
+                        <>
+                          <Package className="w-5 h-5" />
+                          Confirm Parcel Booking • ₹{grandTotal.toLocaleString()}
+                        </>
                       )}
-                      {paymentMethod === 'upi'
-                        ? `Pay ₹${grandTotal.toLocaleString()} & Confirm Order`
-                        : `Confirm Parcel Booking • ₹${grandTotal.toLocaleString()}`}
                     </>
                   )}
                 </button>
 
-                <p className="text-xs text-gray-500 text-center">
-                  🔐 Safe & Verified • Instant order confirmation & dispatch receipt via email
+                <p className="text-xs text-gray-500 text-center flex items-center justify-center gap-1.5">
+                  <span>🔐</span> Payments secured by <strong>Razorpay Standard Checkout</strong> · 256-bit SSL encryption
                 </p>
               </form>
             )}

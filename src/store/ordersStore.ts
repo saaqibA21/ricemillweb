@@ -9,7 +9,7 @@ interface OrdersState {
     items: CartItem[],
     total: number,
     address: Address,
-    paymentMethod: 'upi' | 'cod',
+    paymentMethod: 'upi' | 'cod' | 'razorpay',
     orderId?: string
   ) => Order;
 }

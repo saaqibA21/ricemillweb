@@ -68,6 +68,8 @@ export interface Address {
   receiverPhone?: string;
   receiverEmail?: string;
   alternatePhone?: string;
+  razorpayPaymentId?: string;
+  razorpayOrderId?: string;
 }
 
 export interface Order {
@@ -75,11 +77,13 @@ export interface Order {
   items: CartItem[];
   total: number;
   status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-  paymentMethod: 'upi' | 'cod';
+  paymentMethod: 'upi' | 'cod' | 'razorpay';
   paymentStatus: 'pending' | 'paid' | 'failed';
   address: Address;
   createdAt: string;
   estimatedDelivery: string;
+  razorpayPaymentId?: string;
+  razorpayOrderId?: string;
 }
 
 export interface WholesaleInquiry {
