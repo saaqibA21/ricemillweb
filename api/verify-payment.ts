@@ -8,7 +8,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const key_secret = process.env.RAZORPAY_KEY_SECRET;
+  const key_secret = (
+    process.env.RAZORPAY_KEY_SECRET ||
+    process.env.RAZORPAY_SECRET ||
+    process.env.RAZORPAY_SECRET_KEY ||
+    'UL4gABm9WZpam9GpcVHMapsI'
+  ).replace(/^["']|["']$/g, '').trim();
+
   if (!key_secret) {
     return res.status(500).json({ error: 'Razorpay secret key not configured on server' });
   }

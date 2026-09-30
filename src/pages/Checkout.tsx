@@ -172,7 +172,9 @@ export default function Checkout() {
       });
       toast.dismiss(toastId);
 
-      const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_TiGmllH2S2WEZl';
+      const razorpayKey = (
+        import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_TiGmllH2S2WEZl'
+      ).replace(/^["']|["']$/g, '').trim();
 
       // 3. Open Razorpay Checkout modal
       const options = {
