@@ -54,24 +54,24 @@ export default function Navbar() {
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 md:h-20">
+          <div className="flex items-center justify-between h-20 md:h-24">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-2.5 group shrink-0">
+            <Link to="/" className="flex items-center gap-3 sm:gap-4 group shrink-0 py-1">
               <img
                 src="/assets/logo.jpeg"
                 alt="Hariharan Traders"
-                className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover ring-2 ring-[#d4a017] group-hover:scale-105 transition-transform"
+                className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full object-cover ring-2 sm:ring-[3px] ring-[#d4a017] group-hover:scale-105 transition-transform shadow-md"
               />
               <div className="flex flex-col">
                 <div
-                  className={`font-serif font-bold text-sm sm:text-base md:text-lg leading-tight truncate max-w-[150px] xs:max-w-[190px] sm:max-w-none transition-colors ${
+                  className={`font-serif font-bold text-base sm:text-xl md:text-2xl leading-tight transition-colors ${
                     isHomeTop ? 'text-white' : 'text-[#1c1917]'
                   }`}
                 >
                   Hariharan Traders
                 </div>
-                <div className="text-[#b7860e] text-[10px] sm:text-xs font-bold tracking-wider">
-                  RICE MILL
+                <div className="text-[#b7860e] text-[11px] sm:text-xs md:text-sm font-bold tracking-wider">
+                  RICE • ஆரோக்கியமான வாழ்வு
                 </div>
               </div>
             </Link>

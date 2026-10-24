@@ -13,15 +13,15 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <Link to="/" className="flex items-center gap-3 mb-6">
+            <Link to="/" className="flex items-center gap-4 sm:gap-5 mb-6 group">
               <img
                 src="/assets/logo.jpeg"
                 alt="Hariharan Traders"
-                className="w-14 h-14 rounded-full object-cover ring-2 ring-[#d4a017]"
+                className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full object-cover ring-4 ring-[#d4a017] shadow-2xl group-hover:scale-105 transition-transform"
               />
               <div>
-                <div className="font-serif font-bold text-white text-xl">Hariharan Traders</div>
-                <div className="text-[#d4a017] text-xs tracking-widest">{t('nav.tagline', 'RICE • ஆரோக்கியமான வாழ்வு')}</div>
+                <div className="font-serif font-bold text-white text-2xl sm:text-3xl md:text-4xl leading-tight">Hariharan Traders</div>
+                <div className="text-[#d4a017] text-sm sm:text-base md:text-lg font-bold tracking-wider mt-1">{t('nav.tagline', 'RICE • ஆரோக்கியமான வாழ்வு')}</div>
               </div>
             </Link>
             <p className="text-stone-400 text-sm leading-relaxed mb-6">
