@@ -119,10 +119,10 @@ export default function AnimatedHero() {
   }, [lang]);
 
   return (
-    <section ref={sectionRef} style={{ height: '320vh' }}>
+    <section ref={sectionRef} className="relative min-h-[560px] h-[100dvh] md:h-[320vh]">
       <div
         ref={mountRef}
-        className="sticky top-0 w-full h-screen overflow-hidden bg-gradient-to-b from-[#141416] to-[#050506]"
+        className="relative md:sticky top-0 w-full h-[100dvh] md:h-screen min-h-[560px] overflow-hidden bg-gradient-to-b from-[#141416] to-[#050506]"
       >
         {/* Frame sequence */}
         <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />

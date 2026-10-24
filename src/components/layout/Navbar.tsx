@@ -54,7 +54,7 @@ export default function Navbar() {
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20 md:h-24">
+          <div className="flex items-center justify-between h-16 sm:h-20 md:h-24">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-3 sm:gap-4 group shrink-0 py-1">
               <img
@@ -100,13 +100,13 @@ export default function Navbar() {
             </div>
 
             {/* Right Icons & Language Toggle */}
-            <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="flex items-center gap-1 xs:gap-1.5 sm:gap-3 shrink-0">
               <LanguageToggle className="hidden sm:inline-flex" />
 
               <button
                 onClick={() => setSearchOpen(!searchOpen)}
-                className={`transition-colors p-2 ${
-                  isHomeTop ? 'text-stone-200 hover:text-[#fce18a]' : 'text-[#57534e] hover:text-[#b7860e]'
+                className={`transition-colors p-1.5 sm:p-1.5 sm:p-1.5 sm:p-1.5 sm:p-2 ${
+                  isHomeTop && !menuOpen ? 'text-stone-200 hover:text-[#fce18a]' : 'text-[#57534e] hover:text-[#b7860e]'
                 }`}
                 aria-label="Search"
               >
@@ -116,7 +116,7 @@ export default function Navbar() {
               <Link
                 to="/cart"
                 className={`relative transition-colors p-2 ${
-                  isHomeTop ? 'text-stone-200 hover:text-[#fce18a]' : 'text-[#57534e] hover:text-[#b7860e]'
+                  isHomeTop && !menuOpen ? 'text-stone-200 hover:text-[#fce18a]' : 'text-[#57534e] hover:text-[#b7860e]'
                 }`}
                 aria-label="Cart"
               >
@@ -131,7 +131,7 @@ export default function Navbar() {
               <Link
                 to={isLoggedIn ? '/account' : '/login'}
                 className={`transition-colors p-2 ${
-                  isHomeTop ? 'text-stone-200 hover:text-[#fce18a]' : 'text-[#57534e] hover:text-[#b7860e]'
+                  isHomeTop && !menuOpen ? 'text-stone-200 hover:text-[#fce18a]' : 'text-[#57534e] hover:text-[#b7860e]'
                 }`}
                 aria-label="Account"
               >
@@ -141,7 +141,7 @@ export default function Navbar() {
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
                 className={`md:hidden p-2 ${
-                  isHomeTop ? 'text-stone-200 hover:text-[#fce18a]' : 'text-[#57534e] hover:text-[#b7860e]'
+                  isHomeTop && !menuOpen ? 'text-stone-200 hover:text-[#fce18a]' : 'text-[#57534e] hover:text-[#b7860e]'
                 }`}
                 aria-label="Menu"
               >

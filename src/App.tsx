@@ -48,7 +48,7 @@ export default function App() {
 
   return (
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      <div className="min-h-screen bg-[#faf8f5] text-[#1c1917] flex flex-col selection:bg-[#fef08a] selection:text-[#1c1917]">
+      <div className="min-h-screen bg-[#faf8f5] text-[#1c1917] flex flex-col selection:bg-[#fef08a] selection:text-[#1c1917] overflow-x-hidden w-full max-w-[100vw]">
         <Navbar />
 
         <div className="flex-1">
