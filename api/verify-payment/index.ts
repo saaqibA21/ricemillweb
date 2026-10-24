@@ -1,1 +1,2 @@
-export { default } from '../verify-payment.js';
+// api/verify-payment/index.ts
+export { default } from '../verify-payment';
