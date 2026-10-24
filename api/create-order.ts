@@ -14,20 +14,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
     process.env.RAZORPAY_ID ||
     process.env.RAZORPAY_KEY ||
-    'rzp_test_Trmq5qikiN9LEm'
+    'rzp_test_TrnP7Ngc8Hzili'
   ).replace(/^["']|["']$/g, '').trim();
 
   let key_secret = (
     process.env.RAZORPAY_KEY_SECRET ||
     process.env.RAZORPAY_SECRET ||
     process.env.RAZORPAY_SECRET_KEY ||
-    'ZDcZMEoiuvzuCdoZotcgPNDh'
+    'D9kizd8ieZyFWvBn4hh6pkXw'
   ).replace(/^["']|["']$/g, '').trim();
 
-  // If previous invalid keys are still lingering in Vercel environment variables, override with the validated active keys
-  if (key_id.includes('TiGmll') || key_id.includes('TrmpDad9') || !key_id.startsWith('rzp_')) {
-    key_id = 'rzp_test_Trmq5qikiN9LEm';
-    key_secret = 'ZDcZMEoiuvzuCdoZotcgPNDh';
+  // If previous invalid/revoked keys are still lingering in Vercel environment variables, override with the active verified keys
+  if (
+    key_id.includes('TiGmll') ||
+    key_id.includes('TrmpDad9') ||
+    key_id.includes('Trmq5qik') ||
+    !key_id.startsWith('rzp_')
+  ) {
+    key_id = 'rzp_test_TrnP7Ngc8Hzili';
+    key_secret = 'D9kizd8ieZyFWvBn4hh6pkXw';
   }
 
   console.log('Using Razorpay Key ID:', key_id ? key_id.substring(0, 14) + '...' : 'NONE');

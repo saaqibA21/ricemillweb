@@ -173,9 +173,9 @@ export default function Checkout() {
       toast.dismiss(toastId);
 
       let razorpayKey = (
-        razorpayOrder.key_id || import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_Trmq5qikiN9LEm'
+        razorpayOrder.key_id || import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_TrnP7Ngc8Hzili'
       ).replace(/^["']|["']$/g, '').trim();
-      if (razorpayKey.includes('TiGmll') || razorpayKey.includes('TrmpDad9')) { razorpayKey = 'rzp_test_Trmq5qikiN9LEm'; }
+      if (razorpayKey.includes('TiGmll') || razorpayKey.includes('TrmpDad9') || razorpayKey.includes('Trmq5qik')) { razorpayKey = 'rzp_test_TrnP7Ngc8Hzili'; }
 
       // 3. Open Razorpay Checkout modal
       const options = {
