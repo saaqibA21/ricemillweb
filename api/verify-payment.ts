@@ -12,7 +12,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     process.env.RAZORPAY_KEY_SECRET ||
     process.env.RAZORPAY_SECRET ||
     process.env.RAZORPAY_SECRET_KEY ||
-    'UL4gABm9WZpam9GpcVHMapsI'
+    'b9fg63fl6584T5RrZG8CzN4G'
   ).replace(/^["']|["']$/g, '').trim();
 
   if (!key_secret) {

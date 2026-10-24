@@ -14,14 +14,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
     process.env.RAZORPAY_ID ||
     process.env.RAZORPAY_KEY ||
-    'rzp_test_TiGmllH2S2WEZl'
+    'rzp_test_TrmpDad9rOaGFZ'
   ).replace(/^["']|["']$/g, '').trim();
 
   const key_secret = (
     process.env.RAZORPAY_KEY_SECRET ||
     process.env.RAZORPAY_SECRET ||
     process.env.RAZORPAY_SECRET_KEY ||
-    'UL4gABm9WZpam9GpcVHMapsI'
+    'b9fg63fl6584T5RrZG8CzN4G'
   ).replace(/^["']|["']$/g, '').trim();
 
   if (!key_id || !key_secret) {
