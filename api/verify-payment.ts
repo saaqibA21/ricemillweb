@@ -12,12 +12,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     process.env.RAZORPAY_KEY_SECRET ||
     process.env.RAZORPAY_SECRET ||
     process.env.RAZORPAY_SECRET_KEY ||
-    'b9fg63fl6584T5RrZG8CzN4G'
+    'ZDcZMEoiuvzuCdoZotcgPNDh'
   ).replace(/^["']|["']$/g, '').trim();
 
-  // If old key secret or old key id is lingering, fallback to current secret
-  if (key_secret === 'UL4gABm9WZpam9GpcVHMapsI' || (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_ID.includes('TiGmll'))) {
-    key_secret = 'b9fg63fl6584T5RrZG8CzN4G';
+  // If old key secret or old key id is lingering, fallback to active secret
+  if (
+    key_secret === 'UL4gABm9WZpam9GpcVHMapsI' ||
+    key_secret === 'b9fg63fl6584T5RrZG8CzN4G' ||
+    (process.env.RAZORPAY_KEY_ID && (process.env.RAZORPAY_KEY_ID.includes('TiGmll') || process.env.RAZORPAY_KEY_ID.includes('TrmpDad9')))
+  ) {
+    key_secret = 'ZDcZMEoiuvzuCdoZotcgPNDh';
   }
 
   if (!key_secret) {
