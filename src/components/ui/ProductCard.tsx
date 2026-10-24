@@ -71,8 +71,8 @@ export default function ProductCard({ product }: Props) {
     addItem(product, defaultPrice, 1);
     const prodName = isTa && product.nameTa ? product.nameTa : product.name;
     toast.success(`${prodName} கூடையில் சேர்க்கப்பட்டது!`, {
-      style: { background: '#1a2e1a', color: '#f0f7f0', border: '1px solid #d4a017' },
-      iconTheme: { primary: '#d4a017', secondary: '#0f1a0f' },
+      style: { background: '#ffffff', color: '#1c1917', border: '1px solid #d4a017' },
+      iconTheme: { primary: '#d4a017', secondary: '#ffffff' },
     });
   };
 
@@ -88,27 +88,27 @@ export default function ProductCard({ product }: Props) {
     : defaultPrice.weight;
 
   return (
-    <Link to={`/product/${product.slug}`} className="card group block">
+    <Link to={`/product/${product.slug}`} className="card group block bg-white">
       {/* Image */}
-      <div className="relative overflow-hidden aspect-[4/3] bg-[#0f1a0f]">
+      <div className="relative overflow-hidden aspect-[4/3] bg-[#f5f2eb]">
         <img
           src={product.image}
           alt={displayName}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           onError={(e) => {
             (e.target as HTMLImageElement).src =
-              'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300" fill="%23162216"%3E%3Crect width="400" height="300"/%3E%3Ctext x="50%25" y="50%25" font-size="48" fill="%23d4a017" text-anchor="middle" dominant-baseline="middle"%3E🌾%3C/text%3E%3C/svg%3E';
+              'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300" fill="%23f5f2eb"%3E%3Crect width="400" height="300"/%3E%3Ctext x="50%25" y="50%25" font-size="48" fill="%23d4a017" text-anchor="middle" dominant-baseline="middle"%3E🌾%3C/text%3E%3C/svg%3E';
           }}
         />
         {/* Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-1">
+        <div className="absolute top-3 left-3 flex flex-col gap-1.5">
           {discount && (
-            <span className="badge bg-[#d4a017] text-[#0f1a0f] font-bold">
+            <span className="badge bg-[#d4a017] text-[#1c1917] font-bold shadow-sm">
               -{discount}%
             </span>
           )}
           {product.badges.slice(0, 1).map((b) => (
-            <span key={b} className="badge badge-gold">
+            <span key={b} className="badge badge-gold shadow-sm">
               {isTa && badgeTranslations[b] ? badgeTranslations[b] : b}
             </span>
           ))}
@@ -116,47 +116,47 @@ export default function ProductCard({ product }: Props) {
         {/* Quick add button */}
         <button
           onClick={handleAddToCart}
-          className="absolute bottom-3 right-3 w-10 h-10 bg-[#d4a017] text-[#0f1a0f] rounded-xl flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 translate-y-0 sm:translate-y-2 sm:group-hover:translate-y-0 transition-all duration-200 hover:bg-[#fcd34d] shadow-lg shadow-black/40 active:scale-95"
+          className="absolute bottom-3 right-3 w-10 h-10 bg-[#d4a017] text-[#1c1917] rounded-xl flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 translate-y-0 sm:translate-y-2 sm:group-hover:translate-y-0 transition-all duration-200 hover:bg-[#b7860e] shadow-md shadow-stone-900/10 active:scale-95"
           title="Quick add to cart"
         >
-          <ShoppingCart className="w-5 h-5" />
+          <ShoppingCart className="w-5 h-5 stroke-[2.5]" />
         </button>
       </div>
 
       {/* Content */}
-      <div className="p-4">
-        <div className="flex items-center justify-between mb-1">
-          <span className="text-xs text-[#d4a017] font-semibold uppercase tracking-wider">
+      <div className="p-4 sm:p-5">
+        <div className="flex items-center justify-between mb-1.5">
+          <span className="text-xs text-[#b7860e] font-bold uppercase tracking-wider">
             {displayVariety}
           </span>
           <div className="flex items-center gap-1">
-            <Star className="w-3.5 h-3.5 text-[#fcd34d] fill-current" />
-            <span className="text-xs text-gray-400">
+            <Star className="w-3.5 h-3.5 text-[#d4a017] fill-current" />
+            <span className="text-xs text-stone-500 font-medium">
               {product.rating} ({product.reviews})
             </span>
           </div>
         </div>
 
-        <h3 className="font-serif font-semibold text-white text-lg mb-1 group-hover:text-[#d4a017] transition-colors">
+        <h3 className="font-serif font-bold text-[#1c1917] text-lg mb-1.5 group-hover:text-[#b7860e] transition-colors leading-snug">
           {displayName}
         </h3>
-        <p className="text-gray-400 text-sm line-clamp-2 mb-3">{displayDesc}</p>
+        <p className="text-stone-600 text-xs sm:text-sm line-clamp-2 mb-3.5 leading-relaxed">{displayDesc}</p>
 
         {/* Price */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between pt-2 border-t border-[#f0eae1]">
           <div>
-            <span className="text-[#d4a017] font-bold text-xl">
+            <span className="text-[#b7860e] font-bold text-xl">
               ₹{defaultPrice.price.toLocaleString()}
             </span>
             {defaultPrice.originalPrice && (
-              <span className="text-gray-500 text-sm line-through ml-2">
+              <span className="text-stone-400 text-sm line-through ml-2">
                 ₹{defaultPrice.originalPrice.toLocaleString()}
               </span>
             )}
-            <span className="text-gray-400 text-xs ml-1">/ {displayWeight}</span>
+            <span className="text-stone-500 text-xs ml-1 font-medium">/ {displayWeight}</span>
           </div>
           {product.isWholesaleAvailable && (
-            <span className="badge badge-green text-xs">{t('nav.wholesale', 'Wholesale')}</span>
+            <span className="badge badge-green text-xs font-semibold">{t('nav.wholesale', 'Wholesale')}</span>
           )}
         </div>
       </div>

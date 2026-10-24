@@ -108,14 +108,14 @@ export default function Home() {
       <AnimatedHero />
 
       {/* STATS */}
-      <section ref={statsRef} className="py-16 bg-[#0a150a]">
+      <section ref={statsRef} className="py-16 bg-[#faf8f5] border-b border-[#e8e2d5]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {dynamicStats.map(({ icon: Icon, value, label }) => (
-              <div key={label} className="stat-card card-glass p-6 text-center">
-                <Icon className="w-8 h-8 text-[#d4a017] mx-auto mb-3" />
-                <div className="font-serif font-bold text-3xl text-white mb-1">{value}</div>
-                <div className="text-gray-400 text-sm">{label}</div>
+              <div key={label} className="stat-card card-glass p-6 text-center bg-white shadow-sm">
+                <Icon className="w-8 h-8 text-[#b7860e] mx-auto mb-3" />
+                <div className="font-serif font-bold text-3xl text-[#1c1917] mb-1">{value}</div>
+                <div className="text-stone-500 text-sm font-medium">{label}</div>
               </div>
             ))}
           </div>
@@ -123,13 +123,13 @@ export default function Home() {
       </section>
 
       {/* FEATURED PRODUCTS */}
-      <section ref={productsRef} className="py-20 bg-[#0d180d]">
+      <section ref={productsRef} className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
             <p className="section-subtitle">{t('cat.title', 'Our Collection')}</p>
             <h2 className="section-title mb-4">{lang === 'ta' ? 'சிறந்த அரிசி ரகங்கள்' : 'Premium Rice Varieties'}</h2>
             <div className="gold-divider mx-auto mb-6" />
-            <p className="text-gray-400 max-w-2xl mx-auto">
+            <p className="text-stone-600 max-w-2xl mx-auto text-base">
               {t('cat.subtitle', 'From aromatic Basmati aged for 12 months to nutrition-packed Red and Black rice — discover our full range of premium milled rice.')}
             </p>
           </div>
@@ -143,7 +143,7 @@ export default function Home() {
           </div>
 
           <div className="text-center mt-12">
-            <Link to="/shop" className="btn-primary text-lg px-10 py-4">
+            <Link to="/shop" className="btn-primary text-lg px-10 py-4 shadow-sm hover:shadow">
               {t('cat.viewAll', 'View All Products')}
               <ArrowRight className="w-5 h-5" />
             </Link>
@@ -152,7 +152,7 @@ export default function Home() {
       </section>
 
       {/* WHY CHOOSE US */}
-      <section ref={featuresRef} className="py-20 bg-[#0a150a]">
+      <section ref={featuresRef} className="py-20 bg-[#faf8f5] border-t border-[#e8e2d5]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
             <p className="section-subtitle">Why Hariharan Traders</p>
@@ -161,12 +161,12 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map(({ Icon, title, desc }) => (
-              <div key={title} className="feature-card card p-6">
-                <div className="w-12 h-12 bg-[#d4a017]/10 rounded-xl flex items-center justify-center mb-4">
-                  <Icon className="w-6 h-6 text-[#d4a017]" />
+              <div key={title} className="feature-card card p-6 bg-white shadow-sm">
+                <div className="w-12 h-12 bg-[#fefce8] border border-[#fde68a] rounded-xl flex items-center justify-center mb-4">
+                  <Icon className="w-6 h-6 text-[#b7860e]" />
                 </div>
-                <h3 className="font-serif font-semibold text-white text-lg mb-2">{title}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">{desc}</p>
+                <h3 className="font-serif font-bold text-[#1c1917] text-lg mb-2">{title}</h3>
+                <p className="text-stone-600 text-sm leading-relaxed">{desc}</p>
               </div>
             ))}
           </div>
@@ -174,21 +174,21 @@ export default function Home() {
       </section>
 
       {/* WHOLESALE CTA */}
-      <section className="py-20 bg-gradient-to-br from-[#1e5c1e]/30 to-[#0a150a] border-y border-[#1a2e1a]">
+      <section className="py-20 bg-gradient-to-br from-[#fefce8] via-white to-[#f0fdf4] border-y border-[#e8e2d5]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="section-subtitle">Bulk Orders Welcome</p>
           <h2 className="section-title mb-4">Wholesale &amp; Export</h2>
           <div className="gold-divider mx-auto mb-6" />
-          <p className="text-gray-300 text-lg max-w-2xl mx-auto mb-8">
+          <p className="text-stone-700 text-lg max-w-2xl mx-auto mb-8 leading-relaxed">
             We supply to restaurants, supermarkets, exporters, and food manufacturers.
             Competitive pricing, consistent quality, export documentation handled.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/wholesale" className="btn-primary text-lg px-8 py-4">
+            <Link to="/wholesale" className="btn-primary text-lg px-8 py-4 shadow-sm hover:shadow">
               Get Wholesale Price
               <ArrowRight className="w-5 h-5" />
             </Link>
-            <Link to="/export" className="btn-secondary text-lg px-8 py-4">
+            <Link to="/export" className="btn-secondary text-lg px-8 py-4 bg-white">
               Export Inquiry
             </Link>
           </div>
@@ -196,16 +196,16 @@ export default function Home() {
       </section>
 
       {/* CERTIFICATIONS */}
-      <section className="py-16 bg-[#060e06]">
+      <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="section-subtitle">Certifications</p>
-          <h2 className="text-2xl font-serif text-white mb-10">Trusted. Certified. Safe.</h2>
-          <div className="flex flex-wrap justify-center items-center gap-8">
+          <h2 className="text-2xl font-serif text-[#1c1917] font-bold mb-10">Trusted. Certified. Safe.</h2>
+          <div className="flex flex-wrap justify-center items-center gap-6">
             {['FSSAI Certified', 'ISO 22000', 'APEDA Registered', 'Phytosanitary Cert', 'Halal Certified'].map(
               (cert) => (
                 <div
                   key={cert}
-                  className="px-6 py-3 border border-[#d4a017]/30 rounded-lg text-[#d4a017] text-sm font-semibold"
+                  className="px-6 py-3 border border-[#d4a017] rounded-xl text-[#926b09] bg-[#fefce8] text-sm font-bold shadow-sm"
                 >
                   ✓ {cert}
                 </div>

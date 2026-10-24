@@ -42,8 +42,8 @@ export default function ProductDetail() {
   const handleAddToCart = () => {
     addItem(product, selectedWeight, quantity);
     toast.success(`${displayName} கூடையில் சேர்க்கப்பட்டது!`, {
-      style: { background: '#1a2e1a', color: '#f0f7f0', border: '1px solid #d4a017' },
-      iconTheme: { primary: '#d4a017', secondary: '#0f1a0f' },
+      style: { background: '#ffffff', color: '#1c1917', border: '1px solid #d4a017' },
+      iconTheme: { primary: '#d4a017', secondary: '#ffffff' },
     });
   };
 
@@ -57,25 +57,25 @@ export default function ProductDetail() {
     <main className="pt-24 pb-20 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-gray-400 mb-8">
-          <Link to="/" className="hover:text-white transition-colors">{t('nav.about', 'Home')}</Link>
+        <nav className="flex items-center gap-2 text-sm text-stone-500 mb-8 font-medium">
+          <Link to="/" className="hover:text-[#b7860e] transition-colors">{t('nav.about', 'Home')}</Link>
           <span>/</span>
-          <Link to="/shop" className="hover:text-white transition-colors">{t('nav.shop', 'Shop')}</Link>
+          <Link to="/shop" className="hover:text-[#b7860e] transition-colors">{t('nav.shop', 'Shop')}</Link>
           <span>/</span>
-          <span className="text-white">{displayName}</span>
+          <span className="text-[#1c1917] font-semibold">{displayName}</span>
         </nav>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Images */}
           <div>
-            <div className="aspect-square rounded-2xl overflow-hidden bg-[#1a2e1a] mb-4">
+            <div className="aspect-square rounded-2xl overflow-hidden bg-[#faf8f5] border border-[#e8e2d5] mb-4 shadow-sm">
               <img
                 src={product.images[activeImg] || product.image}
                 alt={displayName}
                 className="w-full h-full object-cover"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src =
-                    'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="600" height="600" fill="%23162216"%3E%3Crect width="600" height="600"/%3E%3Ctext x="50%25" y="50%25" font-size="80" fill="%23d4a017" text-anchor="middle" dominant-baseline="middle"%3E🌾%3C/text%3E%3C/svg%3E';
+                    'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="600" height="600" fill="%23faf8f5"%3E%3Crect width="600" height="600"/%3E%3Ctext x="50%25" y="50%25" font-size="80" fill="%23d4a017" text-anchor="middle" dominant-baseline="middle"%3E🌾%3C/text%3E%3C/svg%3E';
                 }}
               />
             </div>
@@ -85,8 +85,8 @@ export default function ProductDetail() {
                   <button
                     key={i}
                     onClick={() => setActiveImg(i)}
-                    className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
-                      activeImg === i ? 'border-[#d4a017]' : 'border-[#2d4a2d]'
+                    className={`w-20 h-20 rounded-xl overflow-hidden border-2 transition-all shadow-sm ${
+                      activeImg === i ? 'border-[#d4a017] ring-1 ring-[#d4a017]' : 'border-[#e8e2d5] hover:border-[#d4a017]/70'
                     }`}
                   >
                     <img src={img} alt="" className="w-full h-full object-cover" />
@@ -98,10 +98,10 @@ export default function ProductDetail() {
 
           {/* Details */}
           <div>
-            <span className="text-[#d4a017] font-semibold text-xs sm:text-sm uppercase tracking-widest mb-1.5 block">
+            <span className="text-[#b7860e] font-bold text-xs sm:text-sm uppercase tracking-widest mb-1.5 block">
               {displayVariety}
             </span>
-            <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 leading-tight">
+            <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-[#1c1917] mb-3 leading-tight">
               {displayName}
             </h1>
 
@@ -113,13 +113,13 @@ export default function ProductDetail() {
                     key={s}
                     className={`w-4 h-4 sm:w-5 sm:h-5 ${
                       s <= Math.floor(product.rating)
-                        ? 'text-[#fcd34d] fill-current'
-                        : 'text-gray-600'
+                        ? 'text-[#d4a017] fill-current'
+                        : 'text-stone-300'
                     }`}
                   />
                 ))}
               </div>
-              <span className="text-gray-300 text-xs sm:text-sm">
+              <span className="text-stone-600 text-xs sm:text-sm font-medium">
                 {product.rating} ({product.reviews} reviews)
               </span>
             </div>
@@ -127,13 +127,13 @@ export default function ProductDetail() {
             {/* Badges */}
             <div className="flex flex-wrap gap-2 mb-5">
               {product.badges.map((b) => (
-                <span key={b} className="badge badge-gold text-xs">
+                <span key={b} className="badge badge-gold text-xs shadow-sm">
                   {b}
                 </span>
               ))}
             </div>
 
-            <p className="text-gray-300 text-sm sm:text-base leading-relaxed mb-6">{displayDesc}</p>
+            <p className="text-stone-700 text-sm sm:text-base leading-relaxed mb-6">{displayDesc}</p>
 
             {/* Grain specs */}
             <div className="grid grid-cols-2 gap-2.5 sm:gap-3 mb-6">
@@ -143,20 +143,20 @@ export default function ProductDetail() {
                 { label: 'Moisture', value: product.moisture },
                 { label: 'Cook Time', value: product.cookingTime },
               ].map(({ label, value }) => (
-                <div key={label} className="bg-[#1a2e1a] rounded-xl px-3.5 py-2.5 sm:px-4 sm:py-3 border border-[#244224]">
-                  <div className="text-[11px] sm:text-xs text-gray-400 mb-0.5">{label}</div>
-                  <div className="text-white text-xs sm:text-sm font-medium">{value}</div>
+                <div key={label} className="bg-white rounded-xl px-3.5 py-2.5 sm:px-4 sm:py-3 border border-[#e8e2d5] shadow-sm">
+                  <div className="text-[11px] sm:text-xs text-stone-500 font-medium mb-0.5">{label}</div>
+                  <div className="text-[#1c1917] text-xs sm:text-sm font-bold">{value}</div>
                 </div>
               ))}
             </div>
 
             {/* Best For */}
             <div className="mb-6">
-              <p className="text-gray-400 text-xs sm:text-sm mb-2">Best For:</p>
+              <p className="text-stone-600 text-xs sm:text-sm mb-2 font-semibold">Best For:</p>
               <div className="flex flex-wrap gap-2">
                 {product.bestFor.map((b) => (
-                  <span key={b} className="flex items-center gap-1 text-xs text-[#7ec07e] bg-[#1a2e1a] border border-[#2d4a2d] px-3 py-1.5 rounded-full">
-                    <Check className="w-3 h-3" /> {b}
+                  <span key={b} className="flex items-center gap-1 text-xs text-[#166534] bg-[#ecfdf5] border border-[#a7f3d0] px-3 py-1.5 rounded-full font-semibold">
+                    <Check className="w-3 h-3 stroke-[3]" /> {b}
                   </span>
                 ))}
               </div>
@@ -172,8 +172,8 @@ export default function ProductDetail() {
                     onClick={() => setSelectedWeight(p)}
                     className={`px-4 py-2.5 rounded-xl border text-sm font-semibold transition-all active:scale-95 ${
                       selectedWeight.weight === p.weight
-                        ? 'bg-[#d4a017] border-[#d4a017] text-[#0f1a0f] shadow-md shadow-[#d4a017]/20'
-                        : 'border-[#2d4a2d] bg-[#142614] text-gray-300 hover:border-[#d4a017]'
+                        ? 'bg-[#d4a017] border-[#d4a017] text-[#1c1917] font-bold shadow-sm ring-1 ring-[#d4a017]'
+                        : 'border-[#e8e2d5] bg-white text-stone-700 hover:border-[#d4a017] hover:bg-[#faf8f5]'
                     }`}
                   >
                     {p.weight}
@@ -185,39 +185,39 @@ export default function ProductDetail() {
             {/* Price */}
             <div className="mb-6">
               <div className="flex items-baseline gap-2.5 sm:gap-3">
-                <span className="text-[#d4a017] font-bold text-3xl sm:text-4xl">
+                <span className="text-[#b7860e] font-bold text-3xl sm:text-4xl">
                   ₹{selectedWeight.price.toLocaleString()}
                 </span>
                 {selectedWeight.originalPrice && (
-                  <span className="text-gray-500 text-lg sm:text-xl line-through">
+                  <span className="text-stone-400 text-lg sm:text-xl line-through">
                     ₹{selectedWeight.originalPrice.toLocaleString()}
                   </span>
                 )}
                 {discount && (
-                  <span className="badge bg-[#d4a017] text-[#0f1a0f] text-xs sm:text-sm font-bold">
+                  <span className="badge bg-[#d4a017] text-[#1c1917] text-xs sm:text-sm font-bold shadow-sm">
                     {discount}% OFF
                   </span>
                 )}
               </div>
-              <p className="text-gray-400 text-xs sm:text-sm mt-1">
+              <p className="text-stone-500 text-xs sm:text-sm mt-1 font-medium">
                 Per {selectedWeight.weight} · Incl. all taxes
               </p>
             </div>
 
             {/* Quantity + Add to Cart */}
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6">
-              <div className="flex items-center justify-between sm:justify-start border border-[#2d4a2d] rounded-xl overflow-hidden bg-[#142614] w-full sm:w-auto">
+              <div className="flex items-center justify-between sm:justify-start border border-[#e8e2d5] rounded-xl overflow-hidden bg-white w-full sm:w-auto shadow-sm">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="w-14 sm:w-12 h-12 flex items-center justify-center text-white hover:bg-[#1a2e1a] active:bg-[#1e3a1e] transition-colors text-2xl"
+                  className="w-14 sm:w-12 h-12 flex items-center justify-center text-[#1c1917] hover:bg-[#faf8f5] active:bg-[#f5f2eb] transition-colors text-2xl"
                   aria-label="Decrease quantity"
                 >
                   −
                 </button>
-                <span className="w-14 sm:w-12 text-center text-white font-bold text-base">{quantity}</span>
+                <span className="w-14 sm:w-12 text-center text-[#1c1917] font-bold text-base">{quantity}</span>
                 <button
                   onClick={() => setQuantity(quantity + 1)}
-                  className="w-14 sm:w-12 h-12 flex items-center justify-center text-white hover:bg-[#1a2e1a] active:bg-[#1e3a1e] transition-colors text-2xl"
+                  className="w-14 sm:w-12 h-12 flex items-center justify-center text-[#1c1917] hover:bg-[#faf8f5] active:bg-[#f5f2eb] transition-colors text-2xl"
                   aria-label="Increase quantity"
                 >
                   +
@@ -225,36 +225,36 @@ export default function ProductDetail() {
               </div>
               <button
                 onClick={handleAddToCart}
-                className="btn-primary flex-1 justify-center text-base sm:text-lg py-3.5 sm:py-3 shadow-lg shadow-[#d4a017]/10 active:scale-[0.99]"
+                className="btn-primary flex-1 justify-center text-base sm:text-lg py-3.5 sm:py-3 shadow-sm hover:shadow active:scale-[0.99]"
               >
-                <ShoppingCart className="w-5 h-5" />
+                <ShoppingCart className="w-5 h-5 stroke-[2.5]" />
                 Add to Cart
               </button>
             </div>
 
             {/* Trust badges */}
-            <div className="grid grid-cols-3 gap-2 sm:gap-3 pt-4 border-t border-[#1a2e1a]">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3 pt-4 border-t border-[#e8e2d5]">
               {[
                 { Icon: Truck, text: '1,228+ Parcel Counters' },
                 { Icon: Shield, text: '100% pure quality' },
                 { Icon: Award, text: 'FSSAI certified' },
               ].map(({ Icon, text }) => (
-                <div key={text} className="flex flex-col items-center text-center gap-1 p-2 rounded-lg bg-[#122212]/50">
-                  <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-[#d4a017]" />
-                  <span className="text-gray-400 text-[10px] sm:text-xs leading-tight">{text}</span>
+                <div key={text} className="flex flex-col items-center text-center gap-1 p-2.5 rounded-xl bg-white border border-[#e8e2d5] shadow-sm">
+                  <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-[#b7860e]" />
+                  <span className="text-stone-600 text-[10px] sm:text-xs font-semibold leading-tight">{text}</span>
                 </div>
               ))}
             </div>
 
             {/* Wholesale notice */}
             {product.isWholesaleAvailable && (
-              <div className="mt-4 bg-[#1a2e1a] border border-[#2d4a2d] rounded-xl p-4">
-                <p className="text-[#7ec07e] text-sm font-medium mb-1">
+              <div className="mt-4 bg-[#fefce8] border border-[#fde68a] rounded-xl p-4 shadow-sm">
+                <p className="text-[#166534] text-sm font-bold mb-1">
                   ✓ Wholesale pricing available
                 </p>
-                <p className="text-gray-400 text-xs">
+                <p className="text-stone-600 text-xs">
                   Minimum order: {product.minWholesaleQty} kg.{' '}
-                  <Link to="/wholesale" className="text-[#d4a017] underline">
+                  <Link to="/wholesale" className="text-[#b7860e] font-bold underline">
                     Get a quote →
                   </Link>
                 </p>

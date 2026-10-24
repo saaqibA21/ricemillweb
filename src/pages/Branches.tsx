@@ -67,50 +67,50 @@ export default function Branches() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Page Header */}
         <div className="text-center max-w-3xl mx-auto mb-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1e3b1e] border border-[#2d5c2d] text-[#a7f3d0] text-xs font-semibold uppercase tracking-wider mb-4">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#fefce8] border border-[#d4a017] text-[#926b09] text-xs font-bold uppercase tracking-wider mb-4 shadow-sm">
             <Building2 className="w-3.5 h-3.5" />
             1,228+ Pickup Counters
           </div>
-          <h1 className="font-serif text-3xl sm:text-5xl font-bold text-white mb-4">
+          <h1 className="font-serif text-3xl sm:text-5xl font-bold text-[#1c1917] mb-4">
             Parcel Service Branch Locator
           </h1>
-          <p className="text-gray-300 text-sm sm:text-base leading-relaxed">
+          <p className="text-stone-600 text-sm sm:text-base leading-relaxed">
             Due to the heavy weight of rice bags (25kg – 50kg), all customer consignments are dispatched to your nearest{' '}
-            <strong className="text-[#d4a017]">mSs Parcel Service</strong> or{' '}
-            <strong className="text-[#d4a017]">A1 Speed Parcel Service</strong> counter for safe collection.
+            <strong className="text-[#b7860e]">mSs Parcel Service</strong> or{' '}
+            <strong className="text-[#b7860e]">A1 Speed Parcel Service</strong> counter for safe collection.
           </p>
         </div>
 
         {/* Counter Network Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-8">
-          <div className="card p-4 text-center">
-            <p className="text-2xl sm:text-3xl font-bold text-[#d4a017] font-serif">686</p>
-            <p className="text-xs text-gray-300 font-medium mt-1">mSs Parcel Counters</p>
+          <div className="card p-4 text-center bg-white shadow-sm">
+            <p className="text-2xl sm:text-3xl font-bold text-[#b7860e] font-serif">686</p>
+            <p className="text-xs text-stone-600 font-medium mt-1">mSs Parcel Counters</p>
           </div>
-          <div className="card p-4 text-center">
-            <p className="text-2xl sm:text-3xl font-bold text-[#7ec07e] font-serif">542</p>
-            <p className="text-xs text-gray-300 font-medium mt-1">A1 Speed Counters</p>
+          <div className="card p-4 text-center bg-white shadow-sm">
+            <p className="text-2xl sm:text-3xl font-bold text-[#166534] font-serif">542</p>
+            <p className="text-xs text-stone-600 font-medium mt-1">A1 Speed Counters</p>
           </div>
-          <div className="card p-4 text-center">
-            <p className="text-2xl sm:text-3xl font-bold text-white font-serif">7+ States</p>
-            <p className="text-xs text-gray-300 font-medium mt-1">South & West India</p>
+          <div className="card p-4 text-center bg-white shadow-sm">
+            <p className="text-2xl sm:text-3xl font-bold text-[#1c1917] font-serif">7+ States</p>
+            <p className="text-xs text-stone-600 font-medium mt-1">South & West India</p>
           </div>
-          <div className="card p-4 text-center">
-            <p className="text-2xl sm:text-3xl font-bold text-[#60a5fa] font-serif">Daily</p>
-            <p className="text-xs text-gray-300 font-medium mt-1">Lorry Despatches</p>
+          <div className="card p-4 text-center bg-white shadow-sm">
+            <p className="text-2xl sm:text-3xl font-bold text-[#2563eb] font-serif">Daily</p>
+            <p className="text-xs text-stone-600 font-medium mt-1">Lorry Despatches</p>
           </div>
         </div>
 
         {/* Filters Card */}
-        <div className="card p-4 sm:p-6 mb-8 space-y-4">
+        <div className="card p-4 sm:p-6 mb-8 space-y-4 bg-white shadow-sm">
           {/* Service Provider Tabs */}
-          <div className="flex flex-wrap gap-2 pb-2 border-b border-[#2d4a2d]">
+          <div className="flex flex-wrap gap-2 pb-3 border-b border-[#f0eae1]">
             <button
               onClick={() => handleServiceChange('all')}
               className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
                 selectedService === 'all'
-                  ? 'bg-[#d4a017] text-[#0f1a0f]'
-                  : 'bg-[#0f1a0f] text-gray-300 hover:text-white border border-[#2d4a2d]'
+                  ? 'bg-[#d4a017] text-[#1c1917] font-bold shadow-sm'
+                  : 'bg-[#faf8f5] text-stone-600 hover:text-[#1c1917] border border-[#e8e2d5]'
               }`}
             >
               All Services ({PARCEL_BRANCHES.length})
@@ -121,8 +121,8 @@ export default function Branches() {
                 onClick={() => handleServiceChange(srv)}
                 className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
                   selectedService === srv
-                    ? 'bg-[#d4a017] text-[#0f1a0f]'
-                    : 'bg-[#0f1a0f] text-gray-300 hover:text-white border border-[#2d4a2d]'
+                    ? 'bg-[#d4a017] text-[#1c1917] font-bold shadow-sm'
+                    : 'bg-[#faf8f5] text-stone-600 hover:text-[#1c1917] border border-[#e8e2d5]'
                 }`}
               >
                 {srv}
@@ -137,7 +137,7 @@ export default function Branches() {
               <select
                 value={selectedState}
                 onChange={(e) => handleStateChange(e.target.value)}
-                className="input bg-[#0f1a0f]"
+                className="input bg-white text-[#1c1917]"
               >
                 <option value="all">All States</option>
                 {availableStates.map((st) => (
@@ -156,7 +156,7 @@ export default function Branches() {
                   setSelectedCity(e.target.value);
                   setPage(1);
                 }}
-                className="input bg-[#0f1a0f]"
+                className="input bg-white text-[#1c1917]"
               >
                 <option value="all">All Cities / Districts</option>
                 {availableCities.map((ct) => (
@@ -170,7 +170,7 @@ export default function Branches() {
             <div className="sm:col-span-1">
               <label className="label">Instant Search</label>
               <div className="relative">
-                <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
                 <input
                   type="text"
                   placeholder="Town, branch, address, Digi-PIN..."
@@ -179,7 +179,7 @@ export default function Branches() {
                     setSearchQuery(e.target.value);
                     setPage(1);
                   }}
-                  className="input pl-10 bg-[#0f1a0f]"
+                  className="input pl-10 bg-white"
                 />
               </div>
             </div>
@@ -187,10 +187,10 @@ export default function Branches() {
         </div>
 
         {/* Results Header */}
-        <div className="flex items-center justify-between text-xs sm:text-sm text-gray-400 mb-4 px-1">
+        <div className="flex items-center justify-between text-xs sm:text-sm text-stone-500 mb-4 px-1 font-medium">
           <p>
-            Showing <strong className="text-white">{paginatedBranches.length}</strong> of{' '}
-            <strong className="text-[#d4a017]">{totalResults}</strong> parcel counters
+            Showing <strong className="text-[#1c1917]">{paginatedBranches.length}</strong> of{' '}
+            <strong className="text-[#b7860e]">{totalResults}</strong> parcel counters
           </p>
           {totalPages > 1 && (
             <p>
@@ -201,10 +201,10 @@ export default function Branches() {
 
         {/* Branches Grid */}
         {paginatedBranches.length === 0 ? (
-          <div className="card p-12 text-center max-w-lg mx-auto">
+          <div className="card p-12 text-center max-w-lg mx-auto bg-white shadow-sm">
             <div className="text-5xl mb-3">📍</div>
-            <h3 className="font-serif text-xl font-bold text-white mb-2">No counters found</h3>
-            <p className="text-gray-400 text-sm mb-4">
+            <h3 className="font-serif text-xl font-bold text-[#1c1917] mb-2">No counters found</h3>
+            <p className="text-stone-500 text-sm mb-4">
               We couldn't find any branches matching your current filters.
             </p>
             <button
@@ -224,44 +224,44 @@ export default function Branches() {
             {paginatedBranches.map((branch) => (
               <div
                 key={branch.id}
-                className="card p-5 flex flex-col justify-between hover:border-[#437543] transition-all group"
+                className="card p-5 flex flex-col justify-between hover:border-[#d4a017] transition-all group bg-white shadow-sm"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <span
-                      className={`text-[11px] px-2 py-0.5 rounded-full font-semibold ${
+                      className={`text-[11px] px-2.5 py-0.5 rounded-full font-bold ${
                         branch.service === 'mSs Parcel Service'
-                          ? 'bg-[#d4a017]/15 text-[#f0c242] border border-[#d4a017]/30'
-                          : 'bg-[#7ec07e]/15 text-[#7ec07e] border border-[#7ec07e]/30'
+                          ? 'bg-[#fef3c7] text-[#926b09] border border-[#fde68a]'
+                          : 'bg-[#ecfdf5] text-[#166534] border border-[#a7f3d0]'
                       }`}
                     >
                       {branch.service}
                     </span>
-                    <span className="text-[11px] font-mono text-gray-400 bg-[#0f1a0f] px-2 py-0.5 rounded">
+                    <span className="text-[11px] font-mono text-stone-500 bg-[#faf8f5] px-2 py-0.5 rounded border border-[#e8e2d5]">
                       {branch.state}
                     </span>
                   </div>
 
-                  <h3 className="font-serif font-bold text-lg text-white group-hover:text-[#d4a017] transition-colors line-clamp-1">
+                  <h3 className="font-serif font-bold text-lg text-[#1c1917] group-hover:text-[#b7860e] transition-colors line-clamp-1">
                     {branch.branchName}
                   </h3>
 
-                  <p className="text-gray-300 text-xs mt-2 line-clamp-3 leading-relaxed">
+                  <p className="text-stone-600 text-xs mt-2 line-clamp-3 leading-relaxed">
                     {branch.address}
                   </p>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-[#1a2e1a] space-y-2 text-xs">
-                  <div className="flex items-center justify-between text-gray-400">
+                <div className="mt-4 pt-3 border-t border-[#f0eae1] space-y-2 text-xs">
+                  <div className="flex items-center justify-between text-stone-500 font-medium">
                     <a
                       href={`tel:${branch.phone.split(',')[0].trim()}`}
-                      className="flex items-center gap-1.5 text-[#d4a017] font-semibold hover:underline"
+                      className="flex items-center gap-1.5 text-[#b7860e] font-bold hover:underline"
                     >
                       <Phone className="w-3.5 h-3.5" />
                       {branch.phone}
                     </a>
                     {branch.digiPin && (
-                      <span className="bg-[#142314] text-[#93c5fd] font-mono px-2 py-0.5 rounded">
+                      <span className="bg-[#fef3c7] text-[#926b09] font-mono px-2 py-0.5 rounded border border-[#fde68a]">
                         PIN: {branch.digiPin}
                       </span>
                     )}
@@ -270,7 +270,7 @@ export default function Branches() {
                   <div className="pt-2">
                     <Link
                       to="/shop"
-                      className="btn-primary w-full justify-center text-xs py-2 gap-1.5"
+                      className="btn-primary w-full justify-center text-xs py-2 gap-1.5 shadow-sm"
                     >
                       Shop & Pick Up Here
                       <ArrowRight className="w-3.5 h-3.5" />
@@ -291,11 +291,11 @@ export default function Branches() {
                 window.scrollTo({ top: 300, behavior: 'smooth' });
               }}
               disabled={page === 1}
-              className="px-4 py-2 rounded-lg bg-[#142614] border border-[#2d4a2d] text-white text-xs disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-4 py-2 rounded-xl bg-white border border-[#e8e2d5] text-[#1c1917] font-semibold text-xs disabled:opacity-40 disabled:cursor-not-allowed shadow-sm hover:border-[#d4a017]"
             >
               Previous
             </button>
-            <span className="text-xs text-gray-400 px-3">
+            <span className="text-xs text-stone-500 px-3 font-medium">
               Page {page} of {totalPages}
             </span>
             <button
@@ -304,7 +304,7 @@ export default function Branches() {
                 window.scrollTo({ top: 300, behavior: 'smooth' });
               }}
               disabled={page === totalPages}
-              className="px-4 py-2 rounded-lg bg-[#142614] border border-[#2d4a2d] text-white text-xs disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-4 py-2 rounded-xl bg-white border border-[#e8e2d5] text-[#1c1917] font-semibold text-xs disabled:opacity-40 disabled:cursor-not-allowed shadow-sm hover:border-[#d4a017]"
             >
               Next
             </button>

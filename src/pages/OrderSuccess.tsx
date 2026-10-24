@@ -12,7 +12,7 @@ export default function OrderSuccess() {
     return (
       <main className="pt-24 pb-20 min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="font-serif text-3xl text-white mb-4">Order not found</h2>
+          <h2 className="font-serif text-3xl text-[#1c1917] mb-4">Order not found</h2>
           <Link to="/account" className="btn-primary">View Orders</Link>
         </div>
       </main>
@@ -37,100 +37,100 @@ export default function OrderSuccess() {
       <div className="max-w-2xl w-full mx-auto px-4">
         {/* Success Header */}
         <div className="text-center mb-8">
-          <div className="w-20 h-20 sm:w-24 sm:h-24 bg-[#1e5c1e]/30 rounded-full flex items-center justify-center mx-auto mb-5 border border-[#7ec07e]/30">
-            <CheckCircle className="w-12 h-12 sm:w-14 sm:h-14 text-[#7ec07e]" />
+          <div className="w-20 h-20 sm:w-24 sm:h-24 bg-[#ecfdf5] rounded-full flex items-center justify-center mx-auto mb-5 border border-[#a7f3d0] shadow-sm">
+            <CheckCircle className="w-12 h-12 sm:w-14 sm:h-14 text-[#166534]" />
           </div>
-          <h1 className="font-serif text-3xl sm:text-4xl font-bold text-white mb-2">Parcel Order Booked!</h1>
-          <p className="text-gray-400 text-sm sm:text-base">
+          <h1 className="font-serif text-3xl sm:text-4xl font-bold text-[#1c1917] mb-2">Parcel Order Booked!</h1>
+          <p className="text-stone-600 text-sm sm:text-base">
             Your rice bags are scheduled for transport booking with Hariharan Traders 🌾
           </p>
         </div>
 
         {/* Order Details Card */}
-        <div className="card p-5 sm:p-6 mb-6">
+        <div className="card p-5 sm:p-6 mb-6 bg-white shadow-sm">
           <div className="grid grid-cols-2 gap-4 sm:gap-6 mb-6">
             <div>
-              <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">Order ID</p>
-              <p className="text-[#d4a017] font-bold font-mono text-base sm:text-lg">{order.id}</p>
+              <p className="text-stone-500 text-xs uppercase tracking-wider mb-1 font-semibold">Order ID</p>
+              <p className="text-[#b7860e] font-bold font-mono text-base sm:text-lg">{order.id}</p>
             </div>
             <div>
-              <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">Payment</p>
-              <p className="text-white font-semibold capitalize text-sm sm:text-base">
+              <p className="text-stone-500 text-xs uppercase tracking-wider mb-1 font-semibold">Payment</p>
+              <p className="text-[#1c1917] font-semibold capitalize text-sm sm:text-base">
                 {order.paymentMethod === 'cod' ? '💵 Pay at Counter (COD)' : '✓ Paid via Razorpay'}
               </p>
             </div>
             <div>
-              <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">Total Amount</p>
-              <p className="text-white font-bold text-lg sm:text-xl">₹{order.total.toLocaleString()}</p>
+              <p className="text-stone-500 text-xs uppercase tracking-wider mb-1 font-semibold">Total Amount</p>
+              <p className="text-[#1c1917] font-bold text-lg sm:text-xl">₹{order.total.toLocaleString()}</p>
             </div>
             <div>
-              <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">
+              <p className="text-stone-500 text-xs uppercase tracking-wider mb-1 font-semibold">
                 <Clock className="w-3 h-3 inline mr-1" />
                 Est. Dispatch
               </p>
-              <p className="text-white font-medium text-xs sm:text-sm">2–4 business days</p>
+              <p className="text-[#1c1917] font-medium text-xs sm:text-sm">2–4 business days</p>
             </div>
           </div>
 
           {/* Parcel Pickup Counter Box */}
-          <div className="bg-[#0f1a0f] rounded-xl p-4 sm:p-5 mb-6 border border-[#2d4a2d]">
+          <div className="bg-[#fefce8] rounded-xl p-4 sm:p-5 mb-6 border border-[#d4a017]">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs uppercase tracking-wider font-bold text-[#d4a017]">
+              <span className="text-xs uppercase tracking-wider font-bold text-[#b7860e]">
                 📦 Designated Pickup Counter
               </span>
-              <span className="text-[11px] bg-[#1e5c1e] text-[#a7f3d0] px-2 py-0.5 rounded font-medium">
+              <span className="badge badge-gold font-bold">
                 No Home Delivery
               </span>
             </div>
-            <p className="text-white font-bold text-base">{serviceName} — {branchName}</p>
-            <p className="text-gray-300 text-xs sm:text-sm mt-1">{branchAddr}</p>
+            <p className="text-[#1c1917] font-bold text-base">{serviceName} — {branchName}</p>
+            <p className="text-stone-600 text-xs sm:text-sm mt-1">{branchAddr}</p>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3 pt-3 border-t border-[#1a2e1a] text-xs text-gray-400">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3 pt-3 border-t border-[#f0eae1] text-xs text-stone-600 font-medium">
               {order.address.branchPhone && (
                 <p>
                   🏢 Counter Contact:{' '}
-                  <a href={`tel:${order.address.branchPhone}`} className="text-[#d4a017] font-semibold hover:underline">
+                  <a href={`tel:${order.address.branchPhone}`} className="text-[#b7860e] font-bold hover:underline">
                     {order.address.branchPhone}
                   </a>
                 </p>
               )}
               {order.address.branchDigiPin && (
                 <p>
-                  📍 Digi-PIN: <strong className="text-white font-mono">{order.address.branchDigiPin}</strong>
+                  📍 Digi-PIN: <strong className="text-[#1c1917] font-mono">{order.address.branchDigiPin}</strong>
                 </p>
               )}
               {order.address.receiverName && (
                 <p>
-                  👤 Receiver: <strong className="text-white">{order.address.receiverName}</strong>
+                  👤 Receiver: <strong className="text-[#1c1917]">{order.address.receiverName}</strong>
                 </p>
               )}
               {order.address.receiverPhone && (
                 <p>
-                  📞 Phone for SMS: <strong className="text-white">{order.address.receiverPhone}</strong>
+                  📞 Phone for SMS: <strong className="text-[#1c1917] font-mono">{order.address.receiverPhone}</strong>
                 </p>
               )}
             </div>
 
-            <div className="mt-3 p-2.5 rounded bg-[#162416] border border-[#234223] text-xs text-[#a7f3d0]">
-              ℹ️ <strong>Collection Process:</strong> Once your consignment arrives at the counter, the parcel office will call/SMS you. Bring this Order ID (<span className="font-mono font-bold text-white">{order.id}</span>) and your mobile number to pick up your bags.
+            <div className="mt-3 p-3 rounded-xl bg-white border border-[#e8e2d5] text-xs text-stone-700">
+              ℹ️ <strong>Collection Process:</strong> Once your consignment arrives at the counter, the parcel office will call/SMS you. Bring this Order ID (<span className="font-mono font-bold text-[#b7860e]">{order.id}</span>) and your mobile number to pick up your bags.
             </div>
           </div>
 
           {/* Order Status Timeline */}
           <div>
-            <p className="text-gray-400 text-xs uppercase tracking-wider mb-4">Transport Status</p>
+            <p className="text-stone-500 text-xs uppercase tracking-wider mb-4 font-semibold">Transport Status</p>
             <div className="flex items-center justify-between relative">
-              <div className="absolute top-4 left-4 right-4 h-px bg-[#2d4a2d]" />
+              <div className="absolute top-4 left-4 right-4 h-px bg-stone-300" />
               {statusSteps.map(({ Icon, label, done }) => (
                 <div key={label} className="relative flex flex-col items-center gap-2 flex-1">
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center z-10 ${
-                      done ? 'bg-[#1e5c1e] text-[#7ec07e]' : 'bg-[#1a2e1a] text-gray-600'
+                      done ? 'bg-[#166534] text-white shadow-sm' : 'bg-stone-200 text-stone-400'
                     }`}
                   >
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-4 h-4 stroke-[2.5]" />
                   </div>
-                  <p className="text-[11px] text-gray-400 text-center leading-tight max-w-[85px]">
+                  <p className="text-[11px] text-stone-600 text-center leading-tight max-w-[85px] font-medium">
                     {label}
                   </p>
                 </div>
@@ -140,8 +140,8 @@ export default function OrderSuccess() {
         </div>
 
         {/* Items Summary */}
-        <div className="card p-6 mb-8">
-          <h3 className="font-serif font-semibold text-white mb-4">Items Ordered</h3>
+        <div className="card p-6 mb-8 bg-white shadow-sm">
+          <h3 className="font-serif font-bold text-[#1c1917] mb-4">Items Ordered</h3>
           <div className="space-y-3">
             {order.items.map((item) => (
               <div
@@ -149,12 +149,12 @@ export default function OrderSuccess() {
                 className="flex justify-between items-center"
               >
                 <div>
-                  <p className="text-white text-sm font-medium">{item.product.name}</p>
-                  <p className="text-gray-400 text-xs">
+                  <p className="text-[#1c1917] text-sm font-semibold">{item.product.name}</p>
+                  <p className="text-stone-500 text-xs">
                     {item.selectedWeight.weight} × {item.quantity}
                   </p>
                 </div>
-                <span className="text-[#d4a017] font-semibold">
+                <span className="text-[#b7860e] font-bold">
                   ₹{(item.selectedWeight.price * item.quantity).toLocaleString()}
                 </span>
               </div>
@@ -167,15 +167,15 @@ export default function OrderSuccess() {
           <Link to="/account" className="btn-secondary flex-1 justify-center py-3">
             Track Order
           </Link>
-          <Link to="/shop" className="btn-primary flex-1 justify-center py-3">
+          <Link to="/shop" className="btn-primary flex-1 justify-center py-3 shadow-sm hover:shadow">
             <ShoppingBag className="w-4 h-4" />
             Continue Shopping
           </Link>
         </div>
 
-        <p className="text-center text-gray-500 text-xs mt-6">
+        <p className="text-center text-stone-500 text-xs mt-6">
           Order confirmation sent to your registered phone number.
-          For support: <a href="tel:+917810990099" className="text-[#d4a017]">+91 78109 90099</a>
+          For support: <a href="tel:+917810990099" className="text-[#b7860e] font-bold">+91 78109 90099</a>
         </p>
       </div>
     </main>

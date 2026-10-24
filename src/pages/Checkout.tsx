@@ -60,12 +60,13 @@ export default function Checkout() {
       toast.error('Please enter the receiver name who will collect the parcel');
       return;
     }
-    if (!receiverPhone.trim() || receiverPhone.replace(/\D/g, '').length < 10) {
-      toast.error('Please provide a valid 10-digit mobile number for parcel arrival notification');
+    const cleanPhone = receiverPhone.replace(/\D/g, '');
+    if (!cleanPhone || cleanPhone.length < 10) {
+      toast.error('Mobile number is mandatory. Please provide a valid 10-digit mobile number for parcel arrival notification');
       return;
     }
-    if (!receiverEmail.trim() || !receiverEmail.includes('@')) {
-      toast.error('Please enter a valid email address for your order confirmation & receipt');
+    if (receiverEmail.trim() && !receiverEmail.includes('@')) {
+      toast.error('Please enter a valid email address or leave it blank');
       return;
     }
 
@@ -186,7 +187,7 @@ export default function Checkout() {
         prefill: {
           name: receiverName,
           contact: receiverPhone,
-          email: receiverEmail,
+          email: receiverEmail.trim() || undefined,
         },
         theme: {
           color: '#d4a017',
@@ -242,8 +243,8 @@ export default function Checkout() {
   return (
     <main className="pt-24 pb-20 min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="section-title mb-3 sm:mb-4 text-3xl sm:text-4xl">Checkout</h1>
-        <p className="text-gray-400 text-sm mb-6 sm:mb-8">
+        <h1 className="section-title mb-3 sm:mb-4 text-3xl sm:text-4xl text-[#1c1917]">Checkout</h1>
+        <p className="text-stone-600 text-sm mb-6 sm:mb-8 font-medium">
           Heavy rice bag orders are delivered to your nearest transport parcel counter for pickup.
         </p>
 
@@ -257,22 +258,22 @@ export default function Checkout() {
               <div
                 className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold transition-all shrink-0 ${
                   step === key
-                    ? 'bg-[#d4a017] text-[#0f1a0f]'
+                    ? 'bg-[#d4a017] text-[#1c1917] shadow-sm'
                     : step === 'payment' && key === 'branch'
-                    ? 'bg-[#1e5c1e] text-[#7ec07e]'
-                    : 'bg-[#1a2e1a] text-gray-400'
+                    ? 'bg-[#166534] text-white shadow-sm'
+                    : 'bg-stone-200 text-stone-600'
                 }`}
               >
-                {step === 'payment' && key === 'branch' ? <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : i + 1}
+                {step === 'payment' && key === 'branch' ? <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[3]" /> : i + 1}
               </div>
               <span
-                className={`text-xs sm:text-sm font-medium whitespace-nowrap ${
-                  step === key ? 'text-white' : 'text-gray-400'
+                className={`text-xs sm:text-sm font-semibold whitespace-nowrap ${
+                  step === key ? 'text-[#1c1917]' : 'text-stone-500'
                 }`}
               >
                 {label}
               </span>
-              {i < 1 && <div className="w-8 sm:w-12 h-px bg-[#2d4a2d] ml-1 sm:ml-2" />}
+              {i < 1 && <div className="w-8 sm:w-12 h-px bg-stone-300 ml-1 sm:ml-2" />}
             </div>
           ))}
         </div>
@@ -296,7 +297,7 @@ export default function Checkout() {
                 />
 
                 <div className="pt-2">
-                  <button type="submit" className="btn-primary w-full justify-center py-4 text-base shadow-lg shadow-[#d4a017]/20">
+                  <button type="submit" className="btn-primary w-full justify-center py-4 text-base shadow-sm hover:shadow">
                     Continue to Payment
                     <ArrowRight className="w-5 h-5" />
                   </button>
@@ -308,7 +309,7 @@ export default function Checkout() {
                 <button
                   type="button"
                   onClick={() => setStep('branch')}
-                  className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-400 hover:text-[#d4a017] transition-colors"
+                  className="flex items-center gap-1.5 text-xs sm:text-sm text-stone-600 hover:text-[#b7860e] font-semibold transition-colors"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   Change Pickup Counter or Receiver Details
@@ -316,36 +317,36 @@ export default function Checkout() {
 
                 {/* Selected Counter Summary Badge */}
                 {selectedBranch && (
-                  <div className="card p-4 sm:p-5 border-l-4 border-l-[#d4a017] space-y-2">
+                  <div className="card p-4 sm:p-5 border-l-4 border-l-[#d4a017] space-y-2 bg-white shadow-sm">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs uppercase tracking-wider font-semibold text-[#d4a017]">
+                      <span className="text-xs uppercase tracking-wider font-bold text-[#b7860e]">
                         📦 Dispatched To Counter
                       </span>
                       <button
                         type="button"
                         onClick={() => setStep('branch')}
-                        className="text-xs text-[#a7f3d0] hover:underline"
+                        className="text-xs text-[#166534] font-semibold hover:underline"
                       >
                         Change
                       </button>
                     </div>
-                    <p className="text-white font-bold text-base">
+                    <p className="text-[#1c1917] font-bold text-base">
                       {selectedBranch.service} — {selectedBranch.branchName}
                     </p>
-                    <p className="text-gray-300 text-xs sm:text-sm">{selectedBranch.address}</p>
-                    <div className="text-xs text-gray-400 pt-1 border-t border-[#1e331e] flex flex-wrap gap-4">
-                      <span>👤 Receiver: <strong className="text-white">{receiverName}</strong></span>
-                      <span>📞 Phone: <strong className="text-white">{receiverPhone}</strong></span>
+                    <p className="text-stone-600 text-xs sm:text-sm">{selectedBranch.address}</p>
+                    <div className="text-xs text-stone-500 pt-1.5 border-t border-[#f0eae1] flex flex-wrap gap-4 font-medium">
+                      <span>👤 Receiver: <strong className="text-[#1c1917]">{receiverName}</strong></span>
+                      <span>📞 Phone: <strong className="text-[#1c1917] font-mono">{receiverPhone}</strong></span>
                       {selectedBranch.phone && (
-                        <span>🏢 Counter: <strong className="text-[#d4a017]">{selectedBranch.phone}</strong></span>
+                        <span>🏢 Counter: <strong className="text-[#b7860e] font-mono">{selectedBranch.phone}</strong></span>
                       )}
                     </div>
                   </div>
                 )}
 
                 {/* Payment method selector */}
-                <div className="card p-6">
-                  <h2 className="font-serif font-bold text-xl text-white mb-6 flex items-center gap-2">
+                <div className="card p-6 bg-white shadow-sm">
+                  <h2 className="font-serif font-bold text-xl text-[#1c1917] mb-6 flex items-center gap-2">
                     <CreditCard className="w-5 h-5 text-[#d4a017]" />
                     Select Payment Method
                   </h2>
@@ -355,8 +356,8 @@ export default function Checkout() {
                     <label
                       className={`flex items-start gap-4 p-4 rounded-xl border cursor-pointer transition-all ${
                         paymentMethod === 'razorpay'
-                          ? 'border-[#d4a017] bg-[#d4a017]/10 ring-1 ring-[#d4a017]'
-                          : 'border-[#2d4a2d] hover:border-[#d4a017]/50'
+                          ? 'border-[#d4a017] bg-[#fefce8] ring-1 ring-[#d4a017] shadow-sm'
+                          : 'border-[#e8e2d5] bg-white hover:border-[#d4a017]/70'
                       }`}
                     >
                       <input
@@ -365,34 +366,34 @@ export default function Checkout() {
                         value="razorpay"
                         checked={paymentMethod === 'razorpay'}
                         onChange={() => setPaymentMethod('razorpay')}
-                        className="accent-[#d4a017] mt-1"
+                        className="accent-[#d4a017] mt-1 w-4 h-4 cursor-pointer"
                       />
                       <div className="flex-1">
                         <div className="flex items-center gap-2 flex-wrap mb-1">
-                          <span className="text-white font-bold text-base">
+                          <span className="text-[#1c1917] font-bold text-base">
                             Online Payment (Razorpay Standard)
                           </span>
-                          <span className="text-[10px] bg-[#d4a017] text-[#0f1a0f] font-bold px-2 py-0.5 rounded uppercase tracking-wider">
+                          <span className="text-[10px] bg-[#d4a017] text-[#1c1917] font-bold px-2 py-0.5 rounded uppercase tracking-wider shadow-sm">
                             Instant & Verified
                           </span>
                         </div>
-                        <p className="text-gray-400 text-xs mb-3">
+                        <p className="text-stone-600 text-xs mb-3">
                           Pay securely via UPI (GPay, PhonePe, Paytm, CRED), Cards, Netbanking & Wallets
                         </p>
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-xs px-2.5 py-1 rounded bg-[#0f1a0f] border border-[#2d4a2d] text-gray-300">
+                          <span className="text-xs px-2.5 py-1 rounded bg-[#faf8f5] border border-[#e8e2d5] text-stone-700 font-medium">
                             🟢 Google Pay
                           </span>
-                          <span className="text-xs px-2.5 py-1 rounded bg-[#0f1a0f] border border-[#2d4a2d] text-gray-300">
+                          <span className="text-xs px-2.5 py-1 rounded bg-[#faf8f5] border border-[#e8e2d5] text-stone-700 font-medium">
                             🟣 PhonePe
                           </span>
-                          <span className="text-xs px-2.5 py-1 rounded bg-[#0f1a0f] border border-[#2d4a2d] text-gray-300">
+                          <span className="text-xs px-2.5 py-1 rounded bg-[#faf8f5] border border-[#e8e2d5] text-stone-700 font-medium">
                             🔵 Paytm / UPI
                           </span>
-                          <span className="text-xs px-2.5 py-1 rounded bg-[#0f1a0f] border border-[#2d4a2d] text-gray-300">
+                          <span className="text-xs px-2.5 py-1 rounded bg-[#faf8f5] border border-[#e8e2d5] text-stone-700 font-medium">
                             💳 Debit & Credit Cards
                           </span>
-                          <span className="text-xs px-2.5 py-1 rounded bg-[#0f1a0f] border border-[#2d4a2d] text-gray-300">
+                          <span className="text-xs px-2.5 py-1 rounded bg-[#faf8f5] border border-[#e8e2d5] text-stone-700 font-medium">
                             🏦 Netbanking
                           </span>
                         </div>
@@ -403,8 +404,8 @@ export default function Checkout() {
                     <label
                       className={`flex items-start gap-4 p-4 rounded-xl border cursor-pointer transition-all ${
                         paymentMethod === 'cod'
-                          ? 'border-[#d4a017] bg-[#d4a017]/10 ring-1 ring-[#d4a017]'
-                          : 'border-[#2d4a2d] hover:border-[#d4a017]/50'
+                          ? 'border-[#d4a017] bg-[#fefce8] ring-1 ring-[#d4a017] shadow-sm'
+                          : 'border-[#e8e2d5] bg-white hover:border-[#d4a017]/70'
                       } ${grandTotal > 5000 ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                       <input
@@ -414,16 +415,16 @@ export default function Checkout() {
                         checked={paymentMethod === 'cod'}
                         onChange={() => setPaymentMethod('cod')}
                         disabled={grandTotal > 5000}
-                        className="accent-[#d4a017] mt-1"
+                        className="accent-[#d4a017] mt-1 w-4 h-4 cursor-pointer"
                       />
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <Package className="w-4 h-4 text-[#d4a017]" />
-                          <span className="text-white font-medium">
+                          <Package className="w-4 h-4 text-[#b7860e]" />
+                          <span className="text-[#1c1917] font-bold">
                             Pay on Counter Collection (Cash on Delivery)
                           </span>
                         </div>
-                        <p className="text-gray-400 text-xs">
+                        <p className="text-stone-600 text-xs">
                           {grandTotal > 5000
                             ? 'Not available for orders above ₹5,000'
                             : 'Pay in cash at the parcel counter when collecting your rice bags'}
@@ -436,11 +437,11 @@ export default function Checkout() {
                 <button
                   type="submit"
                   disabled={processing}
-                  className="btn-primary w-full justify-center py-4 text-lg disabled:opacity-60 shadow-lg shadow-[#d4a017]/20"
+                  className="btn-primary w-full justify-center py-4 text-lg disabled:opacity-60 shadow-sm hover:shadow"
                 >
                   {processing ? (
                     <>
-                      <div className="w-5 h-5 border-2 border-[#0f1a0f] border-t-transparent rounded-full animate-spin" />
+                      <div className="w-5 h-5 border-2 border-[#1c1917] border-t-transparent rounded-full animate-spin" />
                       Processing Payment...
                     </>
                   ) : (
@@ -460,7 +461,7 @@ export default function Checkout() {
                   )}
                 </button>
 
-                <p className="text-xs text-gray-500 text-center flex items-center justify-center gap-1.5">
+                <p className="text-xs text-stone-500 text-center flex items-center justify-center gap-1.5 font-medium">
                   <span>🔐</span> Payments secured by <strong>Razorpay Standard Checkout</strong> · 256-bit SSL encryption
                 </p>
               </form>
@@ -469,8 +470,8 @@ export default function Checkout() {
 
           {/* Right: Order Summary */}
           <div className="lg:col-span-1">
-            <div className="card p-5 sticky top-24 space-y-4">
-              <h3 className="font-serif font-bold text-lg text-white">
+            <div className="card p-5 sticky top-24 space-y-4 bg-white shadow-sm">
+              <h3 className="font-serif font-bold text-lg text-[#1c1917]">
                 Order Summary
               </h3>
 
@@ -480,64 +481,64 @@ export default function Checkout() {
                     key={`${item.product.id}-${item.selectedWeight.weight}`}
                     className="flex gap-3 items-center"
                   >
-                    <div className="w-12 h-12 rounded-lg overflow-hidden bg-[#0f1a0f] shrink-0 border border-[#233b23]">
+                    <div className="w-12 h-12 rounded-lg overflow-hidden bg-[#faf8f5] shrink-0 border border-[#e8e2d5]">
                       <img
                         src={item.product.image}
                         alt={item.product.name}
                         className="w-full h-full object-cover"
                         onError={(e) => {
                           (e.target as HTMLImageElement).src =
-                            'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="%23162216"%3E%3Crect width="48" height="48"/%3E%3Ctext x="50%25" y="50%25" font-size="20" fill="%23d4a017" text-anchor="middle" dominant-baseline="middle"%3E🌾%3C/text%3E%3C/svg%3E';
+                            'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="%23faf8f5"%3E%3Crect width="48" height="48"/%3E%3Ctext x="50%25" y="50%25" font-size="20" fill="%23d4a017" text-anchor="middle" dominant-baseline="middle"%3E🌾%3C/text%3E%3C/svg%3E';
                         }}
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-white text-sm font-medium line-clamp-1">
+                      <p className="text-[#1c1917] text-sm font-semibold line-clamp-1">
                         {item.product.name}
                       </p>
-                      <p className="text-gray-400 text-xs">
+                      <p className="text-stone-500 text-xs">
                         {item.selectedWeight.weight} × {item.quantity}
                       </p>
                     </div>
-                    <span className="text-[#d4a017] text-sm font-bold shrink-0">
+                    <span className="text-[#b7860e] text-sm font-bold shrink-0">
                       ₹{(item.selectedWeight.price * item.quantity).toLocaleString()}
                     </span>
                   </div>
                 ))}
               </div>
 
-              <div className="border-t border-[#2d4a2d] pt-3 space-y-2">
+              <div className="border-t border-[#f0eae1] pt-3 space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Subtotal</span>
-                  <span className="text-white">₹{total.toLocaleString()}</span>
+                  <span className="text-stone-600">Subtotal</span>
+                  <span className="text-[#1c1917] font-semibold">₹{total.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Parcel Transport</span>
-                  <span className="text-[#a7f3d0] font-medium text-xs">
+                <div className="flex justify-between text-sm items-center">
+                  <span className="text-stone-600">Parcel Transport</span>
+                  <span className="badge badge-green text-xs font-semibold">
                     Payable at Counter
                   </span>
                 </div>
-                <p className="text-[11px] text-gray-400 leading-tight">
+                <p className="text-[11px] text-stone-500 leading-tight">
                   Transport freight differs by location & weight; payable directly at the parcel counter upon pickup.
                 </p>
-                <div className="flex justify-between font-bold text-lg pt-2 border-t border-[#1a2e1a]">
-                  <span className="text-white">Total</span>
-                  <span className="text-[#d4a017]">₹{grandTotal.toLocaleString()}</span>
+                <div className="flex justify-between font-bold text-lg pt-2 border-t border-[#f0eae1]">
+                  <span className="text-[#1c1917]">Total</span>
+                  <span className="text-[#b7860e]">₹{grandTotal.toLocaleString()}</span>
                 </div>
               </div>
 
               {/* Delivery mode highlight */}
-              <div className="p-3 rounded-lg bg-[#0f1a0f] border border-[#233b23] text-xs text-gray-300 space-y-1">
-                <p className="font-semibold text-[#d4a017] flex items-center gap-1">
+              <div className="p-3.5 rounded-xl bg-[#faf8f5] border border-[#e8e2d5] text-xs text-stone-600 space-y-1">
+                <p className="font-bold text-[#b7860e] flex items-center gap-1">
                   <Building2 className="w-3.5 h-3.5" />
                   Counter Pickup Only:
                 </p>
                 {selectedBranch ? (
-                  <p className="line-clamp-2 text-white">
+                  <p className="line-clamp-2 text-[#1c1917] font-medium">
                     📍 {selectedBranch.service} — {selectedBranch.branchName}
                   </p>
                 ) : (
-                  <p className="text-gray-400">Select counter on the left</p>
+                  <p className="text-stone-500">Select counter on the left</p>
                 )}
               </div>
             </div>

@@ -91,8 +91,8 @@ export default function Shop() {
               onClick={() => setSelectedVariety(v)}
               className={`whitespace-nowrap px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold border transition-all shrink-0 active:scale-95 ${
                 selectedVariety === v
-                  ? 'bg-[#d4a017] text-[#0f1a0f] border-[#d4a017] shadow-md shadow-[#d4a017]/20'
-                  : 'border-[#2d4a2d] bg-[#122212] text-gray-300 hover:border-[#d4a017] hover:text-[#d4a017]'
+                  ? 'bg-[#d4a017] text-[#1c1917] border-[#d4a017] shadow-sm font-bold'
+                  : 'border-[#e8e2d5] bg-white text-stone-600 hover:border-[#d4a017] hover:text-[#b7860e] shadow-sm'
               }`}
             >
               {v}
@@ -104,16 +104,16 @@ export default function Shop() {
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8">
           <form onSubmit={handleSearch} className="flex gap-2 flex-1">
             <div className="relative flex-1">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
               <input
                 type="text"
                 placeholder="Search rice varieties..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="input pl-10 text-base py-3"
+                className="input pl-10 text-base py-3 bg-white"
               />
             </div>
-            <button type="submit" className="btn-primary px-5 py-3 shrink-0">
+            <button type="submit" className="btn-primary px-5 py-3 shrink-0 shadow-sm hover:shadow">
               Search
             </button>
           </form>
@@ -122,10 +122,10 @@ export default function Shop() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="input py-3 pr-8 cursor-pointer text-base flex-1 sm:flex-none"
+              className="input py-3 pr-8 cursor-pointer text-base flex-1 sm:flex-none bg-white text-[#1c1917]"
             >
               {sortOptions.map((o) => (
-                <option key={o.value} value={o.value} className="bg-[#1a2e1a]">
+                <option key={o.value} value={o.value} className="bg-white text-[#1c1917]">
                   {o.label}
                 </option>
               ))}
@@ -133,7 +133,7 @@ export default function Shop() {
             {isFiltered && (
               <button
                 onClick={clearFilters}
-                className="flex items-center gap-1 text-sm font-medium text-[#d4a017] border border-[#d4a017]/30 px-3.5 py-3 rounded-lg hover:bg-[#d4a017]/10 active:scale-95 transition-all whitespace-nowrap shrink-0"
+                className="flex items-center gap-1 text-sm font-semibold text-[#b7860e] border border-[#d4a017] px-3.5 py-3 rounded-xl hover:bg-[#fefce8] active:scale-95 transition-all whitespace-nowrap shrink-0 bg-white"
               >
                 <X className="w-4 h-4" /> Clear
               </button>
@@ -142,7 +142,7 @@ export default function Shop() {
         </div>
 
         {/* Results count */}
-        <p className="text-gray-400 text-sm mb-6">
+        <p className="text-stone-500 text-sm mb-6 font-medium">
           Showing {filtered.length} product{filtered.length !== 1 ? 's' : ''}
           {selectedVariety !== 'All' && ` in ${selectedVariety}`}
           {searchQuery && ` for "${searchQuery}"`}
@@ -156,11 +156,11 @@ export default function Shop() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-20">
+          <div className="text-center py-20 bg-white rounded-2xl border border-[#e8e2d5] shadow-sm">
             <div className="text-6xl mb-4">🌾</div>
-            <h3 className="font-serif text-2xl text-white mb-2">No products found</h3>
-            <p className="text-gray-400 mb-6">Try adjusting your search or filters.</p>
-            <button onClick={clearFilters} className="btn-primary">
+            <h3 className="font-serif text-2xl text-[#1c1917] mb-2 font-bold">No products found</h3>
+            <p className="text-stone-500 mb-6">Try adjusting your search or filters.</p>
+            <button onClick={clearFilters} className="btn-primary shadow-sm">
               Clear Filters
             </button>
           </div>

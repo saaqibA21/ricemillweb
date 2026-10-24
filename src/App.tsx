@@ -48,7 +48,7 @@ export default function App() {
 
   return (
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      <div className="min-h-screen bg-[#0f1a0f] flex flex-col">
+      <div className="min-h-screen bg-[#faf8f5] text-[#1c1917] flex flex-col selection:bg-[#fef08a] selection:text-[#1c1917]">
         <Navbar />
 
         <div className="flex-1">
@@ -78,8 +78,8 @@ export default function App() {
                 <main className="pt-24 pb-20 min-h-screen flex items-center justify-center">
                   <div className="text-center">
                     <div className="text-8xl mb-6">🌾</div>
-                    <h1 className="font-serif text-4xl text-white mb-4">404 — Page Not Found</h1>
-                    <p className="text-gray-400 mb-8">The page you're looking for doesn't exist.</p>
+                    <h1 className="font-serif text-4xl text-[#1c1917] mb-4">404 — Page Not Found</h1>
+                    <p className="text-stone-500 mb-8">The page you're looking for doesn't exist.</p>
                     <a href="/" className="btn-primary text-lg px-8 py-4">
                       Go Home
                     </a>
@@ -98,9 +98,10 @@ export default function App() {
           toastOptions={{
             duration: 3000,
             style: {
-              background: '#1a2e1a',
-              color: '#f0f7f0',
-              border: '1px solid #2d4a2d',
+              background: '#ffffff',
+              color: '#1c1917',
+              border: '1px solid #e8e2d5',
+              boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
             },
           }}
         />

@@ -1,6 +1,6 @@
 // src/components/layout/Navbar.tsx
 import { useState, useEffect } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { ShoppingCart, User, Menu, X, Search } from 'lucide-react';
 import { useCartStore } from '../../store/cartStore';
 import { useAuthStore } from '../../store/authStore';
@@ -16,9 +16,10 @@ export default function Navbar() {
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    const handler = () => setIsScrolled(window.scrollY > 60);
+    const handler = () => setIsScrolled(window.scrollY > 40);
     window.addEventListener('scroll', handler);
     return () => window.removeEventListener('scroll', handler);
   }, []);
@@ -41,13 +42,15 @@ export default function Navbar() {
     { to: '/contact', label: t('nav.contact', 'Contact') },
   ];
 
+  const isHomeTop = location.pathname === '/' && !isScrolled;
+
   return (
     <>
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled
-            ? 'bg-[#0a150a]/95 backdrop-blur-md shadow-lg shadow-black/30'
-            : 'bg-transparent'
+          isHomeTop
+            ? 'bg-transparent text-white'
+            : 'bg-white/95 backdrop-blur-md border-b border-[#e8e2d5] text-[#1c1917] shadow-sm'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -57,13 +60,17 @@ export default function Navbar() {
               <img
                 src="/assets/logo.jpeg"
                 alt="Hariharan Traders"
-                className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover ring-2 ring-[#d4a017]/40 group-hover:scale-105 transition-transform"
+                className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover ring-2 ring-[#d4a017] group-hover:scale-105 transition-transform"
               />
               <div className="flex flex-col">
-                <div className="font-serif font-bold text-white text-sm sm:text-base md:text-lg leading-tight truncate max-w-[150px] xs:max-w-[190px] sm:max-w-none">
+                <div
+                  className={`font-serif font-bold text-sm sm:text-base md:text-lg leading-tight truncate max-w-[150px] xs:max-w-[190px] sm:max-w-none transition-colors ${
+                    isHomeTop ? 'text-white' : 'text-[#1c1917]'
+                  }`}
+                >
                   Hariharan Traders
                 </div>
-                <div className="text-[#d4a017] text-[10px] sm:text-xs font-semibold tracking-wider">
+                <div className="text-[#b7860e] text-[10px] sm:text-xs font-bold tracking-wider">
                   RICE MILL
                 </div>
               </div>
@@ -76,7 +83,15 @@ export default function Navbar() {
                   key={l.to}
                   to={l.to}
                   className={({ isActive }) =>
-                    `nav-link ${isActive ? 'active text-[#d4a017]' : ''}`
+                    `nav-link font-medium transition-colors ${
+                      isHomeTop
+                        ? isActive
+                          ? 'text-[#fce18a] font-bold'
+                          : 'text-stone-200 hover:text-[#fce18a]'
+                        : isActive
+                        ? 'text-[#b7860e] font-bold'
+                        : 'text-[#44403c] hover:text-[#b7860e]'
+                    }`
                   }
                 >
                   {l.label}
@@ -90,7 +105,9 @@ export default function Navbar() {
 
               <button
                 onClick={() => setSearchOpen(!searchOpen)}
-                className="text-gray-300 hover:text-[#d4a017] transition-colors p-2"
+                className={`transition-colors p-2 ${
+                  isHomeTop ? 'text-stone-200 hover:text-[#fce18a]' : 'text-[#57534e] hover:text-[#b7860e]'
+                }`}
                 aria-label="Search"
               >
                 <Search className="w-5 h-5" />
@@ -98,12 +115,14 @@ export default function Navbar() {
 
               <Link
                 to="/cart"
-                className="relative text-gray-300 hover:text-[#d4a017] transition-colors p-2"
+                className={`relative transition-colors p-2 ${
+                  isHomeTop ? 'text-stone-200 hover:text-[#fce18a]' : 'text-[#57534e] hover:text-[#b7860e]'
+                }`}
                 aria-label="Cart"
               >
                 <ShoppingCart className="w-5 h-5" />
                 {totalItems > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#d4a017] text-[#0f1a0f] text-xs font-bold rounded-full flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#d4a017] text-[#1c1917] text-xs font-bold rounded-full flex items-center justify-center shadow-sm">
                     {totalItems > 9 ? '9+' : totalItems}
                   </span>
                 )}
@@ -111,7 +130,9 @@ export default function Navbar() {
 
               <Link
                 to={isLoggedIn ? '/account' : '/login'}
-                className="text-gray-300 hover:text-[#d4a017] transition-colors p-2"
+                className={`transition-colors p-2 ${
+                  isHomeTop ? 'text-stone-200 hover:text-[#fce18a]' : 'text-[#57534e] hover:text-[#b7860e]'
+                }`}
                 aria-label="Account"
               >
                 <User className="w-5 h-5" />
@@ -119,7 +140,9 @@ export default function Navbar() {
 
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
-                className="md:hidden text-gray-300 hover:text-[#d4a017] p-2"
+                className={`md:hidden p-2 ${
+                  isHomeTop ? 'text-stone-200 hover:text-[#fce18a]' : 'text-[#57534e] hover:text-[#b7860e]'
+                }`}
                 aria-label="Menu"
               >
                 {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -130,7 +153,7 @@ export default function Navbar() {
 
         {/* Search Bar Dropdown */}
         {searchOpen && (
-          <div className="bg-[#0a150a]/98 backdrop-blur-lg border-t border-[#2d4a2d] px-4 py-3 shadow-xl">
+          <div className="bg-white/98 backdrop-blur-lg border-t border-[#e8e2d5] px-4 py-3 shadow-lg">
             <form onSubmit={handleSearch} className="max-w-2xl mx-auto flex gap-2">
               <input
                 autoFocus
@@ -149,10 +172,10 @@ export default function Navbar() {
 
         {/* Mobile Menu */}
         {menuOpen && (
-          <div className="md:hidden bg-[#0a150a]/98 backdrop-blur-xl border-t border-[#2d4a2d] shadow-2xl animate-in fade-in duration-200">
+          <div className="md:hidden bg-white/98 backdrop-blur-xl border-t border-[#e8e2d5] shadow-2xl animate-in fade-in duration-200">
             <div className="px-5 py-6 space-y-3">
-              <div className="flex justify-between items-center pb-3 border-b border-[#1f381f]">
-                <span className="text-xs text-gray-400 font-medium uppercase tracking-wider">Select Language</span>
+              <div className="flex justify-between items-center pb-3 border-b border-[#e8e2d5]">
+                <span className="text-xs text-stone-500 font-semibold uppercase tracking-wider">Select Language</span>
                 <LanguageToggle />
               </div>
 
@@ -162,17 +185,17 @@ export default function Navbar() {
                   to={l.to}
                   onClick={() => setMenuOpen(false)}
                   className={({ isActive }) =>
-                    `block text-lg font-medium py-2.5 px-3 rounded-xl transition-all ${
+                    `block text-base font-semibold py-2.5 px-3 rounded-xl transition-all ${
                       isActive
-                        ? 'bg-[#1a2e1a] text-[#d4a017] font-semibold'
-                        : 'text-gray-300 hover:text-white hover:bg-[#142314]'
+                        ? 'bg-[#fef3c7] text-[#926b09]'
+                        : 'text-[#44403c] hover:bg-[#faf8f5] hover:text-[#b7860e]'
                     }`
                   }
                 >
                   {l.label}
                 </NavLink>
               ))}
-              <div className="pt-4 border-t border-[#1f381f] flex gap-3">
+              <div className="pt-4 border-t border-[#e8e2d5] flex gap-3">
                 <Link
                   to="/cart"
                   onClick={() => setMenuOpen(false)}

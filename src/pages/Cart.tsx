@@ -26,8 +26,8 @@ export default function Cart() {
       <main className="pt-24 pb-20 min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="text-8xl mb-6">🛒</div>
-          <h2 className="font-serif text-3xl text-white mb-3">Your cart is empty</h2>
-          <p className="text-gray-400 mb-8">Add some premium rice to get started!</p>
+          <h2 className="font-serif text-3xl text-[#1c1917] mb-3">Your cart is empty</h2>
+          <p className="text-stone-500 mb-8 font-medium">Add some premium rice to get started!</p>
           <Link to="/shop" className="btn-primary text-lg px-8 py-4">
             <ShoppingBag className="w-5 h-5" />
             Shop Rice
@@ -40,17 +40,17 @@ export default function Cart() {
   return (
     <main className="pt-24 pb-20 min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="section-title mb-2">Your Cart</h1>
-        <p className="text-gray-400 mb-6">{count} item{count !== 1 ? 's' : ''}</p>
+        <h1 className="section-title mb-2 text-[#1c1917]">Your Cart</h1>
+        <p className="text-stone-500 mb-6 font-medium">{count} item{count !== 1 ? 's' : ''}</p>
 
         {/* Parcel Pickup Notice Banner */}
-        <div className="mb-8 p-4 rounded-xl bg-[#1e1707] border border-[#d4a017]/70 flex items-start gap-3">
+        <div className="mb-8 p-4 rounded-xl bg-[#fefce8] border border-[#d4a017] flex items-start gap-3 shadow-sm">
           <span className="text-xl">📦</span>
           <div>
-            <p className="text-sm font-bold text-[#d4a017]">
+            <p className="text-sm font-bold text-[#b7860e]">
               Parcel Counter Pickup Only (No Home Delivery)
             </p>
-            <p className="text-xs text-gray-300 mt-0.5 leading-relaxed">
+            <p className="text-xs text-stone-600 mt-0.5 leading-relaxed">
               Rice bags (25kg – 50kg) are booked via <strong>mSs Parcel Service</strong> or <strong>A1 Speed Parcel Service</strong>. At Checkout, you can select your nearest counter across 1,228+ locations for pickup.
             </p>
           </div>
@@ -62,16 +62,16 @@ export default function Cart() {
             {items.map((item) => {
               const key = `${item.product.id}-${item.selectedWeight.weight}`;
               return (
-                <div key={key} className="card p-3.5 sm:p-4 flex gap-3 sm:gap-4 items-center">
+                <div key={key} className="card p-3.5 sm:p-4 flex gap-3 sm:gap-4 items-center bg-white shadow-sm">
                   {/* Image */}
-                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden bg-[#0f1a0f] shrink-0 border border-[#233b23]">
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden bg-[#faf8f5] shrink-0 border border-[#e8e2d5]">
                     <img
                       src={item.product.image}
                       alt={item.product.name}
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src =
-                          'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="96" height="96" fill="%23162216"%3E%3Crect width="96" height="96"/%3E%3Ctext x="50%25" y="50%25" font-size="32" fill="%23d4a017" text-anchor="middle" dominant-baseline="middle"%3E🌾%3C/text%3E%3C/svg%3E';
+                          'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="96" height="96" fill="%23faf8f5"%3E%3Crect width="96" height="96"/%3E%3Ctext x="50%25" y="50%25" font-size="32" fill="%23d4a017" text-anchor="middle" dominant-baseline="middle"%3E🌾%3C/text%3E%3C/svg%3E';
                       }}
                     />
                   </div>
@@ -80,14 +80,14 @@ export default function Cart() {
                   <div className="flex-1 min-w-0">
                     <Link
                       to={`/product/${item.product.slug}`}
-                      className="font-serif font-semibold text-white hover:text-[#d4a017] transition-colors text-sm sm:text-base line-clamp-1"
+                      className="font-serif font-bold text-[#1c1917] hover:text-[#b7860e] transition-colors text-sm sm:text-base line-clamp-1"
                     >
                       {item.product.name}
                     </Link>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[#d4a017] text-xs sm:text-sm font-medium">{item.selectedWeight.weight}</span>
-                      <span className="text-gray-500 text-xs">•</span>
-                      <span className="text-gray-400 text-xs truncate">{item.product.variety}</span>
+                      <span className="text-[#b7860e] text-xs sm:text-sm font-semibold">{item.selectedWeight.weight}</span>
+                      <span className="text-stone-300 text-xs">•</span>
+                      <span className="text-stone-500 text-xs truncate font-medium">{item.product.variety}</span>
                     </div>
 
                     <div className="flex items-center justify-between mt-2.5 sm:mt-3">
@@ -101,12 +101,12 @@ export default function Cart() {
                               item.quantity - 1
                             )
                           }
-                          className="w-8 h-8 rounded-lg bg-[#0f1a0f] border border-[#2d4a2d] flex items-center justify-center text-white hover:border-[#d4a017] active:scale-95 transition-all"
+                          className="w-8 h-8 rounded-lg bg-[#faf8f5] border border-[#e8e2d5] flex items-center justify-center text-[#1c1917] hover:border-[#d4a017] hover:bg-white active:scale-95 transition-all shadow-sm"
                           aria-label="Decrease quantity"
                         >
                           <Minus className="w-3.5 h-3.5" />
                         </button>
-                        <span className="w-7 text-center text-white font-semibold text-sm">
+                        <span className="w-7 text-center text-[#1c1917] font-bold text-sm">
                           {item.quantity}
                         </span>
                         <button
@@ -117,7 +117,7 @@ export default function Cart() {
                               item.quantity + 1
                             )
                           }
-                          className="w-8 h-8 rounded-lg bg-[#0f1a0f] border border-[#2d4a2d] flex items-center justify-center text-white hover:border-[#d4a017] active:scale-95 transition-all"
+                          className="w-8 h-8 rounded-lg bg-[#faf8f5] border border-[#e8e2d5] flex items-center justify-center text-[#1c1917] hover:border-[#d4a017] hover:bg-white active:scale-95 transition-all shadow-sm"
                           aria-label="Increase quantity"
                         >
                           <Plus className="w-3.5 h-3.5" />
@@ -126,14 +126,14 @@ export default function Cart() {
 
                       {/* Price + Remove */}
                       <div className="flex items-center gap-3 sm:gap-4">
-                        <span className="text-[#d4a017] font-bold text-base sm:text-lg">
+                        <span className="text-[#b7860e] font-bold text-base sm:text-lg">
                           ₹{(item.selectedWeight.price * item.quantity).toLocaleString()}
                         </span>
                         <button
                           onClick={() =>
                             removeItem(item.product.id, item.selectedWeight.weight)
                           }
-                          className="p-1.5 text-gray-400 hover:text-red-400 active:scale-95 transition-colors"
+                          className="p-1.5 text-stone-400 hover:text-red-500 active:scale-95 transition-colors"
                           title="Remove item"
                           aria-label="Remove item"
                         >
@@ -149,34 +149,34 @@ export default function Cart() {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="card p-6 sticky top-24">
-              <h2 className="font-serif font-bold text-white text-xl mb-6">Order Summary</h2>
+            <div className="card p-6 sticky top-24 bg-white shadow-sm">
+              <h2 className="font-serif font-bold text-[#1c1917] text-xl mb-6">Order Summary</h2>
 
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Subtotal ({count} items)</span>
-                  <span className="text-white">₹{total.toLocaleString()}</span>
+                  <span className="text-stone-600">Subtotal ({count} items)</span>
+                  <span className="text-[#1c1917] font-semibold">₹{total.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Parcel Transport</span>
-                  <span className="text-[#a7f3d0] font-medium text-xs">
+                <div className="flex justify-between text-sm items-center">
+                  <span className="text-stone-600">Parcel Transport</span>
+                  <span className="badge badge-green text-xs font-semibold">
                     Payable at Counter
                   </span>
                 </div>
-                <p className="text-[11px] text-gray-400">
+                <p className="text-[11px] text-stone-500 leading-tight">
                   📦 Transport freight differs by place & weight; payable directly at the parcel counter upon pickup.
                 </p>
               </div>
 
-              <div className="border-t border-[#2d4a2d] pt-4 mb-6">
+              <div className="border-t border-[#f0eae1] pt-4 mb-6">
                 <div className="flex justify-between font-bold text-lg">
-                  <span className="text-white">Total</span>
-                  <span className="text-[#d4a017]">₹{grandTotal.toLocaleString()}</span>
+                  <span className="text-[#1c1917]">Total</span>
+                  <span className="text-[#b7860e]">₹{grandTotal.toLocaleString()}</span>
                 </div>
-                <p className="text-gray-500 text-xs mt-1">Incl. all taxes</p>
+                <p className="text-stone-400 text-xs mt-1">Incl. all taxes</p>
               </div>
 
-              <button onClick={handleCheckout} className="btn-primary w-full justify-center text-lg py-4 mb-4">
+              <button onClick={handleCheckout} className="btn-primary w-full justify-center text-lg py-4 mb-4 shadow-sm hover:shadow">
                 Proceed to Checkout
                 <ArrowRight className="w-5 h-5" />
               </button>
@@ -185,15 +185,15 @@ export default function Cart() {
                 Continue Shopping
               </Link>
 
-              <div className="mt-6 pt-4 border-t border-[#1a2e1a] space-y-2">
-                <p className="text-xs text-gray-500 flex items-center gap-2">
-                  <span className="text-[#d4a017]">✓</span> Secure UPI & Card payment
+              <div className="mt-6 pt-4 border-t border-[#f0eae1] space-y-2">
+                <p className="text-xs text-stone-600 flex items-center gap-2 font-medium">
+                  <span className="text-[#b7860e] font-bold">✓</span> Secure UPI & Card payment
                 </p>
-                <p className="text-xs text-gray-500 flex items-center gap-2">
-                  <span className="text-[#d4a017]">✓</span> COD available on orders ≤ ₹5000
+                <p className="text-xs text-stone-600 flex items-center gap-2 font-medium">
+                  <span className="text-[#b7860e] font-bold">✓</span> COD available on orders ≤ ₹5000
                 </p>
-                <p className="text-xs text-gray-500 flex items-center gap-2">
-                  <span className="text-[#d4a017]">✓</span> Easy 7-day returns
+                <p className="text-xs text-stone-600 flex items-center gap-2 font-medium">
+                  <span className="text-[#b7860e] font-bold">✓</span> Easy 7-day returns
                 </p>
               </div>
             </div>

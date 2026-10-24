@@ -30,7 +30,7 @@ export default function Login() {
     setLoading(false);
     setStep('otp');
     toast.success(`OTP sent to +91 ${phone}`, {
-      style: { background: '#1a2e1a', color: '#f0f7f0', border: '1px solid #d4a017' },
+      style: { background: '#ffffff', color: '#1c1917', border: '1px solid #d4a017' },
     });
     // For demo: OTP is 123456
   };
@@ -60,7 +60,7 @@ export default function Login() {
     login(user);
     setLoading(false);
     toast.success(`Welcome, ${user.name}! 🌾`, {
-      style: { background: '#1a2e1a', color: '#f0f7f0', border: '1px solid #d4a017' },
+      style: { background: '#ffffff', color: '#1c1917', border: '1px solid #d4a017' },
     });
     navigate(redirect);
   };
@@ -73,19 +73,19 @@ export default function Login() {
           <img
             src="/assets/logo.jpeg"
             alt="Hariharan Traders"
-            className="w-20 h-20 rounded-full object-cover ring-2 ring-[#d4a017]/40 mx-auto mb-4"
+            className="w-20 h-20 rounded-full object-cover ring-2 ring-[#d4a017] mx-auto mb-4"
           />
-          <h1 className="font-serif font-bold text-3xl text-white mb-1">Hariharan Traders</h1>
-          <p className="text-[#d4a017] text-sm tracking-widest">RICE</p>
+          <h1 className="font-serif font-bold text-3xl text-[#1c1917] mb-1">Hariharan Traders</h1>
+          <p className="text-[#b7860e] text-xs font-bold tracking-widest uppercase">Rice Mill • Management</p>
         </div>
 
-        <div className="card p-8">
+        <div className="card p-8 bg-white shadow-lg">
           {step === 'phone' ? (
             <>
-              <h2 className="font-serif font-bold text-2xl text-white mb-2">
+              <h2 className="font-serif font-bold text-2xl text-[#1c1917] mb-2">
                 Login / Sign Up
               </h2>
-              <p className="text-gray-400 text-sm mb-8">
+              <p className="text-stone-500 text-sm mb-8 font-medium">
                 We'll send a one-time password to your mobile number.
               </p>
 
@@ -93,7 +93,7 @@ export default function Login() {
                 <div>
                   <label className="label">Mobile Number</label>
                   <div className="flex">
-                    <span className="flex items-center px-4 bg-[#0f1a0f] border border-[#2d4a2d] border-r-0 rounded-l-lg text-gray-400 text-sm font-medium">
+                    <span className="flex items-center px-4 bg-[#faf8f5] border border-[#d6cfc3] border-r-0 rounded-l-xl text-stone-600 text-sm font-semibold">
                       +91
                     </span>
                     <input
@@ -103,7 +103,7 @@ export default function Login() {
                       placeholder="78109 90099"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
-                      className="input rounded-l-none"
+                      className="input rounded-l-none bg-white font-mono"
                       required
                     />
                   </div>
@@ -116,14 +116,14 @@ export default function Login() {
                     placeholder="Enter your name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="input"
+                    className="input bg-white"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="btn-primary w-full justify-center py-4 text-base disabled:opacity-60"
+                  className="btn-primary w-full justify-center py-4 text-base disabled:opacity-60 shadow-sm hover:shadow"
                 >
                   {loading ? (
                     <RefreshCw className="w-5 h-5 animate-spin" />
@@ -140,13 +140,13 @@ export default function Login() {
             <>
               <button
                 onClick={() => setStep('phone')}
-                className="text-gray-400 hover:text-white text-sm mb-6 flex items-center gap-1 transition-colors"
+                className="text-stone-500 hover:text-[#1c1917] text-sm mb-6 flex items-center gap-1 font-semibold transition-colors"
               >
                 ← Change number
               </button>
-              <h2 className="font-serif font-bold text-2xl text-white mb-2">Enter OTP</h2>
-              <p className="text-gray-400 text-sm mb-2">
-                Sent to <span className="text-white font-medium">+91 {phone}</span>
+              <h2 className="font-serif font-bold text-2xl text-[#1c1917] mb-2">Enter OTP</h2>
+              <p className="text-stone-500 text-sm mb-2">
+                Sent to <span className="text-[#1c1917] font-bold">+91 {phone}</span>
               </p>
               <p className="text-[#d4a017] text-xs mb-8 bg-[#d4a017]/10 border border-[#d4a017]/20 rounded-lg px-3 py-2">
                 🔐 Demo mode: Use OTP <strong>123456</strong> to login

@@ -4,10 +4,10 @@
 @tailwind utilities;
 
 :root {
-  --green-primary: #1e5c1e;
-  --green-dark: #0f300f;
+  --green-primary: #166534;
+  --green-dark: #14532d;
   --gold-primary: #d4a017;
-  --gold-light: #fcd34d;
+  --gold-light: #fef08a;
 }
 
 * {
@@ -16,8 +16,8 @@
 
 body {
   font-family: 'Inter', system-ui, sans-serif;
-  background-color: #0f1a0f;
-  color: #f0f7f0;
+  background-color: #faf8f5;
+  color: #1c1917;
   overflow-x: hidden;
 }
 
@@ -61,61 +61,65 @@ body {
 
 /* =================== CUSTOM SCROLLBAR =================== */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 7px;
 }
 ::-webkit-scrollbar-track {
-  background: #0f1a0f;
+  background: #faf8f5;
 }
 ::-webkit-scrollbar-thumb {
   background: #d4a017;
-  border-radius: 3px;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #b7860e;
 }
 
 /* =================== BUTTONS =================== */
 .btn-primary {
-  @apply bg-[#d4a017] hover:bg-[#b7860e] text-[#0f1a0f] font-semibold px-6 py-3 rounded-lg transition-all duration-200 inline-flex items-center gap-2 cursor-pointer;
+  @apply bg-[#d4a017] hover:bg-[#b7860e] text-[#1c1917] font-bold px-6 py-3 rounded-xl transition-all duration-200 inline-flex items-center gap-2 cursor-pointer shadow-sm hover:shadow active:scale-[0.99];
 }
 
 .btn-secondary {
-  @apply border border-[#d4a017] text-[#d4a017] hover:bg-[#d4a017] hover:text-[#0f1a0f] font-semibold px-6 py-3 rounded-lg transition-all duration-200 inline-flex items-center gap-2 cursor-pointer;
+  @apply border-2 border-[#d4a017] text-[#926b09] hover:bg-[#d4a017] hover:text-[#1c1917] font-semibold px-6 py-3 rounded-xl transition-all duration-200 inline-flex items-center gap-2 cursor-pointer active:scale-[0.99];
 }
 
 .btn-green {
-  @apply bg-[#1e5c1e] hover:bg-[#2d7d2d] text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 inline-flex items-center gap-2 cursor-pointer;
+  @apply bg-[#166534] hover:bg-[#14532d] text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 inline-flex items-center gap-2 cursor-pointer shadow-sm active:scale-[0.99];
 }
 
 /* =================== CARDS =================== */
 .card {
-  @apply bg-[#1a2e1a] border border-[#2d4a2d] rounded-2xl overflow-hidden hover:border-[#d4a017]/50 transition-all duration-300;
+  @apply bg-white border border-[#e8e2d5] rounded-2xl overflow-hidden hover:border-[#d4a017] transition-all duration-200 shadow-sm hover:shadow-md;
 }
 
 .card-glass {
-  background: rgba(30, 50, 30, 0.7);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(212, 160, 23, 0.2);
+  border: 1px solid #e8e2d5;
   border-radius: 1rem;
+  box-shadow: 0 4px 20px -2px rgba(212, 160, 23, 0.08);
 }
 
 /* =================== INPUTS =================== */
 .input {
-  @apply bg-[#1a2e1a] border border-[#2d4a2d] text-white placeholder-gray-500 rounded-lg px-4 py-3 w-full focus:outline-none focus:border-[#d4a017] transition-colors duration-200;
+  @apply bg-white border border-[#d6cfc3] text-[#1c1917] placeholder-stone-400 rounded-xl px-4 py-3 w-full focus:outline-none focus:border-[#d4a017] focus:ring-1 focus:ring-[#d4a017] transition-colors duration-200 shadow-sm;
 }
 
 .label {
-  @apply text-sm font-medium text-gray-300 mb-1 block;
+  @apply text-sm font-semibold text-[#292524] mb-1.5 block;
 }
 
 /* =================== BADGES =================== */
 .badge {
-  @apply text-xs font-semibold px-2 py-1 rounded-full;
+  @apply text-xs font-semibold px-2.5 py-1 rounded-full inline-flex items-center gap-1;
 }
 
 .badge-gold {
-  @apply bg-[#d4a017]/20 text-[#fcd34d] border border-[#d4a017]/30;
+  @apply bg-[#fef3c7] text-[#926b09] border border-[#fde68a];
 }
 
 .badge-green {
-  @apply bg-[#1e5c1e]/40 text-[#7ec07e] border border-[#2d7d2d]/40;
+  @apply bg-[#ecfdf5] text-[#166534] border border-[#a7f3d0];
 }
 
 /* =================== GRAIN PARTICLES =================== */
@@ -140,16 +144,16 @@ body {
 /* =================== SECTION TITLES =================== */
 .section-title {
   font-family: 'Playfair Display', Georgia, serif;
-  @apply text-4xl md:text-5xl font-bold text-white;
+  @apply text-4xl md:text-5xl font-bold text-[#1c1917];
 }
 
 .section-subtitle {
-  @apply text-[#d4a017] font-semibold text-sm uppercase tracking-widest mb-4;
+  @apply text-[#b7860e] font-bold text-xs uppercase tracking-widest mb-3;
 }
 
 /* =================== STAR RATING =================== */
-.star-filled { color: #fcd34d; }
-.star-empty { color: #374151; }
+.star-filled { color: #d4a017; }
+.star-empty { color: #d6cfc3; }
 
 /* =================== DIVIDER =================== */
 .gold-divider {
@@ -158,7 +162,7 @@ body {
 
 /* =================== RESPONSIVE NAV =================== */
 .nav-link {
-  @apply text-gray-300 hover:text-[#d4a017] font-medium transition-colors duration-200 relative;
+  @apply text-[#44403c] hover:text-[#b7860e] font-medium transition-colors duration-200 relative;
 }
 
 .nav-link::after {

@@ -1,4 +1,4 @@
-﻿// src/store/productsStore.ts
+// src/store/productsStore.ts
 import { create } from 'zustand';
 import { Product } from '../types';
 import { products as initialProducts, varieties as initialVarieties } from '../data/products';
