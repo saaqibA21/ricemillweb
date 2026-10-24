@@ -1,5 +1,5 @@
 // src/pages/Account.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   User, Package, LogOut, ChevronRight, Clock, CheckCircle, Truck, XCircle
@@ -21,6 +21,38 @@ export default function Account() {
   const { orders } = useOrdersStore();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'orders' | 'profile'>('orders');
+
+  useEffect(() => {
+    let isMounted = true;
+    const syncOrders = async () => {
+      if (user?.phone) {
+        try {
+          const res = await fetch(`/api/orders?phone=${encodeURIComponent(user.phone)}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data) && isMounted) {
+              data.forEach((o) => useOrdersStore.getState().upsertOrder(o));
+            }
+          }
+        } catch (e) {
+          console.warn('Sync orders by phone error:', e);
+        }
+      }
+
+      const currentOrders = useOrdersStore.getState().orders;
+      for (const o of currentOrders) {
+        if (!isMounted) break;
+        useOrdersStore.getState().fetchOrderById(o.id);
+      }
+    };
+
+    syncOrders();
+    const interval = setInterval(syncOrders, 10000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [user?.phone]);
 
   if (!isLoggedIn) {
     return (

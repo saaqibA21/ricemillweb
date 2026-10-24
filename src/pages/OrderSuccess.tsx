@@ -1,12 +1,53 @@
 // src/pages/OrderSuccess.tsx
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { CheckCircle, Package, Truck, Clock, ShoppingBag } from 'lucide-react';
+import { CheckCircle, Package, Truck, Clock, RefreshCw } from 'lucide-react';
 import { useOrdersStore } from '../store/ordersStore';
+import { Order } from '../types';
 
 export default function OrderSuccess() {
   const { orderId } = useParams<{ orderId: string }>();
   const orders = useOrdersStore((s) => s.orders);
-  const order = orders.find((o) => o.id === orderId);
+  const localOrder = orders.find((o) => o.id === orderId);
+
+  const [liveOrder, setLiveOrder] = useState<Order | null>(localOrder || null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const fetchOrderById = useOrdersStore((s) => s.fetchOrderById);
+
+  const loadLiveStatus = async () => {
+    if (!orderId) return;
+    setIsRefreshing(true);
+    try {
+      const serverOrder = await fetchOrderById(orderId);
+      if (serverOrder) {
+        setLiveOrder(serverOrder);
+      }
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!orderId) return;
+    let isMounted = true;
+
+    const run = async () => {
+      const serverOrder = await fetchOrderById(orderId);
+      if (serverOrder && isMounted) {
+        setLiveOrder(serverOrder);
+      }
+    };
+
+    run();
+    // Poll every 8 seconds for live updates from admin
+    const interval = setInterval(run, 8000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [orderId, fetchOrderById]);
+
+  const order = liveOrder || localOrder;
 
   if (!order) {
     return (
@@ -19,11 +60,15 @@ export default function OrderSuccess() {
     );
   }
 
+  const isDelivered = order.status === 'delivered';
+  const isDispatched = ['shipped', 'delivered'].includes(order.status);
+  const isPacked = ['processing', 'shipped', 'delivered'].includes(order.status) || order.status !== 'confirmed';
+
   const statusSteps = [
     { Icon: CheckCircle, label: 'Order Confirmed', done: true },
-    { Icon: Package, label: 'Rice Bags Packed', done: order.status !== 'confirmed' },
-    { Icon: Truck, label: 'Transport Dispatched', done: ['shipped', 'delivered'].includes(order.status) },
-    { Icon: CheckCircle, label: 'Ready at Counter', done: order.status === 'delivered' },
+    { Icon: Package, label: 'Rice Bags Packed', done: isPacked },
+    { Icon: Truck, label: 'Transport Dispatched', done: isDispatched },
+    { Icon: CheckCircle, label: 'Ready at Counter', done: isDelivered },
   ];
 
   const serviceName = order.address.service || 'Parcel Counter Pickup';
@@ -40,14 +85,18 @@ export default function OrderSuccess() {
           <div className="w-20 h-20 sm:w-24 sm:h-24 bg-[#ecfdf5] rounded-full flex items-center justify-center mx-auto mb-5 border border-[#a7f3d0] shadow-sm">
             <CheckCircle className="w-12 h-12 sm:w-14 sm:h-14 text-[#166534]" />
           </div>
-          <h1 className="font-serif text-3xl sm:text-4xl font-bold text-[#1c1917] mb-2">Parcel Order Booked!</h1>
+          <h1 className="font-serif text-3xl sm:text-4xl font-bold text-[#1c1917] mb-2">
+            {isDelivered ? 'Consignment Ready at Counter! 🎉' : 'Parcel Order Booked!'}
+          </h1>
           <p className="text-stone-600 text-sm sm:text-base">
-            Your rice bags are scheduled for transport booking with Hariharan Traders 🌾
+            {isDelivered
+              ? 'Your rice bags have arrived and are ready for pickup at the counter 🌾'
+              : 'Your rice bags are scheduled for transport booking with Hariharan Traders 🌾'}
           </p>
         </div>
 
         {/* Order Details Card */}
-        <div className="card p-5 sm:p-6 mb-6 bg-white shadow-sm">
+        <div className="card p-5 sm:p-6 mb-6 bg-white shadow-sm border border-[#e8e2d5]">
           <div className="grid grid-cols-2 gap-4 sm:gap-6 mb-6">
             <div>
               <p className="text-stone-500 text-xs uppercase tracking-wider mb-1 font-semibold">Order ID</p>
@@ -68,7 +117,9 @@ export default function OrderSuccess() {
                 <Clock className="w-3 h-3 inline mr-1" />
                 Est. Dispatch
               </p>
-              <p className="text-[#1c1917] font-medium text-xs sm:text-sm">2–4 business days</p>
+              <p className="text-[#1c1917] font-medium text-xs sm:text-sm">
+                {isDelivered ? 'Arrived at Destination' : '2–4 business days'}
+              </p>
             </div>
           </div>
 
@@ -99,38 +150,75 @@ export default function OrderSuccess() {
                   📍 Digi-PIN: <strong className="text-[#1c1917] font-mono">{order.address.branchDigiPin}</strong>
                 </p>
               )}
-              {order.address.receiverName && (
+              {receiverName && (
                 <p>
-                  👤 Receiver: <strong className="text-[#1c1917]">{order.address.receiverName}</strong>
+                  👤 Consignee: <strong className="text-[#1c1917]">{receiverName}</strong>
                 </p>
               )}
-              {order.address.receiverPhone && (
+              {receiverPhone && (
                 <p>
-                  📞 Phone for SMS: <strong className="text-[#1c1917] font-mono">{order.address.receiverPhone}</strong>
+                  📞 Contact: <strong className="text-[#1c1917] font-mono">+91 {receiverPhone}</strong>
                 </p>
               )}
             </div>
 
-            <div className="mt-3 p-3 rounded-xl bg-white border border-[#e8e2d5] text-xs text-stone-700">
+            <div className="mt-4 pt-3 border-t border-[#f0eae1] text-xs text-stone-600">
               ℹ️ <strong>Collection Process:</strong> Once your consignment arrives at the counter, the parcel office will call/SMS you. Bring this Order ID (<span className="font-mono font-bold text-[#b7860e]">{order.id}</span>) and your mobile number to pick up your bags.
             </div>
           </div>
 
-          {/* Order Status Timeline */}
+          {/* Order Status Timeline with Live Status Header */}
           <div>
-            <p className="text-stone-500 text-xs uppercase tracking-wider mb-4 font-semibold">Transport Status</p>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <p className="text-stone-500 text-xs uppercase tracking-wider font-semibold">Transport Status</p>
+                <button
+                  onClick={loadLiveStatus}
+                  disabled={isRefreshing}
+                  className="text-stone-400 hover:text-[#b7860e] transition-colors p-1 rounded-lg"
+                  title="Refresh status"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-[#b7860e]' : ''}`} />
+                </button>
+              </div>
+
+              <span
+                className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
+                  isDelivered
+                    ? 'bg-green-100 text-[#166534] border border-green-300'
+                    : isDispatched
+                    ? 'bg-blue-100 text-blue-800 border border-blue-300'
+                    : 'bg-amber-100 text-amber-800 border border-amber-300'
+                }`}
+              >
+                ● {isDelivered ? 'Ready for Pickup / Delivered' : order.status}
+              </span>
+            </div>
+
             <div className="flex items-center justify-between relative">
-              <div className="absolute top-4 left-4 right-4 h-px bg-stone-300" />
+              <div className="absolute top-4 left-4 right-4 h-1 bg-stone-200 -z-0 rounded-full" />
+              <div
+                className="absolute top-4 left-4 h-1 bg-[#166534] -z-0 rounded-full transition-all duration-500"
+                style={{
+                  width: isDelivered ? '92%' : isDispatched ? '62%' : isPacked ? '32%' : '0%',
+                }}
+              />
               {statusSteps.map(({ Icon, label, done }) => (
-                <div key={label} className="relative flex flex-col items-center gap-2 flex-1">
+                <div key={label} className="relative flex flex-col items-center gap-2 flex-1 z-10">
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center z-10 ${
-                      done ? 'bg-[#166534] text-white shadow-sm' : 'bg-stone-200 text-stone-400'
+                    className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 border-2 ${
+                      done
+                        ? 'bg-[#166534] border-[#166534] text-white shadow-md'
+                        : 'bg-white border-stone-300 text-stone-400'
                     }`}
                   >
                     <Icon className="w-4 h-4 stroke-[2.5]" />
                   </div>
-                  <p className="text-[11px] text-stone-600 text-center leading-tight max-w-[85px] font-medium">
+                  <p
+                    className={`text-[11px] text-center leading-tight max-w-[85px] font-semibold ${
+                      done ? 'text-[#166534]' : 'text-stone-400'
+                    }`}
+                  >
                     {label}
                   </p>
                 </div>
@@ -140,7 +228,7 @@ export default function OrderSuccess() {
         </div>
 
         {/* Items Summary */}
-        <div className="card p-6 mb-8 bg-white shadow-sm">
+        <div className="card p-6 mb-8 bg-white shadow-sm border border-[#e8e2d5]">
           <h3 className="font-serif font-bold text-[#1c1917] mb-4">Items Ordered</h3>
           <div className="space-y-3">
             {order.items.map((item) => (
@@ -162,21 +250,26 @@ export default function OrderSuccess() {
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <Link to="/account" className="btn-secondary flex-1 justify-center py-3">
-            Track Order
-          </Link>
-          <Link to="/shop" className="btn-primary flex-1 justify-center py-3 shadow-sm hover:shadow">
-            <ShoppingBag className="w-4 h-4" />
-            Continue Shopping
-          </Link>
+        {/* Next Steps Card */}
+        <div className="card p-5 mb-8 bg-white shadow-sm border border-[#e8e2d5]">
+          <h3 className="font-serif font-bold text-[#1c1917] mb-2">Transport Delivery Steps</h3>
+          <ol className="text-stone-600 text-xs sm:text-sm space-y-1.5 list-decimal list-inside font-medium">
+            <li>Your order is sent to the mill for quality bag packing.</li>
+            <li>Hariharan Traders books the consignment with the parcel transport service.</li>
+            <li>You will receive an SMS/WhatsApp with the lorry waybill number.</li>
+            <li>Visit the counter, pay the nominal freight charge, and collect your rice bags.</li>
+          </ol>
         </div>
 
-        <p className="text-center text-stone-500 text-xs mt-6">
-          Order confirmation sent to your registered phone number.
-          For support: <a href="tel:+917810990099" className="text-[#b7860e] font-bold">+91 78109 90099</a>
-        </p>
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <Link to="/shop" className="btn-primary text-center">
+            Continue Shopping
+          </Link>
+          <Link to="/account" className="btn-secondary text-center">
+            View All Orders
+          </Link>
+        </div>
       </div>
     </main>
   );
