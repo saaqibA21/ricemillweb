@@ -172,9 +172,10 @@ export default function Checkout() {
       });
       toast.dismiss(toastId);
 
-      const razorpayKey = (
-        import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_Trmq5qikiN9LEm'
+      let razorpayKey = (
+        razorpayOrder.key_id || import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_Trmq5qikiN9LEm'
       ).replace(/^["']|["']$/g, '').trim();
+      if (razorpayKey.includes('TiGmll') || razorpayKey.includes('TrmpDad9')) { razorpayKey = 'rzp_test_Trmq5qikiN9LEm'; }
 
       // 3. Open Razorpay Checkout modal
       const options = {

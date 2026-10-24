@@ -92,6 +92,7 @@ export async function createBackendRazorpayOrder(amountInRupees: number, notes?:
     amount: number;
     currency: string;
     receipt?: string;
+    key_id?: string;
   };
 }
 

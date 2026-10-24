@@ -75,6 +75,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       amount: order.amount,
       currency: order.currency,
       receipt: order.receipt,
+      key_id,
     });
   } catch (err: any) {
     console.error('Razorpay create-order error:', err);
