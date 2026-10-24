@@ -123,8 +123,8 @@ export default function Navbar() {
               >
                 <ShoppingCart className="w-5 h-5" />
                 {totalItems > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#d4a017] text-[#1c1917] text-xs font-bold rounded-full flex items-center justify-center shadow-sm">
-                    {totalItems > 9 ? '9+' : totalItems}
+                  <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 bg-[#d4a017] border-2 border-white text-[#1c1917] text-xs font-bold rounded-full flex items-center justify-center shadow-sm">
+                    {totalItems > 99 ? '99+' : totalItems}
                   </span>
                 )}
               </Link>
