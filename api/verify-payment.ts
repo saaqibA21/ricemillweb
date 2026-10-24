@@ -8,12 +8,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const key_secret = (
+  let key_secret = (
     process.env.RAZORPAY_KEY_SECRET ||
     process.env.RAZORPAY_SECRET ||
     process.env.RAZORPAY_SECRET_KEY ||
     'b9fg63fl6584T5RrZG8CzN4G'
   ).replace(/^["']|["']$/g, '').trim();
+
+  // If old key secret or old key id is lingering, fallback to current secret
+  if (key_secret === 'UL4gABm9WZpam9GpcVHMapsI' || (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_ID.includes('TiGmll'))) {
+    key_secret = 'b9fg63fl6584T5RrZG8CzN4G';
+  }
 
   if (!key_secret) {
     return res.status(500).json({ error: 'Razorpay secret key not configured on server' });

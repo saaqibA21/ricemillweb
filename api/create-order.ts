@@ -8,7 +8,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const key_id = (
+  let key_id = (
     process.env.RAZORPAY_KEY_ID ||
     process.env.VITE_RAZORPAY_KEY_ID ||
     process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
@@ -17,12 +17,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     'rzp_test_TrmpDad9rOaGFZ'
   ).replace(/^["']|["']$/g, '').trim();
 
-  const key_secret = (
+  let key_secret = (
     process.env.RAZORPAY_KEY_SECRET ||
     process.env.RAZORPAY_SECRET ||
     process.env.RAZORPAY_SECRET_KEY ||
     'b9fg63fl6584T5RrZG8CzN4G'
   ).replace(/^["']|["']$/g, '').trim();
+
+  // If the old invalid key is still lingering in Vercel environment variables, override with the new key
+  if (key_id.includes('TiGmll')) {
+    key_id = 'rzp_test_TrmpDad9rOaGFZ';
+    key_secret = 'b9fg63fl6584T5RrZG8CzN4G';
+  }
 
   console.log('Using Razorpay Key ID:', key_id ? key_id.substring(0, 14) + '...' : 'NONE');
 
