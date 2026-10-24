@@ -24,6 +24,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     'b9fg63fl6584T5RrZG8CzN4G'
   ).replace(/^["']|["']$/g, '').trim();
 
+  console.log('Using Razorpay Key ID:', key_id ? key_id.substring(0, 14) + '...' : 'NONE');
+
   if (!key_id || !key_secret) {
     return res.status(500).json({ error: 'Razorpay credentials not configured on server' });
   }
@@ -74,7 +76,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       err?.statusCode === 401 ||
       (err?.error?.code === 'BAD_REQUEST_ERROR' && String(err?.message || '').toLowerCase().includes('auth'))
     ) {
-      return res.status(401).json({ error: 'Razorpay authentication failed' });
+      return res.status(401).json({
+        error: `Razorpay authentication failed for Key ID: ${key_id.substring(0, 15)}... Check that your Key ID and Key Secret match the active keys in Razorpay Dashboard.`,
+        key_id_prefix: key_id.substring(0, 15)
+      });
     }
     return res.status(500).json({
       error: err?.error?.description || err?.message || 'Failed to create Razorpay order',
