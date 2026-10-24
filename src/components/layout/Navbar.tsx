@@ -12,7 +12,8 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const totalItems = useCartStore((s) => s.totalItems)();
+  const cartItems = useCartStore((s) => s.items);
+  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
   const { t } = useTranslation();
   const navigate = useNavigate();
