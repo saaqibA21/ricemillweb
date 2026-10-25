@@ -53,18 +53,25 @@ export default function AnimatedHero() {
     resize();
     window.addEventListener('resize', resize);
 
-    // ── ScrollTrigger drives progress 0→1 ──────────────
-    ScrollTrigger.create({
+    // ── ScrollTrigger drives progress 0→1 on mobile & desktop ──────────────
+    // Pure CSS sticky on mountRef avoids GSAP DOM pin conflicts on mobile
+    const st = ScrollTrigger.create({
       trigger: sectionRef.current,
       start: 'top top',
       end: 'bottom bottom',
-      pin: mountRef.current,
-      pinSpacing: false,
-      scrub: 0.3,
+      scrub: 0.15,
       onUpdate: (self) => {
         progressRef.current = self.progress;
       },
     });
+
+    if (images[0]) {
+      if (images[0].complete && images[0].naturalWidth > 0) {
+        drawFrame(0);
+      } else {
+        images[0].onload = () => drawFrame(0);
+      }
+    }
 
     // GSAP entrance for text
     gsap.set(textRef.current, { opacity: 0, y: 50 });
@@ -114,15 +121,15 @@ export default function AnimatedHero() {
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener('resize', resize);
-      ScrollTrigger.getAll().forEach((tr) => tr.kill());
+      if (st) st.kill();
     };
   }, [lang]);
 
   return (
-    <section ref={sectionRef} className="relative min-h-[560px] h-[100dvh] md:h-[320vh]">
+    <section ref={sectionRef} className="relative h-[220vh] sm:h-[260vh] md:h-[320vh]">
       <div
         ref={mountRef}
-        className="relative md:sticky top-0 w-full h-[100dvh] md:h-screen min-h-[560px] overflow-hidden bg-gradient-to-b from-[#141416] to-[#050506]"
+        className="sticky top-0 w-full h-[100dvh] min-h-[540px] overflow-hidden bg-gradient-to-b from-[#141416] to-[#050506]"
       >
         {/* Frame sequence */}
         <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
