@@ -54,11 +54,13 @@ export default function AnimatedHero() {
     window.addEventListener('resize', resize);
 
     // ── ScrollTrigger drives progress 0→1 on mobile & desktop ──────────────
-    // Pure CSS sticky on mountRef avoids GSAP DOM pin conflicts on mobile
     const st = ScrollTrigger.create({
       trigger: sectionRef.current,
       start: 'top top',
       end: 'bottom bottom',
+      pin: mountRef.current,
+      pinSpacing: false,
+      anticipatePin: 1,
       scrub: 0.15,
       onUpdate: (self) => {
         progressRef.current = self.progress;
@@ -93,6 +95,7 @@ export default function AnimatedHero() {
         const fade = p < 0.1 ? 1 : Math.max(0, 1 - (p - 0.1) / 0.12);
         textRef.current.style.opacity = String(fade);
         ctaRef.current.style.opacity = String(fade);
+        ctaRef.current.style.pointerEvents = fade < 0.2 ? 'none' : 'auto';
       }
 
       // Mid-scroll phase label
@@ -126,10 +129,10 @@ export default function AnimatedHero() {
   }, [lang]);
 
   return (
-    <section ref={sectionRef} className="relative h-[220vh] sm:h-[260vh] md:h-[320vh]">
+    <section ref={sectionRef} className="relative h-[240vh] sm:h-[280vh] md:h-[320vh]">
       <div
         ref={mountRef}
-        className="sticky top-0 w-full h-[100dvh] min-h-[540px] overflow-hidden bg-gradient-to-b from-[#141416] to-[#050506]"
+        className="w-full h-screen h-[100dvh] min-h-[540px] overflow-hidden bg-gradient-to-b from-[#141416] to-[#050506]"
       >
         {/* Frame sequence */}
         <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
@@ -140,7 +143,7 @@ export default function AnimatedHero() {
         {/* Mid-scroll phase label */}
         <div
           ref={phaseLabelRef}
-          className="absolute top-[10%] left-1/2 -translate-x-1/2 z-20 font-serif font-bold text-2xl sm:text-3xl md:text-4xl text-[#f0e6c8] text-center px-4 pointer-events-none opacity-0"
+          className="absolute top-[20%] sm:top-[14%] left-1/2 -translate-x-1/2 z-20 font-serif font-bold text-xl sm:text-3xl md:text-4xl text-[#f0e6c8] text-center px-4 pointer-events-none opacity-0 max-w-lg w-full leading-relaxed"
           style={{ textShadow: '0 4px 16px rgba(0,0,0,0.6)' }}
         />
 

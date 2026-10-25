@@ -18,7 +18,7 @@ body {
   font-family: 'Inter', system-ui, sans-serif;
   background-color: #faf8f5;
   color: #1c1917;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* Prevent iOS Safari from auto-zooming on focus */
