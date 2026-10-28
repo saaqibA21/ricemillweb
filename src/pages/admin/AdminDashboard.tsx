@@ -29,6 +29,12 @@ import {
 import toast from 'react-hot-toast';
 import { Product, PriceOption } from '../../types';
 import { useProductsStore } from '../../store/productsStore';
+import {
+  compressImageFile,
+  compressImageDataUrl,
+  getDataUrlSizeBytes,
+  formatFileSize,
+} from '../../utils/imageCompressor';
 
 interface OrderItem {
   product: { name: string };
@@ -144,6 +150,7 @@ export default function AdminDashboard() {
   const [isNewProduct, setIsNewProduct] = useState(false);
   const [savingProduct, setSavingProduct] = useState(false);
   const [imageUploadTab, setImageUploadTab] = useState<'upload' | 'url'>('upload');
+  const [compressingImage, setCompressingImage] = useState(false);
 
   const [orderSearch, setOrderSearch] = useState('');
   const [paymentMethodFilter, setPaymentMethodFilter] = useState('all');
@@ -281,26 +288,47 @@ export default function AdminDashboard() {
     setEditingProduct({ ...prod });
   };
 
-  const handleImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !editingProduct) return;
 
-    if (file.size > 4 * 1024 * 1024) {
-      toast.error('Image size must be less than 4MB');
+    // Reset input so user can re-select if needed
+    e.target.value = '';
+
+    if (file.size > 30 * 1024 * 1024) {
+      toast.error('Image size must be less than 30MB');
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result as string;
-      setEditingProduct({
-        ...editingProduct,
-        image: result,
-        images: [result, ...(editingProduct.images?.slice(1) || [])],
+    setCompressingImage(true);
+    const toastId = toast.loading('Auto-compressing image...');
+
+    try {
+      const res = await compressImageFile(file, {
+        maxWidth: 1200,
+        maxHeight: 1200,
+        quality: 0.82,
+        maxSizeBytes: 600 * 1024,
       });
-      toast.success('Image loaded for product!');
-    };
-    reader.readAsDataURL(file);
+
+      setEditingProduct((prev) => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          image: res.dataUrl,
+          images: [res.dataUrl, ...(prev.images?.slice(1) || [])],
+        };
+      });
+
+      const orig = formatFileSize(res.originalSizeBytes);
+      const comp = formatFileSize(res.compressedSizeBytes);
+      toast.success(`Image auto-compressed: ${orig} → ${comp}!`, { id: toastId });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error compressing image';
+      toast.error(msg, { id: toastId });
+    } finally {
+      setCompressingImage(false);
+    }
   };
 
   const handleSaveProduct = async (e: React.FormEvent) => {
@@ -314,6 +342,32 @@ export default function AdminDashboard() {
 
     setSavingProduct(true);
     try {
+      let productToSave = { ...editingProduct };
+
+      // Pre-save safety auto-compression:
+      // If image is a raw data URL > 600KB, auto-compress to avoid Vercel 413 payload limit
+      if (
+        productToSave.image &&
+        productToSave.image.startsWith('data:image/') &&
+        getDataUrlSizeBytes(productToSave.image) > 600 * 1024
+      ) {
+        toast.loading('Auto-compressing image before saving...', { id: 'pre-save-compress' });
+        try {
+          const res = await compressImageDataUrl(productToSave.image, {
+            maxWidth: 1200,
+            maxHeight: 1200,
+            quality: 0.8,
+            maxSizeBytes: 500 * 1024,
+          });
+          productToSave.image = res.dataUrl;
+          productToSave.images = [res.dataUrl, ...(productToSave.images?.slice(1) || [])];
+        } catch {
+          // Continue if pre-save compression fails
+        } finally {
+          toast.dismiss('pre-save-compress');
+        }
+      }
+
       const method = isNewProduct ? 'POST' : 'PUT';
       const res = await fetch('/api/admin/products', {
         method,
@@ -321,7 +375,7 @@ export default function AdminDashboard() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(editingProduct),
+        body: JSON.stringify(productToSave),
       });
 
       const data = await res.json();
@@ -1155,30 +1209,58 @@ export default function AdminDashboard() {
 
                 <div className="flex flex-col sm:flex-row items-center gap-4">
                   {/* Image Preview Box */}
-                  <div className="w-24 h-24 rounded-2xl overflow-hidden bg-white border border-[#e8e2d5] shrink-0 shadow-sm relative">
-                    <img
-                      src={editingProduct.image}
-                      alt="Product preview"
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src =
-                          'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="96" height="96" fill="%23faf8f5"%3E%3Crect width="96" height="96"/%3E%3Ctext x="50%25" y="50%25" font-size="28" fill="%23d4a017" text-anchor="middle" dominant-baseline="middle"%3E🌾%3C/text%3E%3C/svg%3E';
-                      }}
-                    />
+                  <div className="flex flex-col items-center gap-1 shrink-0">
+                    <div className="w-24 h-24 rounded-2xl overflow-hidden bg-white border border-[#e8e2d5] shadow-sm relative">
+                      <img
+                        src={editingProduct.image}
+                        alt="Product preview"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src =
+                            'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="96" height="96" fill="%23faf8f5"%3E%3Crect width="96" height="96"/%3E%3Ctext x="50%25" y="50%25" font-size="28" fill="%23d4a017" text-anchor="middle" dominant-baseline="middle"%3E🌾%3C/text%3E%3C/svg%3E';
+                        }}
+                      />
+                    </div>
+                    {editingProduct.image && editingProduct.image.startsWith('data:image/') && (
+                      <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                        ⚡ {formatFileSize(getDataUrlSizeBytes(editingProduct.image))}
+                      </span>
+                    )}
                   </div>
 
                   <div className="flex-1 w-full">
                     {imageUploadTab === 'upload' ? (
                       <div className="space-y-1">
-                        <label className="flex flex-col items-center justify-center border-2 border-dashed border-[#d4a017] hover:border-[#b7860e] bg-white rounded-xl p-3 cursor-pointer transition-colors shadow-sm">
-                          <Upload className="w-5 h-5 text-[#b7860e] mb-1" />
-                          <span className="text-xs font-bold text-[#1c1917]">
-                            Click to select an image from your device
-                          </span>
-                          <span className="text-[10px] text-stone-500">JPG, PNG, WebP up to 4MB</span>
+                        <label className={`flex flex-col items-center justify-center border-2 border-dashed ${
+                          compressingImage
+                            ? 'border-amber-400 bg-amber-50/60 cursor-wait'
+                            : 'border-[#d4a017] hover:border-[#b7860e] bg-white cursor-pointer'
+                        } rounded-xl p-3 transition-colors shadow-sm`}>
+                          {compressingImage ? (
+                            <>
+                              <RefreshCw className="w-5 h-5 text-[#b7860e] mb-1 animate-spin" />
+                              <span className="text-xs font-bold text-[#1c1917]">
+                                Auto-compressing image...
+                              </span>
+                              <span className="text-[10px] text-stone-500">
+                                Optimizing quality & resolution
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              <Upload className="w-5 h-5 text-[#b7860e] mb-1" />
+                              <span className="text-xs font-bold text-[#1c1917]">
+                                Click to select an image from your device
+                              </span>
+                              <span className="text-[10px] text-stone-500">
+                                ⚡ Auto-compresses camera photos (JPG, PNG, WebP up to 30MB)
+                              </span>
+                            </>
+                          )}
                           <input
                             type="file"
                             accept="image/*"
+                            disabled={compressingImage}
                             onChange={handleImageFileUpload}
                             className="hidden"
                           />
