@@ -25,6 +25,10 @@ import {
   X,
   Save,
   Check,
+  KeyRound,
+  Eye,
+  EyeOff,
+  Lock,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Product, PriceOption } from '../../types';
@@ -151,6 +155,13 @@ export default function AdminDashboard() {
   const [savingProduct, setSavingProduct] = useState(false);
   const [imageUploadTab, setImageUploadTab] = useState<'upload' | 'url'>('upload');
   const [compressingImage, setCompressingImage] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrentPass, setShowCurrentPass] = useState(false);
+  const [showNewPass, setShowNewPass] = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
 
   const [orderSearch, setOrderSearch] = useState('');
   const [paymentMethodFilter, setPaymentMethodFilter] = useState('all');
@@ -271,6 +282,48 @@ export default function AdminDashboard() {
       toast.error(msg);
     } finally {
       setTestingEmail(false);
+    }
+  };
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast.error('Please fill in all password fields');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error('New passwords do not match');
+      return;
+    }
+    if (newPassword.length < 6) {
+      toast.error('New password must be at least 6 characters long');
+      return;
+    }
+
+    setChangingPassword(true);
+    try {
+      const res = await fetch('/api/admin/change-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to change password');
+
+      toast.success(data.message || 'Password changed successfully!');
+      setShowPasswordModal(false);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error changing password';
+      toast.error(msg);
+    } finally {
+      setChangingPassword(false);
     }
   };
 
@@ -513,6 +566,14 @@ export default function AdminDashboard() {
             >
               <Mail className={`w-4 h-4 text-[#b7860e] ${testingEmail ? 'animate-bounce' : ''}`} />
               {testingEmail ? 'Sending Test...' : 'Test SMTP'}
+            </button>
+            <button
+              onClick={() => setShowPasswordModal(true)}
+              className="flex items-center gap-2 bg-white hover:bg-[#fefce8] text-stone-700 hover:text-[#1c1917] px-4 py-2.5 rounded-xl text-sm border border-[#e8e2d5] hover:border-[#d4a017] font-semibold transition-colors shadow-sm"
+              title="Change your admin portal password"
+            >
+              <KeyRound className="w-4 h-4 text-[#b7860e]" />
+              Change Password
             </button>
             <button
               onClick={() => {
@@ -1507,6 +1568,128 @@ export default function AdminDashboard() {
                       <Save className="w-4 h-4" /> Save Product
                     </>
                   )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* CHANGE PASSWORD MODAL */}
+      {showPasswordModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white border border-[#e8e2d5] rounded-3xl max-w-md w-full shadow-2xl p-6 sm:p-8 space-y-6 animate-in fade-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-[#f0eae1] pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#fefce8] border border-[#d4a017] flex items-center justify-center text-[#b7860e]">
+                  <KeyRound className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-serif text-lg font-bold text-[#1c1917]">
+                    Change Admin Password
+                  </h3>
+                  <p className="text-[11px] text-stone-500">
+                    Update credentials for Hariharan Traders Admin Portal
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowPasswordModal(false);
+                  setCurrentPassword('');
+                  setNewPassword('');
+                  setConfirmPassword('');
+                }}
+                className="w-8 h-8 rounded-full bg-stone-100 hover:bg-stone-200 flex items-center justify-center text-stone-500 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleChangePassword} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-[#1c1917] mb-1">
+                  Current Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showCurrentPass ? 'text' : 'password'}
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    required
+                    placeholder="Enter current password"
+                    className="input bg-white text-xs py-2.5 pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowCurrentPass(!showCurrentPass)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"
+                  >
+                    {showCurrentPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#1c1917] mb-1">
+                  New Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showNewPass ? 'text' : 'password'}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    required
+                    minLength={6}
+                    placeholder="Enter new password (min. 6 chars)"
+                    className="input bg-white text-xs py-2.5 pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPass(!showNewPass)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"
+                  >
+                    {showNewPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#1c1917] mb-1">
+                  Confirm New Password
+                </label>
+                <input
+                  type={showNewPass ? 'text' : 'password'}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  placeholder="Re-enter new password"
+                  className="input bg-white text-xs py-2.5"
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="pt-4 border-t border-[#f0eae1] flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowPasswordModal(false);
+                    setCurrentPassword('');
+                    setNewPassword('');
+                    setConfirmPassword('');
+                  }}
+                  className="px-4 py-2 rounded-xl border border-[#e8e2d5] text-stone-600 font-semibold text-xs hover:bg-[#faf8f5] transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={changingPassword}
+                  className="btn-primary py-2 px-5 text-xs font-bold shadow-sm"
+                >
+                  {changingPassword ? 'Updating...' : 'Update Password'}
                 </button>
               </div>
             </form>

@@ -1,4 +1,6 @@
 // api/admin/login.ts
+import { neon } from '@neondatabase/serverless';
+
 export const config = { runtime: 'edge' };
 
 function json(data: unknown, status = 200) {
@@ -18,7 +20,21 @@ export default async function handler(req: Request) {
     };
 
     const validUser = process.env.ADMIN_ID || 'admin';
-    const validPass = process.env.ADMIN_PASSWORD || 'admin@hariharan1981';
+    let validPass = process.env.ADMIN_PASSWORD || 'admin@hariharan1981';
+
+    // Check if custom password is set in the database
+    const url = process.env.DATABASE_URL;
+    if (url) {
+      try {
+        const sql = neon(url);
+        const rows = await sql`SELECT value FROM admin_settings WHERE key = 'admin_password' LIMIT 1`;
+        if (rows && rows.length > 0 && rows[0].value) {
+          validPass = rows[0].value;
+        }
+      } catch (dbErr) {
+        console.warn('Could not read admin_settings, falling back to env/default password:', dbErr);
+      }
+    }
 
     const normalizedUser = (username || '').trim().toLowerCase();
     const isUserMatch =
