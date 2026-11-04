@@ -12,21 +12,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     process.env.RAZORPAY_KEY_SECRET ||
     process.env.RAZORPAY_SECRET ||
     process.env.RAZORPAY_SECRET_KEY ||
-    'D9kizd8ieZyFWvBn4hh6pkXw'
+    'rkcuEq8GzycrtjYW7e1g6xQF'
   ).replace(/^["']|["']$/g, '').trim();
 
-  // If old key secret or old key id is lingering, fallback to active secret
+  // If old key secret or test key secret is lingering, fallback to active live secret
   if (
+    key_secret === 'D9kizd8ieZyFWvBn4hh6pkXw' ||
     key_secret === 'UL4gABm9WZpam9GpcVHMapsI' ||
     key_secret === 'b9fg63fl6584T5RrZG8CzN4G' ||
     key_secret === 'ZDcZMEoiuvzuCdoZotcgPNDh' ||
     (process.env.RAZORPAY_KEY_ID && (
+      process.env.RAZORPAY_KEY_ID.startsWith('rzp_test_') ||
       process.env.RAZORPAY_KEY_ID.includes('TiGmll') ||
       process.env.RAZORPAY_KEY_ID.includes('TrmpDad9') ||
-      process.env.RAZORPAY_KEY_ID.includes('Trmq5qik')
+      process.env.RAZORPAY_KEY_ID.includes('Trmq5qik') ||
+      process.env.RAZORPAY_KEY_ID.includes('TrnP7Ngc')
     ))
   ) {
-    key_secret = 'D9kizd8ieZyFWvBn4hh6pkXw';
+    key_secret = 'rkcuEq8GzycrtjYW7e1g6xQF';
   }
 
   if (!key_secret) {
