@@ -29,6 +29,7 @@ import {
   Eye,
   EyeOff,
   Lock,
+  User,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Product, PriceOption } from '../../types';
@@ -155,13 +156,15 @@ export default function AdminDashboard() {
   const [savingProduct, setSavingProduct] = useState(false);
   const [imageUploadTab, setImageUploadTab] = useState<'upload' | 'url'>('upload');
   const [compressingImage, setCompressingImage] = useState(false);
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showCredentialsModal, setShowCredentialsModal] = useState(false);
+  const [adminUsername, setAdminUsername] = useState(() => localStorage.getItem('admin_user') || 'admin');
   const [currentPassword, setCurrentPassword] = useState('');
+  const [newUsername, setNewUsername] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showCurrentPass, setShowCurrentPass] = useState(false);
   const [showNewPass, setShowNewPass] = useState(false);
-  const [changingPassword, setChangingPassword] = useState(false);
+  const [changingCredentials, setChangingCredentials] = useState(false);
 
   const [orderSearch, setOrderSearch] = useState('');
   const [paymentMethodFilter, setPaymentMethodFilter] = useState('all');
@@ -285,22 +288,49 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleChangePassword = async (e: React.FormEvent) => {
+  const handleOpenCredentialsModal = () => {
+    const current = localStorage.getItem('admin_user') || 'admin';
+    setNewUsername(current);
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setShowCredentialsModal(true);
+  };
+
+  const handleChangeCredentials = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      toast.error('Please fill in all password fields');
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      toast.error('New passwords do not match');
-      return;
-    }
-    if (newPassword.length < 6) {
-      toast.error('New password must be at least 6 characters long');
+    if (!currentPassword) {
+      toast.error('Current password is required to save changes');
       return;
     }
 
-    setChangingPassword(true);
+    const currentSavedUser = localStorage.getItem('admin_user') || 'admin';
+    const trimmedNewUser = newUsername.trim();
+    const isUserChanging = trimmedNewUser !== '' && trimmedNewUser !== currentSavedUser;
+    const isPassChanging = Boolean(newPassword);
+
+    if (!isUserChanging && !isPassChanging) {
+      toast.error('No changes entered. Please update your username or password.');
+      return;
+    }
+
+    if (isUserChanging && trimmedNewUser.length < 3) {
+      toast.error('Username must be at least 3 characters long');
+      return;
+    }
+
+    if (isPassChanging) {
+      if (newPassword.length < 6) {
+        toast.error('New password must be at least 6 characters long');
+        return;
+      }
+      if (newPassword !== confirmPassword) {
+        toast.error('New passwords do not match');
+        return;
+      }
+    }
+
+    setChangingCredentials(true);
     try {
       const res = await fetch('/api/admin/change-password', {
         method: 'POST',
@@ -308,22 +338,33 @@ export default function AdminDashboard() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ currentPassword, newPassword }),
+        body: JSON.stringify({
+          currentPassword,
+          newUsername: isUserChanging ? trimmedNewUser : undefined,
+          newPassword: isPassChanging ? newPassword : undefined,
+        }),
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to change password');
+      if (!res.ok) throw new Error(data.error || 'Failed to update credentials');
 
-      toast.success(data.message || 'Password changed successfully!');
-      setShowPasswordModal(false);
+      toast.success(data.message || 'Credentials updated successfully!');
+      if (data.username) {
+        localStorage.setItem('admin_user', data.username);
+        setAdminUsername(data.username);
+      }
+      if (data.token) {
+        localStorage.setItem('admin_token', data.token);
+      }
+      setShowCredentialsModal(false);
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Error changing password';
+      const msg = err instanceof Error ? err.message : 'Error updating credentials';
       toast.error(msg);
     } finally {
-      setChangingPassword(false);
+      setChangingCredentials(false);
     }
   };
 
@@ -568,12 +609,12 @@ export default function AdminDashboard() {
               {testingEmail ? 'Sending Test...' : 'Test SMTP'}
             </button>
             <button
-              onClick={() => setShowPasswordModal(true)}
+              onClick={handleOpenCredentialsModal}
               className="flex items-center gap-2 bg-white hover:bg-[#fefce8] text-stone-700 hover:text-[#1c1917] px-4 py-2.5 rounded-xl text-sm border border-[#e8e2d5] hover:border-[#d4a017] font-semibold transition-colors shadow-sm"
-              title="Change your admin portal password"
+              title="Change your admin username and password"
             >
               <KeyRound className="w-4 h-4 text-[#b7860e]" />
-              Change Password
+              Change Credentials
             </button>
             <button
               onClick={() => {
@@ -1574,10 +1615,10 @@ export default function AdminDashboard() {
           </div>
         </div>
       )}
-      {/* CHANGE PASSWORD MODAL */}
-      {showPasswordModal && (
+      {/* CHANGE CREDENTIALS MODAL */}
+      {showCredentialsModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white border border-[#e8e2d5] rounded-3xl max-w-md w-full shadow-2xl p-6 sm:p-8 space-y-6 animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-white border border-[#e8e2d5] rounded-3xl max-w-md w-full shadow-2xl p-6 sm:p-8 space-y-5 animate-in fade-in zoom-in-95 duration-200">
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-[#f0eae1] pb-4">
               <div className="flex items-center gap-3">
@@ -1586,17 +1627,17 @@ export default function AdminDashboard() {
                 </div>
                 <div>
                   <h3 className="font-serif text-lg font-bold text-[#1c1917]">
-                    Change Admin Password
+                    Admin Credentials
                   </h3>
                   <p className="text-[11px] text-stone-500">
-                    Update credentials for Hariharan Traders Admin Portal
+                    Change admin username and login password
                   </p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => {
-                  setShowPasswordModal(false);
+                  setShowCredentialsModal(false);
                   setCurrentPassword('');
                   setNewPassword('');
                   setConfirmPassword('');
@@ -1607,11 +1648,23 @@ export default function AdminDashboard() {
               </button>
             </div>
 
+            {/* Current user badge */}
+            <div className="bg-[#faf8f5] border border-[#e8e2d5] rounded-xl p-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <User className="w-4 h-4 text-stone-500" />
+                <span className="text-xs text-stone-600 font-medium">Logged in as:</span>
+              </div>
+              <span className="text-xs font-bold text-[#b7860e] bg-amber-50 px-2.5 py-0.5 rounded border border-amber-200">
+                {adminUsername}
+              </span>
+            </div>
+
             {/* Form */}
-            <form onSubmit={handleChangePassword} className="space-y-4">
+            <form onSubmit={handleChangeCredentials} className="space-y-4">
+              {/* Current Password (Identity verification) */}
               <div>
                 <label className="block text-xs font-bold text-[#1c1917] mb-1">
-                  Current Password
+                  Current Password <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <input
@@ -1619,7 +1672,7 @@ export default function AdminDashboard() {
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
                     required
-                    placeholder="Enter current password"
+                    placeholder="Enter current password to verify"
                     className="input bg-white text-xs py-2.5 pr-10"
                   />
                   <button
@@ -1630,20 +1683,41 @@ export default function AdminDashboard() {
                     {showCurrentPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
+                <p className="text-[10px] text-stone-500 mt-1">Required to authorize any credential changes</p>
               </div>
 
+              <div className="pt-2 border-t border-[#f0eae1]"></div>
+
+              {/* New Username */}
               <div>
                 <label className="block text-xs font-bold text-[#1c1917] mb-1">
-                  New Password
+                  New Admin Username
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={newUsername}
+                    onChange={(e) => setNewUsername(e.target.value)}
+                    placeholder="Enter new admin username (min. 3 chars)"
+                    className="input bg-white text-xs py-2.5 pl-8"
+                  />
+                  <User className="w-4 h-4 text-stone-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                </div>
+                <p className="text-[10px] text-stone-500 mt-1">Leave as-is to keep your current username</p>
+              </div>
+
+              {/* New Password */}
+              <div>
+                <label className="block text-xs font-bold text-[#1c1917] mb-1">
+                  New Password <span className="text-stone-400 font-normal">(optional)</span>
                 </label>
                 <div className="relative">
                   <input
                     type={showNewPass ? 'text' : 'password'}
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    required
                     minLength={6}
-                    placeholder="Enter new password (min. 6 chars)"
+                    placeholder="Enter new password (leave blank to keep current)"
                     className="input bg-white text-xs py-2.5 pr-10"
                   />
                   <button
@@ -1654,28 +1728,32 @@ export default function AdminDashboard() {
                     {showNewPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
+                <p className="text-[10px] text-stone-500 mt-1">Minimum 6 characters</p>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-[#1c1917] mb-1">
-                  Confirm New Password
-                </label>
-                <input
-                  type={showNewPass ? 'text' : 'password'}
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                  placeholder="Re-enter new password"
-                  className="input bg-white text-xs py-2.5"
-                />
-              </div>
+              {/* Confirm New Password (shown only if new password is typed) */}
+              {newPassword && (
+                <div>
+                  <label className="block text-xs font-bold text-[#1c1917] mb-1">
+                    Confirm New Password <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type={showNewPass ? 'text' : 'password'}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    placeholder="Re-enter new password"
+                    className="input bg-white text-xs py-2.5"
+                  />
+                </div>
+              )}
 
               {/* Action Buttons */}
               <div className="pt-4 border-t border-[#f0eae1] flex items-center justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => {
-                    setShowPasswordModal(false);
+                    setShowCredentialsModal(false);
                     setCurrentPassword('');
                     setNewPassword('');
                     setConfirmPassword('');
@@ -1686,16 +1764,16 @@ export default function AdminDashboard() {
                 </button>
                 <button
                   type="submit"
-                  disabled={changingPassword}
+                  disabled={changingCredentials}
                   className="btn-primary py-2 px-5 text-xs font-bold shadow-sm"
                 >
-                  {changingPassword ? 'Updating...' : 'Update Password'}
+                  {changingCredentials ? 'Saving Changes...' : 'Save Credentials'}
                 </button>
               </div>
             </form>
           </div>
         </div>
-      )}
+      )}
     </main>
   );
 }

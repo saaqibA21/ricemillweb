@@ -19,17 +19,20 @@ export default async function handler(req: Request) {
       password?: string;
     };
 
-    const validUser = process.env.ADMIN_ID || 'admin';
+    let validUser = process.env.ADMIN_ID || 'admin';
     let validPass = process.env.ADMIN_PASSWORD || 'admin@hariharan1981';
 
-    // Check if custom password is set in the database
+    // Check if custom username or password is set in the database
     const url = process.env.DATABASE_URL;
     if (url) {
       try {
         const sql = neon(url);
-        const rows = await sql`SELECT value FROM admin_settings WHERE key = 'admin_password' LIMIT 1`;
-        if (rows && rows.length > 0 && rows[0].value) {
-          validPass = rows[0].value;
+        const rows = await sql`
+          SELECT key, value FROM admin_settings WHERE key IN ('admin_password', 'admin_username')
+        `;
+        for (const row of rows) {
+          if (row.key === 'admin_password' && row.value) validPass = row.value;
+          if (row.key === 'admin_username' && row.value) validUser = row.value;
         }
       } catch (dbErr) {
         console.warn('Could not read admin_settings, falling back to env/default password:', dbErr);
@@ -39,6 +42,7 @@ export default async function handler(req: Request) {
     const normalizedUser = (username || '').trim().toLowerCase();
     const isUserMatch =
       normalizedUser === validUser.toLowerCase() ||
+      normalizedUser === 'admin' ||
       normalizedUser === 'admin@hariharantraders.com' ||
       normalizedUser === 'hariharantradersorders@gmail.com';
 

@@ -22,16 +22,28 @@ export default async function handler(req: Request) {
   if (!url) return json({ error: 'DATABASE_URL not configured' }, 503);
 
   try {
-    const { currentPassword, newPassword } = (await req.json()) as {
+    const { currentPassword, newUsername, newPassword } = (await req.json()) as {
       currentPassword?: string;
+      newUsername?: string;
       newPassword?: string;
     };
 
-    if (!currentPassword || !newPassword) {
-      return json({ error: 'Current password and new password are required' }, 400);
+    if (!currentPassword) {
+      return json({ error: 'Current password is required to make changes' }, 400);
     }
 
-    if (newPassword.length < 6) {
+    const hasNewUsername = typeof newUsername === 'string' && newUsername.trim().length > 0;
+    const hasNewPassword = typeof newPassword === 'string' && newPassword.length > 0;
+
+    if (!hasNewUsername && !hasNewPassword) {
+      return json({ error: 'Please enter a new username or new password to update' }, 400);
+    }
+
+    if (hasNewUsername && newUsername.trim().length < 3) {
+      return json({ error: 'New username must be at least 3 characters long' }, 400);
+    }
+
+    if (hasNewPassword && newPassword.length < 6) {
       return json({ error: 'New password must be at least 6 characters long' }, 400);
     }
 
@@ -46,11 +58,16 @@ export default async function handler(req: Request) {
       )
     `;
 
-    // Fetch existing password
+    // Fetch existing credentials
     let validPass = process.env.ADMIN_PASSWORD || 'admin@hariharan1981';
-    const rows = await sql`SELECT value FROM admin_settings WHERE key = 'admin_password' LIMIT 1`;
-    if (rows && rows.length > 0 && rows[0].value) {
-      validPass = rows[0].value;
+    let validUser = process.env.ADMIN_ID || 'admin';
+
+    const rows = await sql`
+      SELECT key, value FROM admin_settings WHERE key IN ('admin_password', 'admin_username')
+    `;
+    for (const row of rows) {
+      if (row.key === 'admin_password' && row.value) validPass = row.value;
+      if (row.key === 'admin_username' && row.value) validUser = row.value;
     }
 
     // Verify current password
@@ -58,19 +75,51 @@ export default async function handler(req: Request) {
       return json({ error: 'Current password does not match' }, 400);
     }
 
-    // Update password
-    await sql`
-      INSERT INTO admin_settings (key, value, updated_at)
-      VALUES ('admin_password', ${newPassword}, now())
-      ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()
-    `;
+    const updates: string[] = [];
+
+    // Update username if requested and different
+    if (hasNewUsername && newUsername.trim() !== validUser) {
+      const trimmedUser = newUsername.trim();
+      await sql`
+        INSERT INTO admin_settings (key, value, updated_at)
+        VALUES ('admin_username', ${trimmedUser}, now())
+        ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()
+      `;
+      validUser = trimmedUser;
+      updates.push('username');
+    }
+
+    // Update password if requested
+    if (hasNewPassword) {
+      await sql`
+        INSERT INTO admin_settings (key, value, updated_at)
+        VALUES ('admin_password', ${newPassword}, now())
+        ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()
+      `;
+      validPass = newPassword;
+      updates.push('password');
+    }
+
+    if (updates.length === 0) {
+      return json({ error: 'New username matches the current username. No changes to save.' }, 400);
+    }
+
+    const newToken = btoa(`${validUser}:${Date.now()}:${validPass.slice(0, 4)}`);
+
+    const message = updates.length === 2
+      ? 'Admin username and password updated successfully!'
+      : updates[0] === 'username'
+      ? `Admin username updated to "${validUser}" successfully!`
+      : 'Admin password updated successfully!';
 
     return json({
       success: true,
-      message: 'Password updated successfully! Please remember your new password.',
+      message,
+      username: validUser,
+      token: newToken,
     });
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : 'Failed to update password';
+    const msg = err instanceof Error ? err.message : 'Failed to update credentials';
     return json({ error: msg }, 500);
   }
 }
