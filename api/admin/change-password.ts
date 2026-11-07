@@ -119,7 +119,10 @@ export default async function handler(req: Request) {
       token: newToken,
     });
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : 'Failed to update credentials';
+    let msg = err instanceof Error ? err.message : 'Failed to update credentials';
+    if (msg.toLowerCase().includes('quota') || msg.includes('402')) {
+      msg = 'Database project monthly compute quota exceeded. Please check your Neon.tech account limits.';
+    }
     return json({ error: msg }, 500);
   }
 }
