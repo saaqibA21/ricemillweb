@@ -582,23 +582,40 @@ export default function AdminDashboard() {
   if (!token) return null;
 
   return (
-    <main className="min-h-screen pt-24 pb-20 px-4 sm:px-6 lg:px-8 bg-[#faf8f5] text-[#1c1917]">
+    <main className="min-h-screen pt-6 sm:pt-8 pb-20 px-4 sm:px-6 lg:px-8 bg-[#faf8f5] text-[#1c1917]">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Top Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#e8e2d5] pb-6">
-          <div>
-            <div className="flex items-center gap-3">
-              <span className="bg-[#fefce8] border border-[#d4a017] text-[#926b09] px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-widest shadow-sm">
-                Management Portal
-              </span>
-              <span className="text-stone-500 text-xs font-medium">Live Database Connected</span>
+          <div className="flex items-center gap-3.5">
+            <img
+              src="/assets/logo.jpeg"
+              alt="Hariharan Traders"
+              className="w-12 h-12 rounded-full object-cover ring-2 ring-[#d4a017] shadow-sm shrink-0"
+            />
+            <div>
+              <div className="flex items-center gap-3">
+                <span className="bg-[#fefce8] border border-[#d4a017] text-[#926b09] px-3 py-0.5 rounded-full text-xs font-bold uppercase tracking-widest shadow-sm">
+                  Management Portal
+                </span>
+                <span className="text-stone-500 text-xs font-medium">Live Database Connected</span>
+              </div>
+              <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#1c1917] mt-1">
+                Hariharan Traders Dashboard
+              </h1>
             </div>
-            <h1 className="font-serif text-3xl sm:text-4xl font-bold text-[#1c1917] mt-1.5">
-              Hariharan Traders Dashboard
-            </h1>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
+            <a
+              href="/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 bg-white hover:bg-[#faf8f5] text-stone-700 px-3.5 py-2.5 rounded-xl text-sm border border-[#e8e2d5] font-semibold transition-colors shadow-sm"
+              title="Open public store in a new tab"
+            >
+              <ExternalLink className="w-4 h-4 text-[#b7860e]" />
+              View Store
+            </a>
             <button
               onClick={handleTestEmail}
               disabled={testingEmail}

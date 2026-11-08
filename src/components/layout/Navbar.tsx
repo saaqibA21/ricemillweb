@@ -45,6 +45,11 @@ export default function Navbar() {
 
   const isHomeTop = location.pathname === '/' && !isScrolled;
 
+  // Do not render navbar in the admin dashboard
+  if (location.pathname === '/admin' || (location.pathname.startsWith('/admin/') && location.pathname !== '/admin/login')) {
+    return null;
+  }
+
   return (
     <>
       <nav
