@@ -22,7 +22,7 @@ export default function Terms() {
             },
             {
               title: '3. Orders and Payment',
-              content: `Orders are confirmed only after successful payment (for UPI/card orders) or acceptance of Cash on Delivery terms. We accept UPI payments through PhonePe, Google Pay, Paytm, and direct UPI ID. Cash on Delivery is available for orders up to ₹5,000 in select pincodes. Order confirmation will be sent via SMS to your registered mobile number.`,
+              content: `Orders are confirmed upon successful online payment via Razorpay. We accept UPI payments through Google Pay, PhonePe, Paytm, CRED, all major Debit & Credit Cards, and Netbanking. Order confirmation will be sent via SMS to your registered mobile number.`,
             },
             {
               title: '4. Delivery and Shipping',

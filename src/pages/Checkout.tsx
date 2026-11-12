@@ -375,84 +375,39 @@ export default function Checkout() {
 
                   <div className="space-y-4 mb-6">
                     {/* Razorpay Online Option */}
-                    <label
-                      className={`flex items-start gap-4 p-4 rounded-xl border cursor-pointer transition-all ${
-                        paymentMethod === 'razorpay'
-                          ? 'border-[#d4a017] bg-[#fefce8] ring-1 ring-[#d4a017] shadow-sm'
-                          : 'border-[#e8e2d5] bg-white hover:border-[#d4a017]/70'
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="payment"
-                        value="razorpay"
-                        checked={paymentMethod === 'razorpay'}
-                        onChange={() => setPaymentMethod('razorpay')}
-                        className="accent-[#d4a017] mt-1 w-4 h-4 cursor-pointer"
-                      />
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 flex-wrap mb-1">
-                          <span className="text-[#1c1917] font-bold text-base">
-                            Online Payment (Razorpay Standard)
-                          </span>
-                          <span className="text-[10px] bg-[#d4a017] text-[#1c1917] font-bold px-2 py-0.5 rounded uppercase tracking-wider shadow-sm">
-                            Instant & Verified
-                          </span>
-                        </div>
-                        <p className="text-stone-600 text-xs mb-3">
-                          Pay securely via UPI (GPay, PhonePe, Paytm, CRED), Cards, Netbanking & Wallets
-                        </p>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-xs px-2.5 py-1 rounded bg-[#faf8f5] border border-[#e8e2d5] text-stone-700 font-medium">
-                            🟢 Google Pay
-                          </span>
-                          <span className="text-xs px-2.5 py-1 rounded bg-[#faf8f5] border border-[#e8e2d5] text-stone-700 font-medium">
-                            🟣 PhonePe
-                          </span>
-                          <span className="text-xs px-2.5 py-1 rounded bg-[#faf8f5] border border-[#e8e2d5] text-stone-700 font-medium">
-                            🔵 Paytm / UPI
-                          </span>
-                          <span className="text-xs px-2.5 py-1 rounded bg-[#faf8f5] border border-[#e8e2d5] text-stone-700 font-medium">
-                            💳 Debit & Credit Cards
-                          </span>
-                          <span className="text-xs px-2.5 py-1 rounded bg-[#faf8f5] border border-[#e8e2d5] text-stone-700 font-medium">
-                            🏦 Netbanking
-                          </span>
-                        </div>
+                    <div className="p-4 sm:p-5 rounded-2xl border-2 border-[#d4a017] bg-[#fefce8] shadow-sm">
+                      <div className="flex items-center gap-2 flex-wrap mb-1">
+                        <CreditCard className="w-5 h-5 text-[#b7860e]" />
+                        <span className="text-[#1c1917] font-bold text-base">
+                          Online Payment (Razorpay Standard)
+                        </span>
+                        <span className="text-[10px] bg-[#d4a017] text-[#1c1917] font-bold px-2 py-0.5 rounded uppercase tracking-wider shadow-sm">
+                          Instant & Verified
+                        </span>
                       </div>
-                    </label>
+                      <p className="text-stone-600 text-xs mb-3">
+                        Pay securely via UPI (GPay, PhonePe, Paytm, CRED), Cards, Netbanking & Wallets
+                      </p>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-xs px-2.5 py-1 rounded bg-white border border-[#e8e2d5] text-stone-700 font-medium">
+                          🟢 Google Pay
+                        </span>
+                        <span className="text-xs px-2.5 py-1 rounded bg-white border border-[#e8e2d5] text-stone-700 font-medium">
+                          🟣 PhonePe
+                        </span>
+                        <span className="text-xs px-2.5 py-1 rounded bg-white border border-[#e8e2d5] text-stone-700 font-medium">
+                          🔵 Paytm / UPI
+                        </span>
+                        <span className="text-xs px-2.5 py-1 rounded bg-white border border-[#e8e2d5] text-stone-700 font-medium">
+                          💳 Debit & Credit Cards
+                        </span>
+                        <span className="text-xs px-2.5 py-1 rounded bg-white border border-[#e8e2d5] text-stone-700 font-medium">
+                          🏦 Netbanking
+                        </span>
+                      </div>
+                    </div>
 
-                    {/* COD Option */}
-                    <label
-                      className={`flex items-start gap-4 p-4 rounded-xl border cursor-pointer transition-all ${
-                        paymentMethod === 'cod'
-                          ? 'border-[#d4a017] bg-[#fefce8] ring-1 ring-[#d4a017] shadow-sm'
-                          : 'border-[#e8e2d5] bg-white hover:border-[#d4a017]/70'
-                      } ${grandTotal > 5000 ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    >
-                      <input
-                        type="radio"
-                        name="payment"
-                        value="cod"
-                        checked={paymentMethod === 'cod'}
-                        onChange={() => setPaymentMethod('cod')}
-                        disabled={grandTotal > 5000}
-                        className="accent-[#d4a017] mt-1 w-4 h-4 cursor-pointer"
-                      />
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Package className="w-4 h-4 text-[#b7860e]" />
-                          <span className="text-[#1c1917] font-bold">
-                            Pay on Counter Collection (Cash on Delivery)
-                          </span>
-                        </div>
-                        <p className="text-stone-600 text-xs">
-                          {grandTotal > 5000
-                            ? 'Not available for orders above ₹5,000'
-                            : 'Pay in cash at the parcel counter when collecting your rice bags'}
-                        </p>
-                      </div>
-                    </label>
+                    
                   </div>
                 </div>
 
@@ -468,17 +423,8 @@ export default function Checkout() {
                     </>
                   ) : (
                     <>
-                      {paymentMethod === 'razorpay' ? (
-                        <>
-                          <CreditCard className="w-5 h-5" />
-                          Pay ₹{grandTotal.toLocaleString()} with Razorpay
-                        </>
-                      ) : (
-                        <>
-                          <Package className="w-5 h-5" />
-                          Confirm Parcel Booking • ₹{grandTotal.toLocaleString()}
-                        </>
-                      )}
+                      <CreditCard className="w-5 h-5" />
+                      Pay ₹{grandTotal.toLocaleString()} with Razorpay
                     </>
                   )}
                 </button>
