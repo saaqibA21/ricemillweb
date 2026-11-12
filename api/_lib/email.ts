@@ -9,9 +9,9 @@ const FROM_EMAIL =
   process.env.FROM_EMAIL ||
   (process.env.SMTP_USER ? `"Hariharan Traders Rice" <${process.env.SMTP_USER}>` : 'Hariharan Traders Rice <orders@hariharantraders.in>');
 
-let smtpTransporter: nodemailer.Transporter | null = null;
+let smtpTransporter: any = null;
 
-function getSmtpTransporter(): nodemailer.Transporter | null {
+function getSmtpTransporter(): any {
   const host = process.env.SMTP_HOST;
   const user = process.env.SMTP_USER;
   const pass = process.env.SMTP_PASS;
