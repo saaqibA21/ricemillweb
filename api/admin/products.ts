@@ -1,7 +1,7 @@
 // api/admin/products.ts
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getDb } from '../_lib/db';
-import { products as defaultProducts } from '../../src/data/products';
+import { getDb } from '../_lib/db.js';
+import { defaultProducts } from '../_lib/catalog.js';
 
 function mapRow(r: Record<string, unknown>) {
   return {

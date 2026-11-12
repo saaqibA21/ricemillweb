@@ -1,7 +1,7 @@
 // api/_lib/products.ts
 // Shared helpers for the products API routes. Files under an `_`-prefixed
 // folder are not treated as routes by Vercel.
-import { getDb } from './db';
+import { getDb } from './db.js';
 
 export function db() {
   return getDb();

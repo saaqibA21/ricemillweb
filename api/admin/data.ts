@@ -1,6 +1,6 @@
 // api/admin/data.ts
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getDb } from '../_lib/db';
+import { getDb } from '../_lib/db.js';
 import { sendEmailMessage } from '../_lib/email.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {

@@ -1,6 +1,6 @@
 // api/admin/orders.ts
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getDb } from '../_lib/db';
+import { getDb } from '../_lib/db.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'PATCH' && req.method !== 'POST') {

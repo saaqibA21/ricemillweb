@@ -1,7 +1,7 @@
 // api/products/index.ts
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { db, mapProductRow } from '../_lib/products';
-import { products as defaultProducts } from '../../src/data/products';
+import { db, mapProductRow } from '../_lib/products.js';
+import { defaultProducts } from '../_lib/catalog.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') {
