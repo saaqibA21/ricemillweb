@@ -81,6 +81,24 @@ export default function Branches() {
           </p>
         </div>
 
+        {/* Freight Notice Card */}
+        <div className="p-4 sm:p-5 rounded-2xl bg-[#fefce8] border border-[#d4a017] mb-6 flex items-start sm:items-center gap-3.5 shadow-sm">
+          <span className="text-3xl shrink-0">🚚</span>
+          <div className="flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-serif font-bold text-base text-[#1c1917]">
+                Tamil Nadu Freight Tariff:
+              </span>
+              <span className="px-2.5 py-0.5 rounded-full bg-[#166534] text-white text-xs font-bold shadow-sm">
+                ₹109 / per bag
+              </span>
+            </div>
+            <p className="text-xs sm:text-sm text-stone-600 mt-1 leading-relaxed">
+              Freight fees all over Tamil Nadu are <strong>₹109 per bag</strong>, to be payable at pickup counter when you collect your rice bags.
+            </p>
+          </div>
+        </div>
+
         {/* Counter Network Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-8">
           <div className="card p-4 text-center bg-white shadow-sm">

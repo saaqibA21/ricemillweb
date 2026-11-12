@@ -48,10 +48,10 @@ export default function Cart() {
           <span className="text-xl">📦</span>
           <div>
             <p className="text-sm font-bold text-[#b7860e]">
-              Parcel Counter Pickup Only (No Home Delivery)
+              Parcel Counter Pickup Only (No Home Delivery) • Tamil Nadu Freight ₹109 / bag
             </p>
             <p className="text-xs text-stone-600 mt-0.5 leading-relaxed">
-              Rice bags (25kg – 50kg) are booked via <strong>mSs Parcel Service</strong> or <strong>A1 Speed Parcel Service</strong>. At Checkout, you can select your nearest counter across 1,228+ locations for pickup.
+              Rice bags (25kg – 50kg) are booked via <strong>mSs Parcel Service</strong> or <strong>A1 Speed Parcel Service</strong> across 1,228+ locations. <strong>Freight fees all over Tamil Nadu are ₹109 per bag, to be payable at pickup counter.</strong>
             </p>
           </div>
         </div>
@@ -158,13 +158,13 @@ export default function Cart() {
                   <span className="text-[#1c1917] font-semibold">₹{total.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-sm items-center">
-                  <span className="text-stone-600">Parcel Transport</span>
+                  <span className="text-stone-600">Freight Fee (Tamil Nadu)</span>
                   <span className="badge badge-green text-xs font-semibold">
-                    Payable at Counter
+                    ₹109 / bag (Pay at Counter)
                   </span>
                 </div>
-                <p className="text-[11px] text-stone-500 leading-tight">
-                  📦 Transport freight differs by place & weight; payable directly at the parcel counter upon pickup.
+                <p className="text-[11px] text-stone-600 leading-tight">
+                  📦 Freight fees all over Tamil Nadu: <strong>₹109 per bag</strong> to be payable at pickup counter.
                 </p>
               </div>
 

@@ -121,10 +121,13 @@ export default function AdminLogin() {
             </button>
           </form>
 
-          {/* Quick Help Hint */}
-          <div className="mt-6 pt-5 border-t border-[#f0eae1] text-center">
-            <p className="text-stone-500 text-xs leading-relaxed font-medium">
-              Default ID: <span className="text-[#b7860e] font-mono font-bold">admin</span> &nbsp;|&nbsp; Password: <span className="text-[#b7860e] font-mono font-bold">admin@hariharan1981</span>
+          {/* Business & GST Details */}
+          <div className="mt-6 pt-5 border-t border-[#f0eae1] text-center space-y-1">
+            <p className="text-stone-600 text-xs font-semibold">
+              Hariharan Traders • GSTIN: <span className="font-mono font-bold text-[#b7860e] tracking-wider">33AWJPK3483A1ZT</span>
+            </p>
+            <p className="text-stone-400 text-[11px]">
+              Authorized Personnel & Management Access Only
             </p>
           </div>
         </div>

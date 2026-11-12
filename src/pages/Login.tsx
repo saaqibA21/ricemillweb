@@ -1,7 +1,7 @@
 // src/pages/Login.tsx
 import { useState } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { Phone, ArrowRight, RefreshCw } from 'lucide-react';
+import { Phone, ArrowRight, RefreshCw, KeyRound, Check } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { User } from '../types';
 import toast from 'react-hot-toast';
@@ -10,6 +10,7 @@ export default function Login() {
   const [step, setStep] = useState<'phone' | 'otp'>('phone');
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
+  const [generatedOtp, setGeneratedOtp] = useState('');
   const [name, setName] = useState('');
   const [isNewUser, setIsNewUser] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -18,6 +19,28 @@ export default function Login() {
   const [searchParams] = useSearchParams();
   const redirect = searchParams.get('redirect') || '/account';
 
+  const generateAndDispatchOtp = (targetPhone: string) => {
+    // Generate a secure 6-digit OTP
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    setGeneratedOtp(code);
+    setOtp('');
+
+    // Deliver on website via high-visibility toast notification
+    toast.success(
+      `🌾 Verification OTP: ${code} (Sent to website for +91 ${targetPhone})`,
+      {
+        duration: 10000,
+        style: {
+          background: '#ffffff',
+          color: '#1c1917',
+          border: '2px solid #d4a017',
+          fontWeight: '600',
+        },
+      }
+    );
+    return code;
+  };
+
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (phone.length !== 10 || !/^\d+$/.test(phone)) {
@@ -25,14 +48,17 @@ export default function Login() {
       return;
     }
     setLoading(true);
-    // Simulate OTP send (replace with real API call)
-    await new Promise((r) => setTimeout(r, 1200));
+    await new Promise((r) => setTimeout(r, 600));
     setLoading(false);
+    generateAndDispatchOtp(phone);
     setStep('otp');
-    toast.success(`OTP sent to +91 ${phone}`, {
-      style: { background: '#ffffff', color: '#1c1917', border: '1px solid #d4a017' },
-    });
-    // For demo: OTP is 123456
+  };
+
+  const handleResendOtp = async () => {
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 600));
+    setLoading(false);
+    generateAndDispatchOtp(phone);
   };
 
   const handleVerifyOtp = async (e: React.FormEvent) => {
@@ -42,12 +68,12 @@ export default function Login() {
       return;
     }
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 1000));
+    await new Promise((r) => setTimeout(r, 600));
 
-    // Demo: accept 123456 as valid OTP
-    if (otp !== '123456') {
+    // Verify against the on-website generated OTP
+    if (otp !== generatedOtp) {
       setLoading(false);
-      toast.error('Invalid OTP. (Demo: use 123456)');
+      toast.error('Invalid OTP. Please enter the verification code generated above.');
       return;
     }
 
@@ -79,45 +105,60 @@ export default function Login() {
           <p className="text-[#b7860e] text-xs font-bold tracking-widest uppercase">Rice Mill • Management</p>
         </div>
 
-        <div className="card p-8 bg-white shadow-lg">
+        {/* Card */}
+        <div className="card p-8 sm:p-10 bg-white shadow-xl border border-[#e8e2d5]">
           {step === 'phone' ? (
             <>
-              <h2 className="font-serif font-bold text-2xl text-[#1c1917] mb-2">
-                Login / Sign Up
-              </h2>
-              <p className="text-stone-500 text-sm mb-8 font-medium">
-                We'll send a one-time password to your mobile number.
+              <h2 className="font-serif font-bold text-2xl text-[#1c1917] mb-2">Welcome</h2>
+              <p className="text-stone-500 text-sm mb-8">
+                Enter your mobile number to receive your OTP code directly here.
               </p>
 
               <form onSubmit={handleSendOtp} className="space-y-5">
                 <div>
                   <label className="label">Mobile Number</label>
-                  <div className="flex">
-                    <span className="flex items-center px-4 bg-[#faf8f5] border border-[#d6cfc3] border-r-0 rounded-l-xl text-stone-600 text-sm font-semibold">
+                  <div className="flex gap-2">
+                    <span className="input w-16 text-center font-semibold text-stone-500 shrink-0 select-none flex items-center justify-center bg-stone-50">
                       +91
                     </span>
                     <input
                       type="tel"
                       inputMode="numeric"
                       maxLength={10}
-                      placeholder="78109 90099"
+                      placeholder="98765 43210"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
-                      className="input rounded-l-none bg-white font-mono"
+                      className="input flex-1 tracking-wider"
                       required
+                      autoFocus
                     />
                   </div>
                 </div>
 
-                <div>
-                  <label className="label">Your Name</label>
+                {isNewUser && (
+                  <div>
+                    <label className="label">Your Name</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Ramesh Kumar"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="input"
+                    />
+                  </div>
+                )}
+
+                <div className="flex items-center gap-2">
                   <input
-                    type="text"
-                    placeholder="Enter your name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="input bg-white"
+                    type="checkbox"
+                    id="newUser"
+                    checked={isNewUser}
+                    onChange={(e) => setIsNewUser(e.target.checked)}
+                    className="accent-[#d4a017] rounded"
                   />
+                  <label htmlFor="newUser" className="text-xs text-stone-500 cursor-pointer">
+                    I am a new customer
+                  </label>
                 </div>
 
                 <button
@@ -144,13 +185,41 @@ export default function Login() {
               >
                 ← Change number
               </button>
-              <h2 className="font-serif font-bold text-2xl text-[#1c1917] mb-2">Enter OTP</h2>
-              <p className="text-stone-500 text-sm mb-2">
-                Sent to <span className="text-[#1c1917] font-bold">+91 {phone}</span>
+              <h2 className="font-serif font-bold text-2xl text-[#1c1917] mb-1">Enter OTP</h2>
+              <p className="text-stone-500 text-sm mb-4">
+                Mobile: <span className="text-[#1c1917] font-bold">+91 {phone}</span>
               </p>
-              <p className="text-[#d4a017] text-xs mb-8 bg-[#d4a017]/10 border border-[#d4a017]/20 rounded-lg px-3 py-2">
-                🔐 Demo mode: Use OTP <strong>123456</strong> to login
-              </p>
+
+              {/* On-Website Generated OTP Banner */}
+              <div className="mb-6 p-4 rounded-2xl bg-[#fefce8] border-2 border-dashed border-[#d4a017] text-center shadow-sm">
+                <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#fef9c3] text-[#926b09] text-[11px] font-bold uppercase tracking-wider mb-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  OTP Generated on Website
+                </div>
+                <p className="text-xs text-stone-600 mb-2">
+                  Your 6-digit verification code is:
+                </p>
+                <div className="flex items-center justify-center gap-2">
+                  <span className="font-mono text-3xl font-extrabold text-[#b7860e] tracking-[0.25em] bg-white px-4 py-1.5 rounded-xl border border-[#d4a017]/40 shadow-inner">
+                    {generatedOtp}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOtp(generatedOtp);
+                      toast.success('OTP auto-filled!');
+                    }}
+                    className="px-3.5 py-2 bg-[#d4a017] hover:bg-[#b7860e] text-[#1c1917] font-bold text-xs rounded-xl transition-colors shadow-sm flex items-center gap-1"
+                    title="Click to auto-fill this OTP"
+                  >
+                    <Check className="w-3.5 h-3.5 stroke-[3]" />
+                    Auto-fill
+                  </button>
+                </div>
+                <p className="text-[11px] text-stone-500 mt-2">
+                  Click <strong>Auto-fill</strong> or type the code below to login instantly.
+                </p>
+              </div>
 
               <form onSubmit={handleVerifyOtp} className="space-y-5">
                 <div>
@@ -171,7 +240,7 @@ export default function Login() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="btn-primary w-full justify-center py-4 text-base disabled:opacity-60"
+                  className="btn-primary w-full justify-center py-4 text-base disabled:opacity-60 shadow-sm hover:shadow"
                 >
                   {loading ? (
                     <RefreshCw className="w-5 h-5 animate-spin" />
@@ -185,8 +254,9 @@ export default function Login() {
 
                 <button
                   type="button"
-                  onClick={() => setStep('phone')}
-                  className="w-full text-center text-[#d4a017] text-sm hover:underline"
+                  disabled={loading}
+                  onClick={handleResendOtp}
+                  className="w-full text-center text-[#d4a017] hover:text-[#b7860e] text-sm font-semibold hover:underline"
                 >
                   Resend OTP
                 </button>
@@ -197,11 +267,7 @@ export default function Login() {
           <p className="text-xs text-gray-500 text-center mt-6">
             By continuing, you agree to our{' '}
             <Link to="/terms" className="text-[#d4a017] hover:underline">
-              Terms
-            </Link>{' '}
-            &{' '}
-            <Link to="/privacy" className="text-[#d4a017] hover:underline">
-              Privacy Policy
+              Terms & Conditions
             </Link>
           </p>
         </div>

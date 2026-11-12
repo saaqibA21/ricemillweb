@@ -253,9 +253,22 @@ export default function Checkout() {
     <main className="pt-24 pb-20 min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="section-title mb-3 sm:mb-4 text-3xl sm:text-4xl text-[#1c1917]">Checkout</h1>
-        <p className="text-stone-600 text-sm mb-6 sm:mb-8 font-medium">
+        <p className="text-stone-600 text-sm mb-4 font-medium">
           Heavy rice bag orders are delivered to your nearest transport parcel counter for pickup.
         </p>
+
+        {/* Freight Announcement Banner */}
+        <div className="mb-6 sm:mb-8 p-4 rounded-2xl bg-[#fefce8] border border-[#d4a017] flex items-start gap-3 shadow-sm">
+          <span className="text-2xl shrink-0 mt-0.5">🚚</span>
+          <div>
+            <p className="text-sm font-bold text-[#b7860e]">
+              Freight Tariff: ₹109 / per bag across Tamil Nadu
+            </p>
+            <p className="text-xs text-stone-600 mt-0.5 leading-relaxed">
+              Freight fees all over Tamil Nadu are <strong>₹109 per bag</strong>, to be payable at the pickup counter upon collecting your rice bags.
+            </p>
+          </div>
+        </div>
 
         {/* Steps indicator */}
         <div className="flex items-center gap-2 sm:gap-4 mb-8 sm:mb-10">
@@ -522,13 +535,13 @@ export default function Checkout() {
                   <span className="text-[#1c1917] font-semibold">₹{total.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-sm items-center">
-                  <span className="text-stone-600">Parcel Transport</span>
+                  <span className="text-stone-600">Freight Fee (Tamil Nadu)</span>
                   <span className="badge badge-green text-xs font-semibold">
-                    Payable at Counter
+                    ₹109 / bag (Pay at Counter)
                   </span>
                 </div>
-                <p className="text-[11px] text-stone-500 leading-tight">
-                  Transport freight differs by location & weight; payable directly at the parcel counter upon pickup.
+                <p className="text-[11px] text-stone-600 leading-tight">
+                  Freight fees all over Tamil Nadu: <strong>₹109 per bag</strong> to be payable at pickup counter.
                 </p>
                 <div className="flex justify-between font-bold text-lg pt-2 border-t border-[#f0eae1]">
                   <span className="text-[#1c1917]">Total</span>

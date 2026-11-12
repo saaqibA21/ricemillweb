@@ -163,7 +163,7 @@ export default function OrderSuccess() {
             </div>
 
             <div className="mt-4 pt-3 border-t border-[#f0eae1] text-xs text-stone-600">
-              ℹ️ <strong>Collection Process:</strong> Once your consignment arrives at the counter, the parcel office will call/SMS you. Bring this Order ID (<span className="font-mono font-bold text-[#b7860e]">{order.id}</span>) and your mobile number to pick up your bags.
+              ℹ️ <strong>Collection Process:</strong> Once your consignment arrives at the counter, the parcel office will call/SMS you. Bring this Order ID (<span className="font-mono font-bold text-[#b7860e]">{order.id}</span>) and your mobile number to pick up your bags. <strong>Freight fees all over Tamil Nadu: ₹109 per bag to be payable at pickup counter.</strong>
             </div>
           </div>
 
@@ -257,7 +257,7 @@ export default function OrderSuccess() {
             <li>Your order is sent to the mill for quality bag packing.</li>
             <li>Hariharan Traders books the consignment with the parcel transport service.</li>
             <li>You will receive an SMS/WhatsApp with the lorry waybill number.</li>
-            <li>Visit the counter, pay the nominal freight charge, and collect your rice bags.</li>
+            <li>Visit the counter, pay the freight charges (₹109 per bag across Tamil Nadu), and collect your rice bags.</li>
           </ol>
         </div>
 

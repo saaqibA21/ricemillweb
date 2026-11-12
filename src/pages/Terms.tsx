@@ -26,7 +26,7 @@ export default function Terms() {
             },
             {
               title: '4. Delivery and Shipping',
-              content: `We deliver across India. Standard delivery takes 3–5 business days. Delivery timelines may vary due to location, weather conditions, or other unforeseen circumstances. Free delivery is applicable on orders above ₹999. We are not liable for delays caused by courier partners or natural events beyond our control.`,
+              content: `Heavy rice consignments (25kg – 50kg bags) are booked via reliable transport parcel networks (mSs Parcel Service and A1 Speed Parcel Service) to over 1,228+ pickup counters across Tamil Nadu and neighboring states. Standard counter delivery takes 2–4 business days. Freight fees all over Tamil Nadu are ₹109 per bag, to be payable at pickup counter upon collection. We are not liable for transit delays caused by strikes or natural events beyond our control.`,
             },
             {
               title: '5. Returns and Refunds',

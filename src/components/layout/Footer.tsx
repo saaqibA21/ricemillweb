@@ -139,7 +139,7 @@ export default function Footer() {
           <div className="flex items-center gap-4">
             <span>FSSAI: 10012345678901</span>
             <span>•</span>
-            <span>GST: 03AAAAA0000A1Z5</span>
+            <span>GSTIN: 33AWJPK3483A1ZT</span>
             <span>•</span>
             <Link to="/admin" className="text-stone-400 hover:text-[#d4a017] transition-colors">
               Admin Portal
