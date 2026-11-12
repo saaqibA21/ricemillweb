@@ -117,8 +117,8 @@ export default function Login() {
               <form onSubmit={handleSendOtp} className="space-y-5">
                 <div>
                   <label className="label">Mobile Number</label>
-                  <div className="relative">
-                    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center pointer-events-none gap-1.5 text-stone-600 font-bold text-sm border-r border-[#d6cfc3] pr-2.5">
+                  <div className="flex rounded-xl border border-[#d6cfc3] focus-within:border-[#d4a017] focus-within:ring-1 focus-within:ring-[#d4a017] bg-white transition-all shadow-sm overflow-hidden">
+                    <div className="flex items-center gap-1.5 px-3.5 bg-stone-50 border-r border-[#d6cfc3] text-stone-600 font-bold text-sm select-none shrink-0">
                       <span>🇮🇳</span>
                       <span>+91</span>
                     </div>
@@ -129,7 +129,7 @@ export default function Login() {
                       placeholder="98765 43210"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
-                      className="input pl-20 tracking-wider font-medium text-base"
+                      className="w-full bg-transparent px-4 py-3 text-[#1c1917] placeholder-stone-400 focus:outline-none tracking-wider font-medium text-base"
                       required
                       autoFocus
                     />
