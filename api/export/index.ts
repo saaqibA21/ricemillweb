@@ -7,8 +7,7 @@ import { sendWholesaleInquiryEmail } from '../_lib/email.js';
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const url = process.env.DATABASE_URL;
-  if (!url) return res.status(503).json({ error: 'DATABASE_URL is not set' });
+  
 
   try {
     const body = (typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {}) as {

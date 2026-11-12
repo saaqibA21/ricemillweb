@@ -5,8 +5,7 @@ import { getDb } from '../_lib/db.js';
 import { sendOrderConfirmationEmail } from '../_lib/email.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const url = process.env.DATABASE_URL;
-  if (!url) return res.status(500).json({ error: 'DATABASE_URL is not set' });
+  
 
   if (req.method === 'GET') {
     try {

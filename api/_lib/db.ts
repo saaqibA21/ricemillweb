@@ -1,5 +1,4 @@
 // api/_lib/db.ts
-import { neon } from '@neondatabase/serverless';
 import postgres from 'postgres';
 
 export const SUPABASE_URL =
@@ -10,17 +9,11 @@ let _pgInstance: ReturnType<typeof postgres> | null = null;
 export function getDb() {
   let url = process.env.DATABASE_URL || SUPABASE_URL;
 
-  // Automatically divert from the old quota-locked Neon endpoint to active Supabase
+  // If environment variable is pointing to the old quota-exceeded Neon endpoint, route to active Supabase
   if (!url || url.includes('ep-empty-lake-b30d8hxd')) {
     url = SUPABASE_URL;
   }
 
-  // If a valid custom Neon database is used
-  if (url.includes('neon.tech') && !url.includes('ep-empty-lake-b30d8hxd')) {
-    return neon(url);
-  }
-
-  // Supabase / standard PostgreSQL
   if (!_pgInstance) {
     _pgInstance = postgres(url, {
       ssl: 'require',
