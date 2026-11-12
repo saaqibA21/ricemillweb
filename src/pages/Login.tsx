@@ -117,10 +117,11 @@ export default function Login() {
               <form onSubmit={handleSendOtp} className="space-y-5">
                 <div>
                   <label className="label">Mobile Number</label>
-                  <div className="flex gap-2">
-                    <span className="input w-16 text-center font-semibold text-stone-500 shrink-0 select-none flex items-center justify-center bg-stone-50">
-                      +91
-                    </span>
+                  <div className="relative">
+                    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center pointer-events-none gap-1.5 text-stone-600 font-bold text-sm border-r border-[#d6cfc3] pr-2.5">
+                      <span>🇮🇳</span>
+                      <span>+91</span>
+                    </div>
                     <input
                       type="tel"
                       inputMode="numeric"
@@ -128,7 +129,7 @@ export default function Login() {
                       placeholder="98765 43210"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
-                      className="input flex-1 tracking-wider"
+                      className="input pl-20 tracking-wider font-medium text-base"
                       required
                       autoFocus
                     />
