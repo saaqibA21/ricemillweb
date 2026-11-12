@@ -1,9 +1,9 @@
 // api/admin/products.ts
 // Admin API for Managing Products (CRUD)
-import { neon } from '@neondatabase/serverless';
+import { getDb } from '../_lib/db';
 import { products as defaultProducts } from '../../src/data/products';
 
-export const config = { runtime: 'edge' };
+// runtime: nodejs
 
 function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -46,7 +46,7 @@ export default async function handler(req: Request) {
     return json({ error: 'Unauthorized: missing token' }, 401);
   }
 
-  const sql = neon(url);
+  const sql = getDb();
 
   try {
     // 1. GET: Fetch all products (with auto-seed & graceful fallback)

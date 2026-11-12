@@ -4,7 +4,7 @@
 import { db, mapProductRow, json } from '../_lib/products';
 import { products as defaultProducts } from '../../src/data/products';
 
-export const config = { runtime: 'edge' };
+// runtime: nodejs
 
 export default async function handler(req: Request) {
   if (req.method !== 'GET') return json({ error: 'Method not allowed' }, 405);

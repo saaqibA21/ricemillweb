@@ -1,12 +1,12 @@
 // api/_lib/products.ts
 // Shared helpers for the products API routes. Files under an `_`-prefixed
 // folder are not treated as routes by Vercel.
-import { neon } from '@neondatabase/serverless';
+import { getDb } from './db';
 
 export function db() {
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error('DATABASE_URL is not set');
-  return neon(url);
+  return getDb();
 }
 
 export function mapProductRow(r: Record<string, unknown>) {

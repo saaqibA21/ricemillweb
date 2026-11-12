@@ -1,7 +1,7 @@
 // api/admin/change-password.ts
-import { neon } from '@neondatabase/serverless';
+import { getDb } from '../_lib/db';
 
-export const config = { runtime: 'edge' };
+// runtime: nodejs
 
 function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -47,7 +47,7 @@ export default async function handler(req: Request) {
       return json({ error: 'New password must be at least 6 characters long' }, 400);
     }
 
-    const sql = neon(url);
+    const sql = getDb();
 
     // Ensure settings table exists
     await sql`

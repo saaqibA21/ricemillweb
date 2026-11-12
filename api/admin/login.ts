@@ -1,7 +1,7 @@
 // api/admin/login.ts
-import { neon } from '@neondatabase/serverless';
+import { getDb } from '../_lib/db';
 
-export const config = { runtime: 'edge' };
+// runtime: nodejs
 
 function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -26,7 +26,7 @@ export default async function handler(req: Request) {
     const url = process.env.DATABASE_URL;
     if (url) {
       try {
-        const sql = neon(url);
+        const sql = getDb();
         const rows = await sql`
           SELECT key, value FROM admin_settings WHERE key IN ('admin_password', 'admin_username')
         `;

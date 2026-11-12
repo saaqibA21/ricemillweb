@@ -1,7 +1,7 @@
 // api/orders/index.ts
 // POST /api/orders -> create an order, returns { id, estimatedDelivery }
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { neon } from '@neondatabase/serverless';
+import { getDb } from '../_lib/db.js';
 import { sendOrderConfirmationEmail } from '../_lib/email.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -15,7 +15,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(400).json({ error: 'Missing order id or phone parameter' });
       }
 
-      const sql = neon(url);
+      const sql = getDb();
 
       if (id) {
         const rows = await sql`select * from orders where id = ${id} limit 1`;
@@ -106,7 +106,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'Missing required order fields' });
     }
 
-    const sql = neon(url);
+    const sql = getDb();
     const id = `ORD${Date.now()}`;
     const estimatedDelivery = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString();
     const paymentStatus = paymentMethod === 'cod' ? 'pending' : 'paid';

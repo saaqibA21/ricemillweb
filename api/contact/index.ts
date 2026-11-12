@@ -1,7 +1,7 @@
 // api/contact/index.ts
 // POST /api/contact -> save customer feedback / inquiry
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { neon } from '@neondatabase/serverless';
+import { getDb } from '../_lib/db.js';
 import { sendContactFeedbackEmail } from '../_lib/email.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -24,7 +24,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'Name, email, and message are required' });
     }
 
-    const sql = neon(url);
+    const sql = getDb();
     const id = `FB${Date.now()}`;
 
     await sql`

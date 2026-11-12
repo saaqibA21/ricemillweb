@@ -1,7 +1,7 @@
 ﻿// api/admin/data.ts
-import { neon } from '@neondatabase/serverless';
+import { getDb } from '../_lib/db';
 
-export const config = { runtime: 'edge' };
+// runtime: nodejs
 
 function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -22,7 +22,7 @@ export default async function handler(req: Request) {
   if (!url) return json({ error: 'DATABASE_URL not configured' }, 503);
 
   try {
-    const sql = neon(url);
+    const sql = getDb();
 
     const [orders, feedbacks, exportRequests] = await Promise.all([
       sql`select * from orders order by created_at desc`,

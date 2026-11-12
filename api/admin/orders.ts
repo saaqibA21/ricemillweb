@@ -1,7 +1,7 @@
 ﻿// api/admin/orders.ts
-import { neon } from '@neondatabase/serverless';
+import { getDb } from '../_lib/db';
 
-export const config = { runtime: 'edge' };
+// runtime: nodejs
 
 function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -32,7 +32,7 @@ export default async function handler(req: Request) {
 
     if (!id) return json({ error: 'Order id is required' }, 400);
 
-    const sql = neon(url);
+    const sql = getDb();
 
     if (status && paymentStatus) {
       await sql`

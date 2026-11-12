@@ -1,7 +1,7 @@
 // api/export/index.ts
 // POST /api/export -> save wholesale and export inquiry
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { neon } from '@neondatabase/serverless';
+import { getDb } from '../_lib/db.js';
 import { sendWholesaleInquiryEmail } from '../_lib/email.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -27,7 +27,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'Contact name, phone, and email are required' });
     }
 
-    const sql = neon(url);
+    const sql = getDb();
     const id = `EXP${Date.now()}`;
 
     await sql`
