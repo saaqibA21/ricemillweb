@@ -1,36 +1,26 @@
-﻿// api/admin/orders.ts
+// api/admin/orders.ts
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getDb } from '../_lib/db';
 
-// runtime: nodejs
-
-function json(data: unknown, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { 'content-type': 'application/json' },
-  });
-}
-
-export default async function handler(req: Request) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'PATCH' && req.method !== 'POST') {
-    return json({ error: 'Method not allowed' }, 405);
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const authHeader = req.headers.get('authorization') || '';
+  const authHeader = (req.headers.authorization || '') as string;
   if (!authHeader.startsWith('Bearer ')) {
-    return json({ error: 'Unauthorized: missing token' }, 401);
+    return res.status(401).json({ error: 'Unauthorized: missing token' });
   }
-
-  const url = process.env.DATABASE_URL;
-  if (!url) return json({ error: 'DATABASE_URL not configured' }, 503);
 
   try {
-    const { id, status, paymentStatus } = (await req.json()) as {
+    const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {};
+    const { id, status, paymentStatus } = body as {
       id?: string;
       status?: string;
       paymentStatus?: string;
     };
 
-    if (!id) return json({ error: 'Order id is required' }, 400);
+    if (!id) return res.status(400).json({ error: 'Order id is required' });
 
     const sql = getDb();
 
@@ -46,13 +36,9 @@ export default async function handler(req: Request) {
       await sql`update orders set payment_status = ${paymentStatus} where id = ${id}`;
     }
 
-    return json({ success: true, id, status, paymentStatus });
+    return res.status(200).json({ success: true, id, status, paymentStatus });
   } catch (err: unknown) {
-    const rawMsg = err instanceof Error ? err.message : String(err);
-    const isQuota = rawMsg.toLowerCase().includes('quota') || rawMsg.includes('402');
-    const errorMsg = isQuota
-      ? 'Database quota exceeded: Neon free tier compute limit has been reached.'
-      : (err instanceof Error ? err.message : 'Failed to update order');
-    return json({ error: errorMsg, isQuota }, isQuota ? 402 : 500);
+    const errorMsg = err instanceof Error ? err.message : 'Failed to update order';
+    return res.status(500).json({ error: errorMsg });
   }
 }

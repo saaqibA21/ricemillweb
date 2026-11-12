@@ -1,15 +1,14 @@
 // api/products/index.ts
-// GET /api/products            -> all products
-// GET /api/products?variety=X  -> products filtered by variety
-import { db, mapProductRow, json } from '../_lib/products';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { db, mapProductRow } from '../_lib/products';
 import { products as defaultProducts } from '../../src/data/products';
 
-// runtime: nodejs
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
-export default async function handler(req: Request) {
-  if (req.method !== 'GET') return json({ error: 'Method not allowed' }, 405);
-
-  const variety = new URL(req.url).searchParams.get('variety');
+  const variety = req.query.variety as string | undefined;
 
   try {
     const sql = db();
@@ -18,16 +17,15 @@ export default async function handler(req: Request) {
       : await sql`select * from products order by created_at`;
 
     if (rows && rows.length > 0) {
-      return json(rows.map(mapProductRow));
+      return res.status(200).json(rows.map(mapProductRow));
     }
   } catch (err: unknown) {
-    console.warn('Database error or table missing, falling back to static catalog:', err);
+    console.warn('Database error in products handler, falling back to static catalog:', err);
   }
 
-  // Fallback to static catalog if DB is empty or during migration
   const filtered = variety
     ? defaultProducts.filter((p) => p.variety.toLowerCase() === variety.toLowerCase())
     : defaultProducts;
 
-  return json(filtered);
+  return res.status(200).json(filtered);
 }

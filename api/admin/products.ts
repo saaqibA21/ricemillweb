@@ -1,16 +1,7 @@
 // api/admin/products.ts
-// Admin API for Managing Products (CRUD)
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getDb } from '../_lib/db';
 import { products as defaultProducts } from '../../src/data/products';
-
-// runtime: nodejs
-
-function json(data: unknown, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { 'content-type': 'application/json' },
-  });
-}
 
 function mapRow(r: Record<string, unknown>) {
   return {
@@ -37,61 +28,34 @@ function mapRow(r: Record<string, unknown>) {
   };
 }
 
-export default async function handler(req: Request) {
-  const url = process.env.DATABASE_URL;
-  if (!url) return json({ error: 'DATABASE_URL not configured' }, 503);
-
-  const authHeader = req.headers.get('authorization') || '';
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  const authHeader = (req.headers.authorization || '') as string;
   if (!authHeader.startsWith('Bearer ') && req.method !== 'GET') {
-    return json({ error: 'Unauthorized: missing token' }, 401);
+    return res.status(401).json({ error: 'Unauthorized: missing token' });
   }
 
   const sql = getDb();
 
   try {
-    // 1. GET: Fetch all products (with auto-seed & graceful fallback)
+    // 1. GET: Fetch all products
     if (req.method === 'GET') {
       try {
         const rows = await sql`select * from products order by created_at desc`;
         if (rows && rows.length > 0) {
-          return json(rows.map(mapRow));
-        }
-
-        // Table empty: attempt seeding
-        for (const p of defaultProducts) {
-          await sql`
-            insert into products (
-              id, name, slug, variety, description, long_description, image, images,
-              grain_length, aroma, moisture, cooking_time, best_for, badges, prices,
-              stock, rating, reviews, is_wholesale_available, min_wholesale_qty
-            ) values (
-              ${p.id}, ${p.name}, ${p.slug}, ${p.variety}, ${p.description}, ${p.longDescription},
-              ${p.image}, ${JSON.stringify(p.images || [p.image])}, ${p.grainLength}, ${p.aroma}, ${p.moisture},
-              ${p.cookingTime}, ${JSON.stringify(p.bestFor || [])}, ${JSON.stringify(p.badges || [])},
-              ${JSON.stringify(p.prices)}, ${p.stock || 100}, ${p.rating || 5}, ${p.reviews || 0},
-              ${p.isWholesaleAvailable ?? true}, ${p.minWholesaleQty || 1}
-            )
-            on conflict (id) do nothing
-          `;
-        }
-        const rowsAfterSeed = await sql`select * from products order by created_at desc`;
-        if (rowsAfterSeed && rowsAfterSeed.length > 0) {
-          return json(rowsAfterSeed.map(mapRow));
+          return res.status(200).json(rows.map(mapRow));
         }
       } catch (err: unknown) {
-        console.warn('Database query warning in GET /api/admin/products, falling back to static catalog:', err);
+        console.warn('DB query error in admin products, falling back to static:', err);
       }
-
-      // Graceful fallback to static catalog so admin dashboard never 500s on GET
-      return json(defaultProducts);
+      return res.status(200).json(defaultProducts);
     }
 
     // 2. POST: Add new product
     if (req.method === 'POST') {
-      const body = await req.json();
+      const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {};
       const id = body.id || `rm-${Date.now()}`;
       const name = (body.name || '').trim();
-      if (!name) return json({ error: 'Product name is required' }, 400);
+      if (!name) return res.status(400).json({ error: 'Product name is required' });
 
       const baseSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
       const slug = body.slug || `${baseSlug}-${Date.now().toString().slice(-4)}`;
@@ -131,14 +95,14 @@ export default async function handler(req: Request) {
         )
       `;
 
-      return json({ success: true, message: 'Product created successfully', id, slug }, 201);
+      return res.status(201).json({ success: true, message: 'Product created successfully', id, slug });
     }
 
     // 3. PUT: Update existing product
     if (req.method === 'PUT') {
-      const body = await req.json();
+      const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {};
       const id = body.id;
-      if (!id) return json({ error: 'Product ID is required' }, 400);
+      if (!id) return res.status(400).json({ error: 'Product ID is required' });
 
       const name = (body.name || '').trim();
       const variety = body.variety || 'Basmati';
@@ -178,27 +142,22 @@ export default async function handler(req: Request) {
         where id = ${id}
       `;
 
-      return json({ success: true, message: 'Product updated successfully', id });
+      return res.status(200).json({ success: true, message: 'Product updated successfully', id });
     }
 
     // 4. DELETE: Remove product
     if (req.method === 'DELETE') {
-      const { searchParams } = new URL(req.url);
-      const id = searchParams.get('id');
-      if (!id) return json({ error: 'Product ID is required' }, 400);
+      const id = req.query.id as string | undefined;
+      if (!id) return res.status(400).json({ error: 'Product ID is required' });
 
       await sql`delete from products where id = ${id}`;
-      return json({ success: true, message: 'Product deleted successfully', id });
+      return res.status(200).json({ success: true, message: 'Product deleted successfully', id });
     }
 
-    return json({ error: 'Method not allowed' }, 405);
+    return res.status(405).json({ error: 'Method not allowed' });
   } catch (err: unknown) {
     console.error('Admin products API error:', err);
-    const rawMsg = err instanceof Error ? err.message : String(err);
-    const isQuota = rawMsg.toLowerCase().includes('quota') || rawMsg.includes('402');
-    const message = isQuota
-      ? 'Database quota exceeded: Neon free tier usage limit has been reached. Please check console.neon.tech to resume compute or upgrade.'
-      : (err instanceof Error ? err.message : 'Database error');
-    return json({ error: message, isQuota }, isQuota ? 402 : 500);
+    const message = err instanceof Error ? err.message : 'Database error';
+    return res.status(500).json({ error: message });
   }
 }

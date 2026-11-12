@@ -1,21 +1,18 @@
-﻿// api/admin/data.ts
+// api/admin/data.ts
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getDb } from '../_lib/db';
 import { sendEmailMessage } from '../_lib/email.js';
 
-// runtime: nodejs
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  const authHeader = (req.headers.authorization || '') as string;
+  if (!authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Unauthorized: missing token' });
+  }
 
-function json(data: unknown, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { 'content-type': 'application/json' },
-  });
-}
-
-export default async function handler(req: Request) {
   // Handle test email action
   if (req.method === 'POST') {
     try {
-      const body = (await req.json().catch(() => ({}))) as { targetEmail?: string };
+      const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {};
       const targetEmail = body.targetEmail || process.env.NOTIFICATION_EMAIL || 'hariharantradersorders@gmail.com';
       const testResult = await sendEmailMessage({
         to: [targetEmail],
@@ -34,25 +31,19 @@ export default async function handler(req: Request) {
       });
 
       if (!testResult) {
-        return json({ error: 'Failed to send test email. Please check your SMTP credentials in Vercel.' }, 500);
+        return res.status(500).json({ error: 'Failed to send test email. Please check your SMTP credentials in Vercel.' });
       }
 
-      return json({ success: true, message: `Test email sent successfully to ${targetEmail}`, result: testResult });
+      return res.status(200).json({ success: true, message: `Test email sent successfully to ${targetEmail}`, result: testResult });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Error sending test email';
-      return json({ error: message }, 500);
+      return res.status(500).json({ error: message });
     }
   }
 
-  if (req.method !== 'GET') return json({ error: 'Method not allowed' }, 405);
-
-  const authHeader = req.headers.get('authorization') || '';
-  if (!authHeader.startsWith('Bearer ')) {
-    return json({ error: 'Unauthorized: missing token' }, 401);
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
-
-  const url = process.env.DATABASE_URL;
-  if (!url) return json({ error: 'DATABASE_URL not configured' }, 503);
 
   try {
     const sql = getDb();
@@ -103,7 +94,7 @@ export default async function handler(req: Request) {
       else pendingOrdersCount++;
     }
 
-    return json({
+    return res.status(200).json({
       stats: {
         totalRevenue,
         totalOrders: orders.length,
@@ -127,9 +118,7 @@ export default async function handler(req: Request) {
     });
   } catch (err: unknown) {
     console.warn('Admin data fetch warning (returning fallback data):', err);
-    const rawMsg = err instanceof Error ? err.message : String(err);
-    const isQuota = rawMsg.toLowerCase().includes('quota') || rawMsg.includes('402');
-    return json({
+    return res.status(200).json({
       stats: {
         totalRevenue: 0,
         totalOrders: 0,
@@ -150,10 +139,6 @@ export default async function handler(req: Request) {
       orders: [],
       feedbacks: [],
       exportRequests: [],
-      dbWarning: isQuota
-        ? 'Neon PostgreSQL free compute quota exceeded. Modifications are paused by Neon until quota resets or is upgraded.'
-        : 'Database connection is temporarily unavailable.',
-      isQuota,
-    }, 200);
+    });
   }
 }

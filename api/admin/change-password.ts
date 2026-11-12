@@ -1,128 +1,91 @@
 // api/admin/change-password.ts
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getDb } from '../_lib/db';
 
-// runtime: nodejs
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-function json(data: unknown, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { 'content-type': 'application/json' },
-  });
-}
-
-export default async function handler(req: Request) {
-  if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
-
-  const authHeader = req.headers.get('authorization') || '';
+  const authHeader = (req.headers.authorization || '') as string;
   if (!authHeader.startsWith('Bearer ')) {
-    return json({ error: 'Unauthorized: missing token' }, 401);
+    return res.status(401).json({ error: 'Unauthorized: missing admin token' });
   }
 
-  const url = process.env.DATABASE_URL;
-  if (!url) return json({ error: 'DATABASE_URL not configured' }, 503);
-
   try {
-    const { currentPassword, newUsername, newPassword } = (await req.json()) as {
+    const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {};
+    const { currentPassword, newPassword, newUsername } = body as {
       currentPassword?: string;
-      newUsername?: string;
       newPassword?: string;
+      newUsername?: string;
     };
 
-    if (!currentPassword) {
-      return json({ error: 'Current password is required to make changes' }, 400);
+    if (!newPassword && !newUsername) {
+      return res.status(400).json({ error: 'Either new username or new password must be provided' });
     }
 
-    const hasNewUsername = typeof newUsername === 'string' && newUsername.trim().length > 0;
-    const hasNewPassword = typeof newPassword === 'string' && newPassword.length > 0;
-
-    if (!hasNewUsername && !hasNewPassword) {
-      return json({ error: 'Please enter a new username or new password to update' }, 400);
+    if (newPassword && newPassword.length < 6) {
+      return res.status(400).json({ error: 'New password must be at least 6 characters long' });
     }
 
-    if (hasNewUsername && newUsername.trim().length < 3) {
-      return json({ error: 'New username must be at least 3 characters long' }, 400);
-    }
-
-    if (hasNewPassword && newPassword.length < 6) {
-      return json({ error: 'New password must be at least 6 characters long' }, 400);
-    }
-
-    const sql = getDb();
-
-    // Ensure settings table exists
-    await sql`
-      CREATE TABLE IF NOT EXISTS admin_settings (
-        key text PRIMARY KEY,
-        value text NOT NULL,
-        updated_at timestamptz DEFAULT now()
-      )
-    `;
-
-    // Fetch existing credentials
     let validPass = process.env.ADMIN_PASSWORD || 'admin@hariharan1981';
     let validUser = process.env.ADMIN_ID || 'admin';
 
-    const rows = await sql`
-      SELECT key, value FROM admin_settings WHERE key IN ('admin_password', 'admin_username')
-    `;
-    for (const row of rows) {
-      if (row.key === 'admin_password' && row.value) validPass = row.value;
-      if (row.key === 'admin_username' && row.value) validUser = row.value;
+    const sql = getDb();
+
+    try {
+      const rows = await sql`
+        SELECT key, value FROM admin_settings WHERE key IN ('admin_password', 'admin_username')
+      `;
+      for (const row of rows as any[]) {
+        if (row.key === 'admin_password' && row.value) validPass = row.value;
+        if (row.key === 'admin_username' && row.value) validUser = row.value;
+      }
+    } catch {
+      // Table might not exist yet
     }
 
-    // Verify current password
     if (currentPassword !== validPass) {
-      return json({ error: 'Current password does not match' }, 400);
+      return res.status(403).json({ error: 'Current password is incorrect' });
     }
 
-    const updates: string[] = [];
+    await sql`
+      CREATE TABLE IF NOT EXISTS admin_settings (
+        key text primary key,
+        value text not null,
+        updated_at timestamptz not null default now()
+      )
+    `;
 
-    // Update username if requested and different
-    if (hasNewUsername && newUsername.trim() !== validUser) {
+    if (newPassword) {
+      await sql`
+        INSERT INTO admin_settings (key, value, updated_at)
+        VALUES ('admin_password', ${newPassword}, now())
+        ON CONFLICT (key) DO UPDATE
+        SET value = ${newPassword}, updated_at = now()
+      `;
+    }
+
+    if (newUsername && newUsername.trim()) {
       const trimmedUser = newUsername.trim();
       await sql`
         INSERT INTO admin_settings (key, value, updated_at)
         VALUES ('admin_username', ${trimmedUser}, now())
-        ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()
+        ON CONFLICT (key) DO UPDATE
+        SET value = ${trimmedUser}, updated_at = now()
       `;
       validUser = trimmedUser;
-      updates.push('username');
     }
 
-    // Update password if requested
-    if (hasNewPassword) {
-      await sql`
-        INSERT INTO admin_settings (key, value, updated_at)
-        VALUES ('admin_password', ${newPassword}, now())
-        ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()
-      `;
-      validPass = newPassword;
-      updates.push('password');
-    }
+    const updatedPass = newPassword || validPass;
+    const newToken = btoa(`${validUser}:${Date.now()}:${updatedPass.slice(0, 4)}`);
 
-    if (updates.length === 0) {
-      return json({ error: 'New username matches the current username. No changes to save.' }, 400);
-    }
-
-    const newToken = btoa(`${validUser}:${Date.now()}:${validPass.slice(0, 4)}`);
-
-    const message = updates.length === 2
-      ? 'Admin username and password updated successfully!'
-      : updates[0] === 'username'
-      ? `Admin username updated to "${validUser}" successfully!`
-      : 'Admin password updated successfully!';
-
-    return json({
+    return res.status(200).json({
       success: true,
-      message,
-      username: validUser,
+      message: 'Credentials updated successfully in Supabase',
       token: newToken,
+      user: { username: validUser, role: 'administrator' },
     });
   } catch (err: unknown) {
-    let msg = err instanceof Error ? err.message : 'Failed to update credentials';
-    if (msg.toLowerCase().includes('quota') || msg.includes('402')) {
-      msg = 'Database project monthly compute quota exceeded. Please check your Neon.tech account limits.';
-    }
-    return json({ error: msg }, 500);
+    const errorMsg = err instanceof Error ? err.message : 'Failed to update credentials';
+    return res.status(500).json({ error: errorMsg });
   }
 }
