@@ -1,6 +1,6 @@
 // src/App.tsx
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { useProductsStore } from './store/productsStore';
 import Navbar from './components/layout/Navbar';
@@ -24,7 +24,7 @@ import Refund from './pages/Refund';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminLogin from './pages/admin/AdminLogin';
 
-// WhatsApp floating button
+// WhatsApp floating button for storefront
 function WhatsAppButton() {
   return (
     <a
@@ -41,6 +41,75 @@ function WhatsAppButton() {
   );
 }
 
+function MainLayout() {
+  const location = useLocation();
+  // Check if current route is part of the admin portal
+  const isAdminRoute = location.pathname.toLowerCase().startsWith('/admin');
+
+  return (
+    <div className="min-h-screen bg-[#faf8f5] text-[#1c1917] flex flex-col selection:bg-[#fef08a] selection:text-[#1c1917] w-full">
+      {/* Consumer store navigation bar - NEVER render on any /admin route */}
+      {!isAdminRoute && <Navbar />}
+
+      <div className="flex-1">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/shop" element={<Shop />} />
+          <Route path="/branches" element={<Branches />} />
+          <Route path="/product/:slug" element={<ProductDetail />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/order-success/:orderId" element={<OrderSuccess />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/account" element={<Account />} />
+          <Route path="/wholesale" element={<Wholesale />} />
+          <Route path="/export" element={<Export />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/refund" element={<Refund />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          {/* Catch-all redirect */}
+          <Route
+            path="*"
+            element={
+              <main className="pt-24 pb-20 min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                  <div className="text-8xl mb-6">🌾</div>
+                  <h1 className="font-serif text-4xl text-[#1c1917] mb-4">404 — Page Not Found</h1>
+                  <p className="text-stone-500 mb-8">The page you're looking for doesn't exist.</p>
+                  <a href="/" className="btn-primary text-lg px-8 py-4">
+                    Go Home
+                  </a>
+                </div>
+              </main>
+            }
+          />
+        </Routes>
+      </div>
+
+      {/* Footer and floating chat - only for public storefront */}
+      {!isAdminRoute && <Footer />}
+      {!isAdminRoute && <WhatsAppButton />}
+
+      <Toaster
+        position="bottom-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#ffffff',
+            color: '#1c1917',
+            border: '1px solid #e8e2d5',
+            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
+          },
+        }}
+      />
+    </div>
+  );
+}
+
 export default function App() {
   useEffect(() => {
     useProductsStore.getState().fetchProducts();
@@ -48,64 +117,7 @@ export default function App() {
 
   return (
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      <div className="min-h-screen bg-[#faf8f5] text-[#1c1917] flex flex-col selection:bg-[#fef08a] selection:text-[#1c1917] w-full">
-        <Navbar />
-
-        <div className="flex-1">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/branches" element={<Branches />} />
-            <Route path="/product/:slug" element={<ProductDetail />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/order-success/:orderId" element={<OrderSuccess />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/account" element={<Account />} />
-            <Route path="/wholesale" element={<Wholesale />} />
-            <Route path="/export" element={<Export />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/refund" element={<Refund />} />
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/login" element={<AdminLogin />} />
-            {/* Catch-all redirect */}
-            <Route
-              path="*"
-              element={
-                <main className="pt-24 pb-20 min-h-screen flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="text-8xl mb-6">🌾</div>
-                    <h1 className="font-serif text-4xl text-[#1c1917] mb-4">404 — Page Not Found</h1>
-                    <p className="text-stone-500 mb-8">The page you're looking for doesn't exist.</p>
-                    <a href="/" className="btn-primary text-lg px-8 py-4">
-                      Go Home
-                    </a>
-                  </div>
-                </main>
-              }
-            />
-          </Routes>
-        </div>
-
-        <Footer />
-        <WhatsAppButton />
-
-        <Toaster
-          position="bottom-right"
-          toastOptions={{
-            duration: 3000,
-            style: {
-              background: '#ffffff',
-              color: '#1c1917',
-              border: '1px solid #e8e2d5',
-              boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
-            },
-          }}
-        />
-      </div>
+      <MainLayout />
     </BrowserRouter>
   );
 }

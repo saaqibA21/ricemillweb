@@ -603,7 +603,7 @@ export default function AdminDashboard() {
   if (!token) return null;
 
   return (
-    <main className="min-h-screen pt-6 sm:pt-8 pb-20 px-4 sm:px-6 lg:px-8 bg-[#faf8f5] text-[#1c1917]">
+    <main className="min-h-screen pt-8 sm:pt-10 pb-24 px-4 sm:px-6 lg:px-8 bg-[#faf8f5] text-[#1c1917]">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Top Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#e8e2d5] pb-6">
@@ -618,7 +618,7 @@ export default function AdminDashboard() {
                 <span className="bg-[#fefce8] border border-[#d4a017] text-[#926b09] px-3 py-0.5 rounded-full text-xs font-bold uppercase tracking-widest shadow-sm">
                   Management Portal
                 </span>
-                <span className="text-stone-500 text-xs font-medium">Live Database Connected</span>
+                <span className="text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full text-xs font-semibold flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>Live Supabase Connected</span>
               </div>
               <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#1c1917] mt-1">
                 Hariharan Traders Dashboard
