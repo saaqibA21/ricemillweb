@@ -1,1 +1,2 @@
-export { default, config } from '../products';
+// api/admin/products/index.ts
+export { default } from '../products';

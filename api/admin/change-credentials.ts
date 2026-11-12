@@ -1,2 +1,2 @@
 // api/admin/change-credentials.ts
-export { default, config } from './change-password';
+export { default } from './change-password';
