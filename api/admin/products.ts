@@ -2,6 +2,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getDb } from '../_lib/db.js';
 import { defaultProducts } from '../_lib/catalog.js';
+import { parseJsonArray } from '../_lib/products.js';
 
 function mapRow(r: Record<string, unknown>) {
   return {
@@ -12,14 +13,14 @@ function mapRow(r: Record<string, unknown>) {
     description: r.description,
     longDescription: r.long_description,
     image: r.image,
-    images: typeof r.images === 'string' ? JSON.parse(r.images as string) : r.images || [],
+    images: parseJsonArray<string>(r.images, [(r.image as string) || '/assets/rice-bowl.jpg']),
     grainLength: r.grain_length || '8.0mm',
     aroma: r.aroma || 'Medium',
     moisture: r.moisture || '≤13%',
     cookingTime: r.cooking_time || '15-20 min',
-    bestFor: typeof r.best_for === 'string' ? JSON.parse(r.best_for as string) : r.best_for || [],
-    badges: typeof r.badges === 'string' ? JSON.parse(r.badges as string) : r.badges || [],
-    prices: typeof r.prices === 'string' ? JSON.parse(r.prices as string) : r.prices || [],
+    bestFor: parseJsonArray<string>(r.best_for, ['Daily Cooking']),
+    badges: parseJsonArray<string>(r.badges, ['Premium Quality']),
+    prices: parseJsonArray(r.prices, [{ weight: '26 kg', weightKg: 26, price: 1100, originalPrice: 1250 }]),
     stock: Number(r.stock) || 0,
     rating: Number(r.rating) || 5.0,
     reviews: Number(r.reviews) || 0,

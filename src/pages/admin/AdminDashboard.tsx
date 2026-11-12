@@ -1131,7 +1131,7 @@ export default function AdminDashboard() {
                           <span className="badge badge-gold font-bold shadow-sm">
                             {p.variety}
                           </span>
-                          {p.badges?.slice(0, 1).map((b) => (
+                          {(Array.isArray(p.badges) ? p.badges : []).slice(0, 1).map((b) => (
                             <span key={b} className="badge bg-white/90 text-[#1c1917] border border-[#e8e2d5] font-semibold text-[10px]">
                               {b}
                             </span>
@@ -1651,7 +1651,7 @@ export default function AdminDashboard() {
                 <label className="label">Badges (comma-separated)</label>
                 <input
                   type="text"
-                  value={editingProduct.badges?.join(', ') || ''}
+                  value={Array.isArray(editingProduct.badges) ? editingProduct.badges.join(', ') : ''}
                   onChange={(e) =>
                     setEditingProduct({
                       ...editingProduct,

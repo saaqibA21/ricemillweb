@@ -126,7 +126,7 @@ export default function ProductDetail() {
 
             {/* Badges */}
             <div className="flex flex-wrap gap-2 mb-5">
-              {product.badges.map((b) => (
+              {(Array.isArray(product.badges) ? product.badges : []).map((b) => (
                 <span key={b} className="badge badge-gold text-xs shadow-sm">
                   {b}
                 </span>

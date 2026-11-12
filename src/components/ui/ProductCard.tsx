@@ -107,7 +107,7 @@ export default function ProductCard({ product }: Props) {
               -{discount}%
             </span>
           )}
-          {product.badges.slice(0, 1).map((b) => (
+          {(Array.isArray(product.badges) ? product.badges : []).slice(0, 1).map((b) => (
             <span key={b} className="badge badge-gold shadow-sm">
               {isTa && badgeTranslations[b] ? badgeTranslations[b] : b}
             </span>
