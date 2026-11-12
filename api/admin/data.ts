@@ -1,5 +1,6 @@
 ﻿// api/admin/data.ts
 import { getDb } from '../_lib/db';
+import { sendEmailMessage } from '../_lib/email.js';
 
 // runtime: nodejs
 
@@ -11,6 +12,38 @@ function json(data: unknown, status = 200) {
 }
 
 export default async function handler(req: Request) {
+  // Handle test email action
+  if (req.method === 'POST') {
+    try {
+      const body = (await req.json().catch(() => ({}))) as { targetEmail?: string };
+      const targetEmail = body.targetEmail || process.env.NOTIFICATION_EMAIL || 'hariharantradersorders@gmail.com';
+      const testResult = await sendEmailMessage({
+        to: [targetEmail],
+        subject: '🌾 Live SMTP Verified: Hariharan Traders Rice',
+        html: `
+          <div style="font-family: Arial, sans-serif; background: #0f1a0f; color: #ffffff; padding: 25px;">
+            <div style="max-width: 500px; margin: 0 auto; background: #1a2e1a; padding: 25px; border-radius: 12px; border: 1px solid #d4a017;">
+              <h2 style="color: #d4a017; margin-top: 0;">✅ Gmail SMTP Live & Working!</h2>
+              <p>Your live Vercel deployment for <strong>Hariharan Traders Rice</strong> is successfully connected to Gmail SMTP.</p>
+              <p>Order confirmations and contact inquiries will now be delivered reliably.</p>
+              <hr style="border: 0; border-top: 1px solid #2d4a2d; margin: 20px 0;" />
+              <p style="font-size: 12px; color: #94a3b8;">Sent via ${process.env.SMTP_USER || 'Gmail SMTP'} on ${new Date().toLocaleString('en-IN')}</p>
+            </div>
+          </div>
+        `,
+      });
+
+      if (!testResult) {
+        return json({ error: 'Failed to send test email. Please check your SMTP credentials in Vercel.' }, 500);
+      }
+
+      return json({ success: true, message: `Test email sent successfully to ${targetEmail}`, result: testResult });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Error sending test email';
+      return json({ error: message }, 500);
+    }
+  }
+
   if (req.method !== 'GET') return json({ error: 'Method not allowed' }, 405);
 
   const authHeader = req.headers.get('authorization') || '';

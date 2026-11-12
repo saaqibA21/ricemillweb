@@ -283,9 +283,12 @@ export default function AdminDashboard() {
   const handleTestEmail = async () => {
     setTestingEmail(true);
     try {
-      const res = await fetch('/api/admin/test-email', {
+      const res = await fetch('/api/admin/data', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to send test email');
