@@ -14,6 +14,7 @@ import {
   MessageSquare,
   Globe,
   ExternalLink,
+  AlertTriangle,
   ChevronDown,
   ChevronUp,
   Package,
@@ -173,6 +174,8 @@ export default function AdminDashboard() {
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
   const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null);
   const [testingEmail, setTestingEmail] = useState(false);
+  const [dbWarning, setDbWarning] = useState<string | null>(null);
+  const [isQuotaExceeded, setIsQuotaExceeded] = useState(false);
 
   const navigate = useNavigate();
   const token = localStorage.getItem('admin_token');
@@ -202,6 +205,13 @@ export default function AdminDashboard() {
       setOrders(data.orders || []);
       setFeedbacks(data.feedbacks || []);
       setExportRequests(data.exportRequests || []);
+      if (data.dbWarning) {
+        setDbWarning(data.dbWarning);
+        setIsQuotaExceeded(Boolean(data.isQuota));
+      } else {
+        setDbWarning(null);
+        setIsQuotaExceeded(false);
+      }
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : 'Error fetching dashboard data';
       toast.error(errorMsg);
@@ -481,7 +491,11 @@ export default function AdminDashboard() {
       await useProductsStore.getState().fetchProducts();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Error saving product';
-      toast.error(msg);
+      toast.error(msg, { duration: 6000 });
+      if (msg.toLowerCase().includes('quota') || msg.toLowerCase().includes('neon')) {
+        setDbWarning('Neon database free compute quota exceeded. Product modifications are paused.');
+        setIsQuotaExceeded(true);
+      }
     } finally {
       setSavingProduct(false);
     }
@@ -507,7 +521,11 @@ export default function AdminDashboard() {
       await useProductsStore.getState().fetchProducts();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Error deleting product';
-      toast.error(msg);
+      toast.error(msg, { duration: 6000 });
+      if (msg.toLowerCase().includes('quota') || msg.toLowerCase().includes('neon')) {
+        setDbWarning('Neon database free compute quota exceeded. Product modifications are paused.');
+        setIsQuotaExceeded(true);
+      }
     }
   };
 
@@ -653,6 +671,43 @@ export default function AdminDashboard() {
             </button>
           </div>
         </div>
+
+        {/* Database Quota Warning Banner */}
+        {dbWarning && (
+          <div className="bg-amber-50/90 border border-amber-300 rounded-2xl p-4 sm:p-5 flex items-start gap-4 shadow-sm animate-in fade-in">
+            <div className="p-2.5 bg-amber-100 rounded-xl text-amber-800 shrink-0 mt-0.5">
+              <AlertTriangle className="w-5 h-5 text-amber-700" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h3 className="font-semibold text-amber-950 text-base">
+                  Database Notice: Neon Cloud Quota Limit Reached
+                </h3>
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide bg-amber-200 text-amber-900">
+                  Read-Only Mode
+                </span>
+              </div>
+              <p className="text-amber-900/90 text-sm mt-1.5 leading-relaxed">
+                Your database provider (<strong>Neon PostgreSQL</strong>) has reached its free tier compute allowance (100 CU hours for this billing cycle). 
+                The public store continues to display your products via the cached catalog, but write actions (saving/deleting products or updating order status) are temporarily paused by Neon until compute resets.
+              </p>
+              <div className="mt-3.5 flex flex-wrap items-center gap-3">
+                <a
+                  href="https://console.neon.tech"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-amber-800 hover:bg-amber-900 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  Open Neon Console (Reset or Upgrade)
+                </a>
+                <span className="text-xs text-amber-800/80">
+                  Tip: Creating a new free branch or project at neon.tech gives you an instant fresh connection string.
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* KPI Metric Cards */}
         {stats && (

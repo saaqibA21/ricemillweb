@@ -93,7 +93,34 @@ export default async function handler(req: Request) {
       exportRequests,
     });
   } catch (err: unknown) {
-    const errorMsg = err instanceof Error ? err.message : 'Failed to fetch admin data';
-    return json({ error: errorMsg }, 500);
+    console.warn('Admin data fetch warning (returning fallback data):', err);
+    const rawMsg = err instanceof Error ? err.message : String(err);
+    const isQuota = rawMsg.toLowerCase().includes('quota') || rawMsg.includes('402');
+    return json({
+      stats: {
+        totalRevenue: 0,
+        totalOrders: 0,
+        pendingOrdersCount: 0,
+        confirmedOrdersCount: 0,
+        deliveredOrdersCount: 0,
+        upiCount: 0,
+        upiTotal: 0,
+        codCount: 0,
+        codTotal: 0,
+        pendingPaymentsCount: 0,
+        pendingPaymentTotal: 0,
+        paidPaymentsCount: 0,
+        paidPaymentTotal: 0,
+        feedbacksCount: 0,
+        exportRequestsCount: 0,
+      },
+      orders: [],
+      feedbacks: [],
+      exportRequests: [],
+      dbWarning: isQuota
+        ? 'Neon PostgreSQL free compute quota exceeded. Modifications are paused by Neon until quota resets or is upgraded.'
+        : 'Database connection is temporarily unavailable.',
+      isQuota,
+    }, 200);
   }
 }

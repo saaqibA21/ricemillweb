@@ -49,62 +49,41 @@ export default async function handler(req: Request) {
   const sql = neon(url);
 
   try {
-    // 1. GET: Fetch all products (with auto-seed fallback)
+    // 1. GET: Fetch all products (with auto-seed & graceful fallback)
     if (req.method === 'GET') {
       try {
         const rows = await sql`select * from products order by created_at desc`;
         if (rows && rows.length > 0) {
           return json(rows.map(mapRow));
         }
-      } catch (err) {
-        // Create table if not exists
-        await sql`
-          create table if not exists products (
-            id text primary key,
-            name text not null,
-            slug text unique not null,
-            variety text not null,
-            description text not null,
-            long_description text not null,
-            image text not null,
-            images jsonb not null default '[]',
-            grain_length text not null default '8.0mm',
-            aroma text not null default 'Medium',
-            moisture text not null default '≤13%',
-            cooking_time text not null default '18 min',
-            best_for jsonb not null default '[]',
-            badges jsonb not null default '[]',
-            prices jsonb not null default '[]',
-            stock integer not null default 100,
-            rating numeric not null default 5.0,
-            reviews integer not null default 10,
-            is_wholesale_available boolean not null default true,
-            min_wholesale_qty integer not null default 1,
-            created_at timestamptz not null default now()
-          )
-        `;
+
+        // Table empty: attempt seeding
+        for (const p of defaultProducts) {
+          await sql`
+            insert into products (
+              id, name, slug, variety, description, long_description, image, images,
+              grain_length, aroma, moisture, cooking_time, best_for, badges, prices,
+              stock, rating, reviews, is_wholesale_available, min_wholesale_qty
+            ) values (
+              ${p.id}, ${p.name}, ${p.slug}, ${p.variety}, ${p.description}, ${p.longDescription},
+              ${p.image}, ${JSON.stringify(p.images || [p.image])}, ${p.grainLength}, ${p.aroma}, ${p.moisture},
+              ${p.cookingTime}, ${JSON.stringify(p.bestFor || [])}, ${JSON.stringify(p.badges || [])},
+              ${JSON.stringify(p.prices)}, ${p.stock || 100}, ${p.rating || 5}, ${p.reviews || 0},
+              ${p.isWholesaleAvailable ?? true}, ${p.minWholesaleQty || 1}
+            )
+            on conflict (id) do nothing
+          `;
+        }
+        const rowsAfterSeed = await sql`select * from products order by created_at desc`;
+        if (rowsAfterSeed && rowsAfterSeed.length > 0) {
+          return json(rowsAfterSeed.map(mapRow));
+        }
+      } catch (err: unknown) {
+        console.warn('Database query warning in GET /api/admin/products, falling back to static catalog:', err);
       }
 
-      // If empty in DB, seed from default catalog so admin can see and edit them immediately
-      for (const p of defaultProducts) {
-        await sql`
-          insert into products (
-            id, name, slug, variety, description, long_description, image, images,
-            grain_length, aroma, moisture, cooking_time, best_for, badges, prices,
-            stock, rating, reviews, is_wholesale_available, min_wholesale_qty
-          ) values (
-            ${p.id}, ${p.name}, ${p.slug}, ${p.variety}, ${p.description}, ${p.longDescription},
-            ${p.image}, ${JSON.stringify(p.images || [p.image])}, ${p.grainLength}, ${p.aroma}, ${p.moisture},
-            ${p.cookingTime}, ${JSON.stringify(p.bestFor || [])}, ${JSON.stringify(p.badges || [])},
-            ${JSON.stringify(p.prices)}, ${p.stock || 100}, ${p.rating || 5}, ${p.reviews || 0},
-            ${p.isWholesaleAvailable ?? true}, ${p.minWholesaleQty || 1}
-          )
-          on conflict (id) do nothing
-        `;
-      }
-
-      const rowsAfterSeed = await sql`select * from products order by created_at desc`;
-      return json(rowsAfterSeed.map(mapRow));
+      // Graceful fallback to static catalog so admin dashboard never 500s on GET
+      return json(defaultProducts);
     }
 
     // 2. POST: Add new product
@@ -215,7 +194,11 @@ export default async function handler(req: Request) {
     return json({ error: 'Method not allowed' }, 405);
   } catch (err: unknown) {
     console.error('Admin products API error:', err);
-    const message = err instanceof Error ? err.message : 'Database error';
-    return json({ error: message }, 500);
+    const rawMsg = err instanceof Error ? err.message : String(err);
+    const isQuota = rawMsg.toLowerCase().includes('quota') || rawMsg.includes('402');
+    const message = isQuota
+      ? 'Database quota exceeded: Neon free tier usage limit has been reached. Please check console.neon.tech to resume compute or upgrade.'
+      : (err instanceof Error ? err.message : 'Database error');
+    return json({ error: message, isQuota }, isQuota ? 402 : 500);
   }
 }

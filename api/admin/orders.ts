@@ -48,7 +48,11 @@ export default async function handler(req: Request) {
 
     return json({ success: true, id, status, paymentStatus });
   } catch (err: unknown) {
-    const errorMsg = err instanceof Error ? err.message : 'Failed to update order';
-    return json({ error: errorMsg }, 500);
+    const rawMsg = err instanceof Error ? err.message : String(err);
+    const isQuota = rawMsg.toLowerCase().includes('quota') || rawMsg.includes('402');
+    const errorMsg = isQuota
+      ? 'Database quota exceeded: Neon free tier compute limit has been reached.'
+      : (err instanceof Error ? err.message : 'Failed to update order');
+    return json({ error: errorMsg, isQuota }, isQuota ? 402 : 500);
   }
 }
