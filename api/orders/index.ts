@@ -4,9 +4,28 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getDb } from '../_lib/db.js';
 import { sendOrderConfirmationEmail } from '../_lib/email.js';
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  
+function safeParse<T>(val: unknown, fallback: T): T {
+  if (val === null || val === undefined) return fallback;
+  if (typeof val === 'object') return val as T;
+  if (typeof val === 'string') {
+    try {
+      const parsed = JSON.parse(val);
+      if (typeof parsed === 'string') {
+        try {
+          return JSON.parse(parsed) as T;
+        } catch {
+          return parsed as unknown as T;
+        }
+      }
+      return parsed as T;
+    } catch {
+      return fallback;
+    }
+  }
+  return fallback;
+}
 
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'GET') {
     try {
       const { id, phone } = req.query as { id?: string; phone?: string };
@@ -22,14 +41,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           return res.status(404).json({ error: 'Order not found' });
         }
         const r = rows[0] as any;
+        const address = safeParse<any>(r.address, {});
         return res.status(200).json({
           id: r.id,
-          items: typeof r.items === 'string' ? JSON.parse(r.items) : r.items,
+          items: safeParse<any[]>(r.items, []),
           total: Number(r.total),
           status: r.status,
           paymentStatus: r.payment_status,
           paymentMethod: r.payment_method,
-          address: typeof r.address === 'string' ? JSON.parse(r.address) : r.address,
+          address: {
+            ...address,
+            fullName: address.receiverName || address.fullName || 'Customer',
+            phone: address.receiverPhone || address.phone || '',
+          },
           createdAt: r.created_at,
           estimatedDelivery: r.estimated_delivery,
         });
@@ -44,17 +68,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           order by created_at desc 
           limit 50
         `;
-        const formatted = (rows as any[]).map((r) => ({
-          id: r.id,
-          items: typeof r.items === 'string' ? JSON.parse(r.items) : r.items,
-          total: Number(r.total),
-          status: r.status,
-          paymentStatus: r.payment_status,
-          paymentMethod: r.payment_method,
-          address: typeof r.address === 'string' ? JSON.parse(r.address) : r.address,
-          createdAt: r.created_at,
-          estimatedDelivery: r.estimated_delivery,
-        }));
+        const formatted = (rows as any[]).map((r) => {
+          const address = safeParse<any>(r.address, {});
+          return {
+            id: r.id,
+            items: safeParse<any[]>(r.items, []),
+            total: Number(r.total),
+            status: r.status,
+            paymentStatus: r.payment_status,
+            paymentMethod: r.payment_method,
+            address: {
+              ...address,
+              fullName: address.receiverName || address.fullName || 'Customer',
+              phone: address.receiverPhone || address.phone || '',
+            },
+            createdAt: r.created_at,
+            estimatedDelivery: r.estimated_delivery,
+          };
+        });
         return res.status(200).json(formatted);
       }
     } catch (err: unknown) {
@@ -83,6 +114,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         phone?: string;
         email?: string;
         name?: string;
+        fullName?: string;
         service?: string;
         branchId?: string;
         branchName?: string;
@@ -110,16 +142,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const estimatedDelivery = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString();
     const paymentStatus = paymentMethod === 'cod' ? 'pending' : 'paid';
 
+    const normalizedAddress = {
+      ...address,
+      fullName: address.receiverName || address.fullName || address.name || 'Customer',
+      phone: address.receiverPhone || address.phone || '',
+      email: address.receiverEmail || address.email || '',
+    };
+
     try {
       await sql`
         insert into orders (id, items, total, status, payment_method, payment_status, address, estimated_delivery)
         values (
-          ${id}, ${JSON.stringify(items)}, ${total}, 'confirmed',
-          ${paymentMethod}, ${paymentStatus}, ${JSON.stringify(address)}, ${estimatedDelivery}
+          ${id}, ${sql.json(items)}, ${total}, 'confirmed',
+          ${paymentMethod}, ${paymentStatus}, ${sql.json(normalizedAddress)}, ${estimatedDelivery}
         )
       `;
     } catch (dbErr) {
-      console.warn('Order DB insert error (e.g. quota limit), proceeding with email confirmation:', dbErr);
+      console.warn('Order DB insert error, proceeding with email confirmation:', dbErr);
     }
 
     // Always trigger automated order confirmation email asynchronously
@@ -128,7 +167,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       items,
       total,
       paymentMethod,
-      address,
+      address: normalizedAddress,
       estimatedDelivery,
     }).catch((err) => console.warn('Order email dispatch warning:', err));
 

@@ -56,13 +56,25 @@ interface OrderRecord {
   payment_method: string;
   payment_status: string;
   address: {
-    fullName: string;
-    phone: string;
-    line1: string;
+    fullName?: string;
+    receiverName?: string;
+    name?: string;
+    phone?: string;
+    receiverPhone?: string;
+    email?: string;
+    receiverEmail?: string;
+    line1?: string;
     line2?: string;
-    city: string;
-    state: string;
-    pincode: string;
+    city?: string;
+    state?: string;
+    pincode?: string;
+    service?: string;
+    branchId?: string;
+    branchName?: string;
+    branchAddress?: string;
+    branchPhone?: string;
+    branchDigiPin?: string;
+    contactPerson?: string;
   };
   created_at: string;
   estimated_delivery?: string;
@@ -202,7 +214,32 @@ export default function AdminDashboard() {
       if (!res.ok) throw new Error(data.error || 'Failed to load admin data');
 
       setStats(data.stats);
-      setOrders(data.orders || []);
+      const parsedOrders = (data.orders || []).map((o: any) => {
+        let items = o.items;
+        if (typeof items === 'string') {
+          try {
+            items = JSON.parse(items);
+            if (typeof items === 'string') items = JSON.parse(items);
+          } catch {
+            items = [];
+          }
+        }
+        let address = o.address;
+        if (typeof address === 'string') {
+          try {
+            address = JSON.parse(address);
+            if (typeof address === 'string') address = JSON.parse(address);
+          } catch {
+            address = {};
+          }
+        }
+        return {
+          ...o,
+          items: Array.isArray(items) ? items : [],
+          address: address || {},
+        };
+      });
+      setOrders(parsedOrders);
       setFeedbacks(data.feedbacks || []);
       setExportRequests(data.exportRequests || []);
       if (data.dbWarning) {
@@ -577,9 +614,10 @@ export default function AdminDashboard() {
       if (orderSearch) {
         const q = orderSearch.toLowerCase();
         const idMatch = o.id.toLowerCase().includes(q);
-        const nameMatch = o.address?.fullName?.toLowerCase().includes(q);
-        const phoneMatch = o.address?.phone?.includes(q);
-        if (!idMatch && !nameMatch && !phoneMatch) return false;
+        const nameMatch = (o.address?.receiverName || o.address?.fullName || o.address?.name)?.toLowerCase().includes(q);
+        const phoneMatch = (o.address?.receiverPhone || o.address?.phone)?.includes(q);
+        const branchMatch = (o.address?.branchName || o.address?.city)?.toLowerCase().includes(q);
+        if (!idMatch && !nameMatch && !phoneMatch && !branchMatch) return false;
       }
       if (paymentMethodFilter !== 'all' && o.payment_method !== paymentMethodFilter) return false;
       if (paymentStatusFilter !== 'all' && o.payment_status !== paymentStatusFilter) return false;
@@ -950,16 +988,25 @@ export default function AdminDashboard() {
                             </span>
                           </div>
 
-                          <div className="mt-2 text-sm text-[#1c1917] font-semibold">
-                            {o.address?.fullName || 'Customer'}
-                            {o.address?.phone && (
-                              <span className="text-stone-500 ml-2 font-normal font-mono text-xs">
-                                📞 {o.address.phone}
+                          <div className="mt-2 text-sm text-[#1c1917] font-semibold flex flex-wrap items-center gap-x-3 gap-y-1">
+                            <span className="font-bold text-[#1c1917]">
+                              👤 {o.address?.receiverName || o.address?.fullName || o.address?.name || 'Customer'}
+                            </span>
+                            {(o.address?.receiverPhone || o.address?.phone) && (
+                              <span className="text-stone-600 font-normal font-mono text-xs">
+                                📞 {o.address.receiverPhone || o.address.phone}
                               </span>
                             )}
-                            <span className="text-stone-500 ml-3 text-xs font-normal">
-                              📍 {o.address?.city}, {o.address?.state} - {o.address?.pincode}
-                            </span>
+                            {o.address?.branchName && (
+                              <span className="text-[#b7860e] text-xs font-semibold">
+                                🏢 {o.address.service}: {o.address.branchName}
+                              </span>
+                            )}
+                            {(o.address?.city || o.address?.state) && (
+                              <span className="text-stone-500 text-xs font-normal">
+                                📍 {[o.address?.city, o.address?.state].filter(Boolean).join(', ')}{o.address?.pincode ? ` — ${o.address.pincode}` : ''}
+                              </span>
+                            )}
                           </div>
                         </div>
 
@@ -1036,32 +1083,70 @@ export default function AdminDashboard() {
                             <h4 className="font-bold text-xs text-[#b7860e] uppercase tracking-wider mb-2">
                               Pickup &amp; Receiver Info
                             </h4>
-                            <div className="bg-[#faf8f5] p-3 rounded-xl border border-[#e8e2d5] text-xs space-y-1 text-stone-700 leading-relaxed font-medium">
-                              <p className="font-bold text-[#1c1917]">{o.address?.fullName}</p>
-                              <p>{o.address?.line1}</p>
-                              {o.address?.line2 && <p>{o.address.line2}</p>}
-                              <p>
-                                {o.address?.city}, {o.address?.state} — {o.address?.pincode}
-                              </p>
-                              <div className="pt-2 flex items-center gap-3">
-                                {o.address?.phone && (
-                                  <a
-                                    href={`tel:${o.address.phone}`}
-                                    className="text-[#b7860e] font-bold hover:underline flex items-center gap-1"
-                                  >
-                                    <Phone className="w-3.5 h-3.5" /> Call Customer
-                                  </a>
+                            <div className="bg-[#faf8f5] p-3.5 rounded-xl border border-[#e8e2d5] text-xs space-y-2 text-stone-700 leading-relaxed font-medium">
+                              <div className="border-b border-[#f0eae1] pb-2">
+                                <p className="text-[10px] uppercase font-bold text-stone-400 tracking-wider">
+                                  Receiver Contact
+                                </p>
+                                <p className="font-bold text-sm text-[#1c1917]">
+                                  {o.address?.receiverName || o.address?.fullName || o.address?.name || 'Customer'}
+                                </p>
+                                {(o.address?.receiverPhone || o.address?.phone) && (
+                                  <p className="text-stone-600 font-mono text-xs mt-0.5">
+                                    📞 {o.address.receiverPhone || o.address.phone}
+                                  </p>
                                 )}
-                                {o.address?.phone && (
-                                  <a
-                                    href={`https://wa.me/91${o.address.phone.replace(/[^0-9]/g, '')}`}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="text-[#166534] font-bold hover:underline flex items-center gap-1"
-                                  >
-                                    <MessageSquare className="w-3.5 h-3.5" /> WhatsApp
-                                  </a>
+                                {(o.address?.receiverEmail || o.address?.email) && (
+                                  <p className="text-stone-500 text-[11px]">
+                                    ✉️ {o.address.receiverEmail || o.address.email}
+                                  </p>
                                 )}
+                              </div>
+
+                              <div>
+                                <p className="text-[10px] uppercase font-bold text-stone-400 tracking-wider">
+                                  Designated Parcel Counter
+                                </p>
+                                <p className="font-bold text-xs text-[#b7860e]">
+                                  🏢 {o.address?.service} — {o.address?.branchName || o.address?.city}
+                                </p>
+                                <p className="text-stone-600 text-xs mt-0.5">
+                                  {o.address?.branchAddress || o.address?.line2 || o.address?.line1}
+                                </p>
+                                <p className="text-stone-500 text-[11px] mt-0.5">
+                                  📍 {[o.address?.city, o.address?.state].filter(Boolean).join(', ')}{o.address?.pincode ? ` — ${o.address.pincode}` : ''}
+                                </p>
+                                {o.address?.branchPhone && (
+                                  <p className="text-stone-600 text-[11px] font-mono mt-1">
+                                    ☎️ Counter Phone: {o.address.branchPhone}
+                                  </p>
+                                )}
+                              </div>
+
+                              <div className="pt-2 flex items-center gap-3 border-t border-[#f0eae1]">
+                                {(() => {
+                                  const rawPhone = o.address?.receiverPhone || o.address?.phone;
+                                  if (!rawPhone) return null;
+                                  const phoneDigits = rawPhone.replace(/[^0-9]/g, '');
+                                  return (
+                                    <>
+                                      <a
+                                        href={`tel:${rawPhone.replace(/[^0-9+]/g, '')}`}
+                                        className="text-[#b7860e] font-bold hover:underline flex items-center gap-1"
+                                      >
+                                        <Phone className="w-3.5 h-3.5" /> Call Customer
+                                      </a>
+                                      <a
+                                        href={`https://wa.me/91${phoneDigits.slice(-10)}`}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="text-[#166534] font-bold hover:underline flex items-center gap-1"
+                                      >
+                                        <MessageSquare className="w-3.5 h-3.5" /> WhatsApp
+                                      </a>
+                                    </>
+                                  );
+                                })()}
                               </div>
                             </div>
                           </div>

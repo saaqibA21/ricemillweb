@@ -3,6 +3,58 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getDb } from '../_lib/db.js';
 import { sendEmailMessage } from '../_lib/email.js';
 
+function safeParse<T>(val: unknown, fallback: T): T {
+  if (val === null || val === undefined) return fallback;
+  if (typeof val === 'object') return val as T;
+  if (typeof val === 'string') {
+    try {
+      const parsed = JSON.parse(val);
+      if (typeof parsed === 'string') {
+        try {
+          return JSON.parse(parsed) as T;
+        } catch {
+          return parsed as unknown as T;
+        }
+      }
+      return parsed as T;
+    } catch {
+      return fallback;
+    }
+  }
+  return fallback;
+}
+
+function mapAdminOrder(r: any) {
+  const address = safeParse<any>(r.address, {});
+  const items = safeParse<any[]>(r.items, []);
+
+  const receiverName = address.receiverName || address.fullName || address.name || 'Customer';
+  const phone = address.receiverPhone || address.phone || '';
+  const email = address.receiverEmail || address.email || '';
+
+  const normalizedAddress = {
+    ...address,
+    fullName: receiverName,
+    receiverName,
+    phone,
+    receiverPhone: phone,
+    email,
+    receiverEmail: email,
+  };
+
+  return {
+    id: r.id,
+    items: Array.isArray(items) ? items : [],
+    total: Number(r.total) || 0,
+    status: r.status,
+    payment_status: r.payment_status,
+    payment_method: r.payment_method,
+    address: normalizedAddress,
+    created_at: r.created_at,
+    estimated_delivery: r.estimated_delivery,
+  };
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const authHeader = (req.headers.authorization || '') as string;
   if (!authHeader.startsWith('Bearer ')) {
@@ -48,11 +100,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const sql = getDb();
 
-    const [orders, feedbacks, exportRequests] = await Promise.all([
+    const [rawOrders, feedbacks, exportRequests] = await Promise.all([
       sql`select * from orders order by created_at desc`,
       sql`select * from feedbacks order by created_at desc`,
       sql`select * from export_requests order by created_at desc`,
     ]);
+
+    const orders = (rawOrders as any[]).map(mapAdminOrder);
 
     // Compute metrics
     let totalRevenue = 0;
@@ -69,11 +123,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     let pendingPaymentsCount = 0;
     let paidPaymentsCount = 0;
 
-    for (const o of orders as any[]) {
+    for (const o of orders) {
       const amt = Number(o.total) || 0;
       totalRevenue += amt;
 
-      if (o.payment_method === 'upi') {
+      if (o.payment_method === 'upi' || o.payment_method === 'razorpay') {
         upiCount++;
         upiTotal += amt;
       } else if (o.payment_method === 'cod') {
