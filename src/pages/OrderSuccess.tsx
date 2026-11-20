@@ -39,11 +39,11 @@ export default function OrderSuccess() {
     };
 
     run();
-    // Poll every 8 seconds for live updates from admin
-    const interval = setInterval(run, 8000);
+    // One follow-up check after 5 seconds to sync DB without infinite polling
+    const timer = setTimeout(run, 5000);
     return () => {
       isMounted = false;
-      clearInterval(interval);
+      clearTimeout(timer);
     };
   }, [orderId, fetchOrderById]);
 

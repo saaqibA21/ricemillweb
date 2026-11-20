@@ -8,6 +8,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  // Cache products at the Vercel CDN Edge for 1 hour to prevent Fast Origin Transfer consumption
+  res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
+
   const variety = req.query.variety as string | undefined;
 
   try {

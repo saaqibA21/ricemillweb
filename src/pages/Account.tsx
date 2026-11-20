@@ -47,10 +47,8 @@ export default function Account() {
     };
 
     syncOrders();
-    const interval = setInterval(syncOrders, 10000);
     return () => {
       isMounted = false;
-      clearInterval(interval);
     };
   }, [user?.phone]);
 
